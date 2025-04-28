@@ -36,9 +36,6 @@ void console_rx(uint8_t _rx) {
 }
 
 void send_data(char data[]) {
-    wifi_init();
-    wifi_command_join_AP("justAnotherWiFiNetwork", "124567890");
-    wifi_command_create_TCP_connection("192.168.1.81", 23, NULL, NULL);
     wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
 }
 
@@ -53,7 +50,7 @@ void measureTemp() {
     else {
         temp_hum_error = 0;
         char buffer[16];
-        sprintf(buffer, "TEMP=%d.%d", temperature_reading,
+        sprintf(buffer, "TEMP=%d.%d\n", temperature_reading,
                 temperature_reading_decimal);
         send_data(buffer);
     }
@@ -64,16 +61,16 @@ int main() {
     sei();
 
     // initiate wifi connection
-
+    wifi_init();
+    wifi_command_join_AP("POCO X3 NFC", "12456789");
+    wifi_command_create_TCP_connection("192.168.19.234", 23, NULL, NULL);
     // initiate the temperature and humidity sensor
     dht11_init();
     int perMinute = 10;
     void (*pointer)(void) = &measureTemp;
 
     // // initiate a timer [perMinute] with the [measureTemp] function
-    // periodic_task_init_c(pointer, 1000);
-    measureTemp();
-    measureTemp();
+    periodic_task_init_c(pointer, (60000/perMinute));
     while (1) {
         int a = 1;
     }
