@@ -43,15 +43,15 @@ void measureTemp() {
     // // in here do the getting + sending to TCP, since timers need a void
     // // function alright
     DHT11_ERROR_MESSAGE_t status =
-        dht11_get(&temperature_reading, &temperature_reading_decimal,
-                  &humidity_reading, &humidity_reading_decimal);
+        dht11_get(&humidity_reading, &humidity_reading_decimal, 
+            &temperature_reading, &temperature_reading_decimal);
     if (status == DHT11_FAIL)
         temp_hum_error = 1;
     else {
         temp_hum_error = 0;
-        char buffer[16];
-        sprintf(buffer, "TEMP=%d.%d\n", temperature_reading,
-                temperature_reading_decimal);
+        char buffer[40];
+        sprintf(buffer, "TEMP=%d.%dC\nHUMIDITY=%d.%d%c\n\n", temperature_reading,
+                temperature_reading_decimal, humidity_reading, humidity_reading_decimal, '%');
         send_data(buffer);
     }
 }
@@ -69,11 +69,11 @@ int main() {
     int perMinute = 10;
     void (*pointer)(void) = &measureTemp;
 
-    // // initiate a timer [perMinute] with the [measureTemp] function
+    // initiate a timer [perMinute] with the [measureTemp] function
     periodic_task_init_c(pointer, (60000/perMinute));
-    while (1) {
-        int a = 1;
-    }
+
+    // just so the program does not terminate
+    while (1) {}
 
     // Example of uart and wifi connection
     //
