@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SEP4_IoT_Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c943013f74d88acc393d155c1dcf078d4ab478de")]
 [assembly: System.Reflection.AssemblyProductAttribute("SEP4_IoT_Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SEP4_IoT_Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
