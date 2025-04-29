@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@tanstack/react-query': '@tanstack/react-query/build/lib/index.js',
+      '@tanstack/react-query': '@tanstack/react-query/build/lib/index.esm.js',
     },
   },
 });

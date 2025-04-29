@@ -4,8 +4,7 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import { useQuery } from '@tanstack/react-query';
-import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
+import { useQuery, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 
 const queryClient = new QueryClient();
