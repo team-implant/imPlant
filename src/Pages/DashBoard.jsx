@@ -4,6 +4,7 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
+import { useGetAllTemperatures } from '../services/temperatureService'; // Assuming you move the hook to a separate file
 
 // Mock data and utility functions
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -27,14 +28,31 @@ const mockSensorData = {
     }
 };
 
+const getAllTemperatures = async () => {
+  const url = `/api/temperature`;
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export const useGetAllTemperatures = () => {
+  const { data, isLoading, error } = useQuery(
+    ['getAllTemperatures'],
+    getAllTemperatures,
+  );
+  return { data, loading: isLoading, error };
+};
+
 export default function Dashboard() {
     const [isOnline, setIsOnline] = useState(true);
     const [plantType, setPlantType] = useState('Bell Pepper');
     const [plantTypes, setPlantTypes] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [sensorData, setSensorData] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    //hook
+
+    const { data: temperatureData, loading: temperatureLoading, error: temperatureError } = useGetAllTemperatures();
 
     // Mock API calls for now until just to see the dashboard in action
     const fetchPlantTypes = async () => {
@@ -63,7 +81,6 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchInitialData = async () => {
-            setIsLoading(true);
             setError(null);
             try {
                 const [plantTypesData, notificationsData] = await Promise.all([
@@ -73,7 +90,8 @@ export default function Dashboard() {
                 setPlantTypes(plantTypesData);
                 setNotifications(notificationsData);
 
-                const sensorTypes = ['temperature', 'humidity', 'light', 'soilMoisture'];
+                // We'll update temperature data separately using the useGetAllTemperatures hook
+                const sensorTypes = ['humidity', 'light', 'soilMoisture'];
                 const sensorDataPromises = sensorTypes.map(type => fetchSensorData(type));
                 const sensorDataResults = await Promise.all(sensorDataPromises);
                 
@@ -86,13 +104,32 @@ export default function Dashboard() {
                 console.error('Error fetching initial data:', error);
                 setError('Failed to load dashboard data. Please try again later.');
                 setIsOnline(false);
-            } finally {
-                setIsLoading(false);
             }
         };
 
         fetchInitialData();
     }, []);
+
+    // Update sensorData when temperatureData changes
+    useEffect(() => {
+        if (temperatureData) {
+            setSensorData(prevData => ({
+                ...prevData,
+                temperature: {
+                    labels: temperatureData.map(t => t.timestamp), // Adjust based on your API response structure
+                    values: temperatureData.map(t => t.value)
+                }
+            }));
+        }
+    }, [temperatureData]);
+
+    if (temperatureLoading) {
+        return <div className="loading">Loading dashboard data...</div>;
+    }
+
+    if (error || temperatureError) {
+        return <div className="error">{error || temperatureError.message}</div>;
+    }
 
     const handleIrrigationControl = async (activate) => {
         try {
@@ -103,14 +140,6 @@ export default function Dashboard() {
             console.error('Error updating irrigation status:', error);
         }
     };
-
-    if (isLoading) {
-        return <div className="loading">Loading dashboard data...</div>;
-    }
-
-    if (error) {
-        return <div className="error">{error}</div>;
-    }
 
     return (
         <div className="dashboard-container">
