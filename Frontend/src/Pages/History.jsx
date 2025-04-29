@@ -57,7 +57,7 @@ export default function History() {
                 </div>
 
                 <div className="charts">
-                    <ChartPanel title="Temperature " data={temperatureData} />
+                    <ChartPanel title="Measurement " data={temperatureData} />
                     <ChartPanel title="Light Intensity " data={lightIntensityData} />
                     <ChartPanel title="Air Humidity" data={airHumidityData} />
                     <ChartPanel title="Soil Moisture " data={soilMoistureData} />

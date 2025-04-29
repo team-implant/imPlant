@@ -25,7 +25,7 @@ export default function MLInsights() {
                     </div>
 
                     <div className="insight-card">
-                        <h2>🌡️ Temperature Trend </h2>
+                        <h2>🌡️ Measurement Trend </h2>
                         <p>Predicted temperature range for next 24 hours: 20°C - 25°C</p>
                         <p>No significant anomalies expected.</p>
                     </div>

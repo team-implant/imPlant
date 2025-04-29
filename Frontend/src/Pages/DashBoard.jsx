@@ -134,7 +134,7 @@ export default function Dashboard() {
                     </select>
                 </div>
                 <div className="sensor-cards">
-                    <SensorCard label="Temperature" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
+                    <SensorCard label="Measurement" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
                     <SensorCard label="Light Intensity" value={`${sensorData.light?.values.slice(-1)[0] || 'N/A'} Lux`} icon="☀️" />
                     <SensorCard label="Air Humidity" value={`${sensorData.humidity?.values.slice(-1)[0] || 'N/A'}%`} icon="💨" />
                     <SensorCard label="Soil Moisture" value={`${sensorData.soilMoisture?.values.slice(-1)[0] || 'N/A'}%`} icon="🌱" />
@@ -142,7 +142,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="charts">
-                    <ChartPanel title="Temperature (24h)" data={sensorData.temperature} />
+                    <ChartPanel title="Measurement (24h)" data={sensorData.temperature} />
                     <ChartPanel title="Humidity (24h)" data={sensorData.humidity} />
                 </div>
 

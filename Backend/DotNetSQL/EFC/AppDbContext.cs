@@ -9,6 +9,6 @@ namespace DotNetSQL.EFC
         {
         }
 
-        public DbSet<TemperatureData> TemperatureData { get; set; }
+        public DbSet<MeasurementData> MeasurementData { get; set; }
     }
 }

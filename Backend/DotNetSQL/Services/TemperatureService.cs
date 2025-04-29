@@ -4,28 +4,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSQL.Services
 {
-    public class TemperatureService : ITemperatureService
+    public class MeasurementService : IMeasurementService
     {
         private readonly AppDbContext _context;
 
-        public TemperatureService(AppDbContext context)
+        public MeasurementService(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<TemperatureData>> GetAllTemperaturesAsync()
+        public async Task<IEnumerable<MeasurementData>> GetAllMeasurementsAsync()
         {
-            return await _context.TemperatureData.ToListAsync();
+            return await _context.MeasurementData.ToListAsync();
         }
 
-        public async Task<TemperatureData?> GetTemperatureByIdAsync(int id)
+        public async Task<MeasurementData?> GetMeasurementByIdAsync(int id)
         {
-            return await _context.TemperatureData.FindAsync(id);
+            return await _context.MeasurementData.FindAsync(id);
         }
 
-        public async Task<TemperatureData> AddTemperatureAsync(TemperatureData temperatureData)
+        public async Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData)
         {
-            _context.TemperatureData.Add(temperatureData);
+            _context.MeasurementData.Add(temperatureData);
             await _context.SaveChangesAsync();
             return temperatureData;
         }
