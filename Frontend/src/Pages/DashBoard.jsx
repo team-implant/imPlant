@@ -7,10 +7,9 @@ import '../styles/dashboard.css';
 import axios from 'axios';
 import {useGetAllTemperatures} from "../Hooks/useGetTemperature.jsx";
 
+
 // Mock data and utility functions
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-const {data, loading, error } = useGetAllTemperatures();
 
 const mockSensorData = {
     temperature: {
@@ -39,6 +38,8 @@ export default function Dashboard() {
     const [sensorData, setSensorData] = useState({});
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const {data} = useGetAllTemperatures();
 
     const fetchTemperatureData = async () => {
         try {
