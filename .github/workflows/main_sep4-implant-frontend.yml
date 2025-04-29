@@ -60,8 +60,3 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9C50BEABEDB444A8335B942AB42A48D }}
           package: Frontend/dist
-
-      - name: Verify Deployment
-        run: |
-          curl -s https://sep4-implant-frontend.azurewebsites.net/ > response.txt
-          cat response.txt
