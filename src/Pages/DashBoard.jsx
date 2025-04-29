@@ -4,7 +4,8 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import { useGetAllTemperatures } from '../services/temperatureService'; // Assuming you move the hook to a separate file
+import { useQuery } from '@tanstack/react-query';
+import axios from '../../shared/axios';
 
 // Mock data and utility functions
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -34,14 +35,6 @@ const getAllTemperatures = async () => {
   return response.data;
 };
 
-export const useGetAllTemperatures = () => {
-  const { data, isLoading, error } = useQuery(
-    ['getAllTemperatures'],
-    getAllTemperatures,
-  );
-  return { data, loading: isLoading, error };
-};
-
 export default function Dashboard() {
     const [isOnline, setIsOnline] = useState(true);
     const [plantType, setPlantType] = useState('Bell Pepper');
@@ -50,9 +43,11 @@ export default function Dashboard() {
     const [sensorData, setSensorData] = useState({});
     const [error, setError] = useState(null);
 
-    //hook
-
-    const { data: temperatureData, loading: temperatureLoading, error: temperatureError } = useGetAllTemperatures();
+    // Use useQuery directly in the component
+    const { data: temperatureData, isLoading: temperatureLoading, error: temperatureError } = useQuery(
+        ['getAllTemperatures'],
+        getAllTemperatures
+    );
 
     // Mock API calls for now until just to see the dashboard in action
     const fetchPlantTypes = async () => {
