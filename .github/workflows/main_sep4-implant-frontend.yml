@@ -30,7 +30,7 @@ jobs:
       - name: Zip build folder
         run: |
           cd Frontend
-          zip -r ../../release.zip . 
+          zip -r ../../release.zip dist 
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -61,4 +61,4 @@ jobs:
           app-name: 'sep4-implant-frontend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9C50BEABEDB444A8335B942AB42A48D }}
-          package: .
+          package: ./dist
