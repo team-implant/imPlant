@@ -10,7 +10,7 @@ import './styles/PageTransitions.css';
 
 function AnimatedRoutes() {
   const location = useLocation();
-
+// checking CI workflow
   return (
     <TransitionGroup>
       <CSSTransition key={location.pathname} classNames="fade" timeout={300}>
