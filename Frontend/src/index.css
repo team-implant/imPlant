@@ -1,0 +1,73 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f5;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #2e7d32;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.sensor-cards {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+}
+
+.sensor-card {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.chart-panel {
+    background: white;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+}
+
+.insights-panel {
+    background: #fffbe6;
+    border-left: 4px solid #ffc107;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+nav {
+    margin-bottom: 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #4CAF50;
+}
