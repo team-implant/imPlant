@@ -7,9 +7,13 @@ import MLInsights from './Pages/MLInsights';
 import CustomizeThresholds from './Pages/CustomizeThresholds';
 import ThirdPartyControl from './Pages/ThirdPartyControl';
 import './styles/PageTransitions.css';
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+
+const queryClient= new QueryClient();
 
 function AnimatedRoutes() {
   const location = useLocation();
+
 
   return (
     <TransitionGroup>
@@ -28,9 +32,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
+      <QueryClientProvider client={queryClient}>
     <Router>
       <AnimatedRoutes />
     </Router>
+      </QueryClientProvider>
   );
 }
 
