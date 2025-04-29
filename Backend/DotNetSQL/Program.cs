@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
 // Get connection string (same logic for both Dev and Prod)
-var connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connection))
 {
