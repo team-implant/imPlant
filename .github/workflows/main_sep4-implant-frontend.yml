@@ -49,7 +49,8 @@ jobs:
           name: vite-build
 
       - name: Unzip artifact
-        run: unzip release.zip
+        run: |
+          unzip release.zip -d Frontend
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -58,7 +59,7 @@ jobs:
           app-name: 'sep4-implant-frontend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9C50BEABEDB444A8335B942AB42A48D }}
-          package: ./Frontend/dist
+          package: Frontend/dist
 
       - name: Verify Deployment
         run: |
