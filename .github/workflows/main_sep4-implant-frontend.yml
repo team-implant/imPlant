@@ -29,7 +29,7 @@ jobs:
           
       - name: Zip build folder
         run: |
-          cd Frontend/dist
+          cd Frontend
           zip -r ../../release.zip . 
 
       - name: Upload artifact
