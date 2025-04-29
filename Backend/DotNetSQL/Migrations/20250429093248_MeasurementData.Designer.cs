@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250426192654_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250429093248_MeasurementData")]
+    partial class MeasurementData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,13 +25,16 @@ namespace DotNetSQL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DotNetSQL.Entities.TemperatureData", b =>
+            modelBuilder.Entity("DotNetSQL.Entities.MeasurementData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Humidity")
+                        .HasColumnType("float");
 
                     b.Property<double>("Temperature")
                         .HasColumnType("float");
@@ -41,7 +44,7 @@ namespace DotNetSQL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TemperatureData");
+                    b.ToTable("MeasurementData");
                 });
 #pragma warning restore 612, 618
         }

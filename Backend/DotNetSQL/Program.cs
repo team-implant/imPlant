@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register services before building the app
-builder.Services.AddScoped<ITemperatureService, TemperatureService>();
+builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
 var connection = string.Empty;
 if (builder.Environment.IsDevelopment())
@@ -31,7 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 // Remove this line - it's now above before app.Build()
-// builder.Services.AddScoped<ITemperatureService, TemperatureService>();
+// builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
 if (app.Environment.IsDevelopment())  // Add parentheses here
 {

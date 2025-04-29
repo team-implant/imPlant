@@ -6,7 +6,7 @@ export default function InsightsPanel() {
         <div className="insights-panel">
             <h3> Real-time Insights</h3>
             <ul>
-                <li>🌡️ Temperature placeholder.</li>
+                <li>🌡️ Measurement placeholder.</li>
                 <li>💧 Soil moisture placeholder.</li>
                 <li>☀️ Light intensity placeholder.</li>
                 <li>🚰 Water pump level placeholder.</li>

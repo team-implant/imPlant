@@ -2,10 +2,10 @@ using DotNetSQL.Entities;
 
 namespace DotNetSQL.Services
 {
-    public interface ITemperatureService
+    public interface IMeasurementService
     {
-        Task<IEnumerable<TemperatureData>> GetAllTemperaturesAsync();
-        Task<TemperatureData?> GetTemperatureByIdAsync(int id);
-        Task<TemperatureData> AddTemperatureAsync(TemperatureData temperatureData);
+        Task<IEnumerable<MeasurementData>> GetAllMeasurementsAsync();
+        Task<MeasurementData?> GetMeasurementByIdAsync(int id);
+        Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData);
     }
 }
