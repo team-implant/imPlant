@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,27 +23,33 @@ jobs:
           cd Frontend
           npm install
           npm run build
+          mv dist ../dist  # Move dist to root so Azure deploy works correctly
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: vite-build
-          path: Frontend/dist
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: vite-build
+          path: dist
 
       - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'sep4-implant-frontend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9C50BEABEDB444A8335B942AB42A48D }}
-          package: .
+          package: dist
