@@ -39,17 +39,9 @@ export default function Dashboard() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const {data} = useGetAllTemperatures();
+    const {data, loading} = useGetAllTemperatures();
+    console.log(useGetAllTemperatures());
 
-    const fetchTemperatureData = async () => {
-        try {
-            const response = await axios.get('/api/temperature');
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching temperature data:', error);
-            throw error;
-        }
-    };
 
     // Mock API calls
     const fetchPlantTypes = async () => {
@@ -76,49 +68,7 @@ export default function Dashboard() {
         return { success: true, message: `Irrigation ${status ? 'activated' : 'deactivated'}` };
     };
 
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const [plantTypesData, notificationsData, temperatureData] = await Promise.all([
-                    fetchPlantTypes(),
-                    fetchNotifications(),
-                    fetchTemperatureData()
-                ]);
-                setPlantTypes(plantTypesData);
-                setNotifications(notificationsData);
 
-                const sensorTypes = ['humidity', 'light', 'soilMoisture'];
-                const sensorDataPromises = sensorTypes.map(type => fetchSensorData(type));
-                const sensorDataResults = await Promise.all(sensorDataPromises);
-                
-                const newSensorData = {
-                    temperature: {
-                        labels: temperatureData.map(t => t.timestamp),
-                        values: temperatureData.map(t => t.value)
-                    }
-                };
-                sensorTypes.forEach((type, index) => {
-                    newSensorData[type] = sensorDataResults[index];
-                });
-                setSensorData(newSensorData);
-                setIsOnline(true);
-            } catch (error) {
-                console.error('Error fetching initial data:', error);
-                setError('Failed to load dashboard data. Please try again later.');
-                setIsOnline(false);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchInitialData();
-    }, []);
-
-    if (isLoading) {
-        return <div className="loading">Loading dashboard data...</div>;
-    }
 
     if (error) {
         return <div className="error">{error}</div>;
@@ -140,43 +90,14 @@ export default function Dashboard() {
             <header className="dashboard-header">
                 <h1>PlaceHolder</h1>
                 <p>Greenhouse Monitoring Dashboard</p>
-                <p>{data}</p>
-            </header>
-            <div className="dashboard-content">
-                <div className="connection-status">
-                    Status: <span className={isOnline ? 'status-online' : 'status-offline'}>
-                        {isOnline ? 'Online' : 'Offline'}
-                    </span>
-                </div>
-                <div className="plant-type">
-                    <label>Plant Type: </label>
-                    <select value={plantType} onChange={(e) => setPlantType(e.target.value)}>
-                        {plantTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="sensor-cards">
-                    <SensorCard label="Measurement" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
-                    <SensorCard label="Light Intensity" value={`${sensorData.light?.values.slice(-1)[0] || 'N/A'} Lux`} icon="☀️" />
-                    <SensorCard label="Air Humidity" value={`${sensorData.humidity?.values.slice(-1)[0] || 'N/A'}%`} icon="💨" />
-                    <SensorCard label="Soil Moisture" value={`${sensorData.soilMoisture?.values.slice(-1)[0] || 'N/A'}%`} icon="🌱" />
-                    <SensorCard label="Water Pump Level" value="70%" icon="🚰" />
-                </div>
-
-                <div className="charts">
-                    <ChartPanel title="Measurement (24h)" data={sensorData.temperature} />
-                    <ChartPanel title="Humidity (24h)" data={sensorData.humidity} />
-                </div>
-
-                <InsightsPanel />
-
-                <div className="controls">
-                    <h2>Irrigation Control</h2>
-                    <button onClick={() => handleIrrigationControl(true)}>Activate Irrigation</button>
-                    <button onClick={() => handleIrrigationControl(false)}>Deactivate Irrigation</button>
-                </div>
-            </div>
+                {(loading) ? (<p>Loading</p>) : (data.map((measurement) => (
+          <li key={measurement.id}>
+            <strong>Temperature:</strong> {measurement.temperature}°C |{' '}
+            <strong>Humidity:</strong> {measurement.humidity}% |{' '}
+            <strong>Timestamp:</strong> {new Date(measurement.timestamp).toLocaleString()}
+          </li>
+        )))}
+                </header>
         </div>
     );
 }

@@ -4,10 +4,23 @@ using DotNetSQL.Services;  // Add this namespace import
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 // Register services before building the app
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
@@ -44,6 +57,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+app.UseCors("AllowFrontend");
+
 app.MapGet("/swagger", context =>
 {
     context.Response.Redirect("/swagger/index.html");
@@ -51,3 +66,4 @@ app.MapGet("/swagger", context =>
 });
 
 app.Run();
+
