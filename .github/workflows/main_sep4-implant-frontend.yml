@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,23 +25,15 @@ jobs:
           npm install
           npm run build
 
-      - name: Zip dist folder
-        run: |
-          cd Frontend
-          zip -r ../release.zip dist
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: vite-build
-          path: release.zip
+          path: Frontend/dist
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact
@@ -48,15 +41,10 @@ jobs:
         with:
           name: vite-build
 
-      - name: Unzip artifact
-        run: |
-          unzip release.zip -d Frontend
-
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'sep4-implant-frontend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9C50BEABEDB444A8335B942AB42A48D }}
-          package: Frontend/dist
+          package: .
