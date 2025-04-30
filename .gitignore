@@ -1,0 +1,17 @@
+# Ignore published backend builds
+Backend/DotNetSQL/tmpPublish/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build folders
+dist/
+build/
+
+# Ignore environment/local/system files
+.env
+*.log
+.vscode/
+.idea/
+.DS_Store
+*.local
