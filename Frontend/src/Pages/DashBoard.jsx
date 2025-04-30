@@ -58,10 +58,9 @@ export default function Dashboard() {
     const updateIrrigationStatus = async (status) => {
     await delay(200);
     console.log(`Irrigation status updated to: ${status}`);
-    return {
-        success: true,
-        message: `Irrigation ${status ? 'activated' : 'deactivated'}`
+    return { success: true, message: `Irrigation ${status ? 'activated' : 'deactivated'}` 
     };
+
 };
 
     useEffect(() => {
