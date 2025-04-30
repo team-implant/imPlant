@@ -4,67 +4,100 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import { useGetAllTemperatures } from "../Hooks/useGetTemperature.jsx";
+import axios from 'axios';
+import {useGetAllTemperatures} from "../Hooks/useGetTemperature.jsx";
+
+
+// Mock data and utility functions
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const mockSensorData = {
+    temperature: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        values: [20, 22, 25, 28, 26, 23]
+    },
+    humidity: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        values: [60, 62, 65, 63, 68, 65]
+    },
+    light: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        values: [0, 100, 500, 800, 600, 200]
+    },
+    soilMoisture: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        values: [40, 38, 42, 45, 43, 41]
+    }
+};
 
 export default function Dashboard() {
-  const [plantType] = useState('Bell Pepper');
-  const [notifications, setNotifications] = useState([]);
-  const { data, loading, error } = useGetAllTemperatures();
+    const [isOnline, setIsOnline] = useState(true);
+    const [plantType, setPlantType] = useState('Bell Pepper');
+    const [plantTypes, setPlantTypes] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+    const [sensorData, setSensorData] = useState({});
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Load real notifications if you have an endpoint; for now we just leave it empty.
-    setNotifications([
-      { id: 1, message: "System online and monitoring." }
-    ]);
-  }, []);
+    const {data, loading} = useGetAllTemperatures();
+    console.log(useGetAllTemperatures());
 
-  const handleIrrigationControl = async (activate) => {
-    try {
-      // Replace with your real irrigation control API call
-      console.log(`Irrigation ${activate ? 'activated' : 'deactivated'}`);
-    } catch (err) {
-      console.error("Irrigation control error:", err);
+
+    // Mock API calls
+    const fetchPlantTypes = async () => {
+        await delay(300);
+        return ['Tomato', 'Bell Pepper', 'Chestnut'];
+    };
+
+    const fetchNotifications = async () => {
+        await delay(400);
+        return [
+            { id: 1, message: "Water pump level low. Refill soon." },
+            { id: 2, message: "Optimal conditions maintained for the last 24 hours." }
+        ];
+    };
+
+    const fetchSensorData = async (type) => {
+        await delay(500);
+        return mockSensorData[type] || null;
+    };
+
+    const updateIrrigationStatus = async (status) => {
+        await delay(200);
+        console.log(Irrigation status updated to: ${status});
+        return { success: true, message: Irrigation ${status ? 'activated' : 'deactivated'} };
+    };
+
+
+
+    if (error) {
+        return <div className="error">{error}</div>;
     }
-  };
 
-  return (
-    <div className="dashboard-container">
-      <TopBar notifications={notifications} />
+    const handleIrrigationControl = async (activate) => {
+        try {
+            const result = await updateIrrigationStatus(activate);
+            console.log(result.message);
+            // You might want to update some state here or show a notification
+        } catch (error) {
+            console.error('Error updating irrigation status:', error);
+        }
+    };
 
-      <header className="dashboard-header">
-        <h1>{plantType} Dashboard</h1>
-        <p>Greenhouse Monitoring Dashboard</p>
-
-        {loading ? (
-          <p>Loading temperature data...</p>
-        ) : error ? (
-          <p className="error">Error loading data: {error.message}</p>
-        ) : data?.length ? (
-          <ul>
-            {data.map((measurement) => (
-              <li key={measurement.id}>
-                🌡️ <strong>Temp:</strong> {measurement.temperature}°C | 💧 <strong>Humidity:</strong> {measurement.humidity}% | ⏱️ <strong>Time:</strong> {new Date(measurement.timestamp).toLocaleString()}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No measurements available.</p>
-        )}
-      </header>
-
-      <main className="dashboard-main">
-        {/* Replace these with live summaries if available */}
-        {data && data.length > 0 && (
-          <>
-            <SensorCard type="Temperature" value={data.at(-1).temperature} />
-            <SensorCard type="Humidity" value={data.at(-1).humidity} />
-            {/* Add other sensor cards if data supports them */}
-          </>
-        )}
-
-        <ChartPanel data={data} />
-        <InsightsPanel />
-      </main>
-    </div>
-  );
+    return (
+        <div className="dashboard-container">
+            <TopBar notifications={notifications} />
+            <header className="dashboard-header">
+                <h1>PlaceHolder</h1>
+                <p>Greenhouse Monitoring Dashboard</p>
+                {(loading) ? (<p>Loading</p>) : (data.map((measurement) => (
+          <li key={measurement.id}>
+            <strong>Temperature:</strong> {measurement.temperature}°C |{' '}
+            <strong>Humidity:</strong> {measurement.humidity}% |{' '}
+            <strong>Timestamp:</strong> {new Date(measurement.timestamp).toLocaleString()}
+          </li>
+        )))}
+                </header>
+        </div>
+    );
 }
