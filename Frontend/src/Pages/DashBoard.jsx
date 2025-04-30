@@ -4,9 +4,6 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import axios from 'axios';
-import {useGetAllTemperatures} from "../Hooks/useGetTemperature.jsx";
-
 
 // Mock data and utility functions
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -36,14 +33,10 @@ export default function Dashboard() {
     const [plantTypes, setPlantTypes] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [sensorData, setSensorData] = useState({});
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const {data, loading} = useGetAllTemperatures();
-    console.log(useGetAllTemperatures());
-
-
-    // Mock API calls
+    // Mock API calls for now until just to see the dashboard in action
     const fetchPlantTypes = async () => {
         await delay(300);
         return ['Tomato', 'Bell Pepper', 'Chestnut'];
@@ -53,7 +46,7 @@ export default function Dashboard() {
         await delay(400);
         return [
             { id: 1, message: "Water pump level low. Refill soon." },
-            { id: 2, message: "Optimal conditions maintained for the last 24 hours." }
+            { id: 2, message: "Optimal conditions maintained for the last 24 hours." } // this is just a mock  for the modal , real data would come from API call
         ];
     };
 
@@ -68,11 +61,38 @@ export default function Dashboard() {
         return { success: true, message: Irrigation ${status ? 'activated' : 'deactivated'} };
     };
 
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const [plantTypesData, notificationsData] = await Promise.all([
+                    fetchPlantTypes(),
+                    fetchNotifications()
+                ]);
+                setPlantTypes(plantTypesData);
+                setNotifications(notificationsData);
 
+                const sensorTypes = ['temperature', 'humidity', 'light', 'soilMoisture'];
+                const sensorDataPromises = sensorTypes.map(type => fetchSensorData(type));
+                const sensorDataResults = await Promise.all(sensorDataPromises);
+                
+                const newSensorData = {};
+                sensorTypes.forEach((type, index) => {
+                    newSensorData[type] = sensorDataResults[index];
+                });
+                setSensorData(newSensorData);
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+                setError('Failed to load dashboard data. Please try again later.');
+                setIsOnline(false);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    if (error) {
-        return <div className="error">{error}</div>;
-    }
+        fetchInitialData();
+    }, []);
 
     const handleIrrigationControl = async (activate) => {
         try {
@@ -84,20 +104,56 @@ export default function Dashboard() {
         }
     };
 
+    if (isLoading) {
+        return <div className="loading">Loading dashboard data...</div>;
+    }
+
+    if (error) {
+        return <div className="error">{error}</div>;
+    }
+
     return (
         <div className="dashboard-container">
             <TopBar notifications={notifications} />
             <header className="dashboard-header">
                 <h1>PlaceHolder</h1>
                 <p>Greenhouse Monitoring Dashboard</p>
-                {(loading) ? (<p>Loading</p>) : (data.map((measurement) => (
-          <li key={measurement.id}>
-            <strong>Temperature:</strong> {measurement.temperature}°C |{' '}
-            <strong>Humidity:</strong> {measurement.humidity}% |{' '}
-            <strong>Timestamp:</strong> {new Date(measurement.timestamp).toLocaleString()}
-          </li>
-        )))}
-                </header>
+            </header>
+            <div className="dashboard-content">
+                <div className="connection-status">
+                    Status: <span className={isOnline ? 'status-online' : 'status-offline'}>
+                        {isOnline ? 'Online' : 'Offline'}
+                    </span>
+                </div>
+                <div className="plant-type">
+                    <label>Plant Type: </label>
+                    <select value={plantType} onChange={(e) => setPlantType(e.target.value)}>
+                        {plantTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="sensor-cards">
+                    <SensorCard label="Measurement" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
+                    <SensorCard label="Light Intensity" value={`${sensorData.light?.values.slice(-1)[0] || 'N/A'} Lux`} icon="☀️" />
+                    <SensorCard label="Air Humidity" value={`${sensorData.humidity?.values.slice(-1)[0] || 'N/A'}%`} icon="💨" />
+                    <SensorCard label="Soil Moisture" value={`${sensorData.soilMoisture?.values.slice(-1)[0] || 'N/A'}%`} icon="🌱" />
+                    <SensorCard label="Water Pump Level" value="70%" icon="🚰" />
+                </div>
+
+                <div className="charts">
+                    <ChartPanel title="Measurement (24h)" data={sensorData.temperature} />
+                    <ChartPanel title="Humidity (24h)" data={sensorData.humidity} />
+                </div>
+
+                <InsightsPanel />
+
+                <div className="controls">
+                    <h2>Irrigation Control</h2>
+                    <button onClick={() => handleIrrigationControl(true)}>Activate Irrigation</button>
+                    <button onClick={() => handleIrrigationControl(false)}>Deactivate Irrigation</button>
+                </div>
+            </div>
         </div>
     );
 }
