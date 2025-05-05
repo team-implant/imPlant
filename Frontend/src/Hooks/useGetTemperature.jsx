@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios'
 
 const getAllTemperatures = async () => {
-    const url = `/api/Measurement`;
+    const url = `http://sep4-implant.azurewebsites.net/api/Measurement`;
     const response = await axios.get(url);
     return response.data;
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import Dashboard from './Pages/Dashboard';
+import Dashboard from './Pages/DashBoard';
 import History from './Pages/History';
 import MLInsights from './Pages/MLInsights';
 import CustomizeThresholds from './Pages/CustomizeThresholds';
