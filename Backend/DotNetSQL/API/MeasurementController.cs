@@ -40,5 +40,32 @@ namespace DotNetSQL.Controllers
 
             return temperature;
         }
+
+        [HttpGet("airhumidity")]
+        public async Task<ActionResult<IEnumerable<MeasurementData>>> GetAirHumidity()
+        {
+            var airHumidity = await _temperatureService.GetAirHumidityAsync();
+
+            if (airHumidity == null || !airHumidity.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(airHumidity);
+        }   
+
+        [HttpGet("soilhumidity")]
+        public async Task<ActionResult<IEnumerable<MeasurementData>>> GetSoilHumidity()
+        {
+            var soilHumidity = await _temperatureService.GetSoilHumidityAsync();
+
+            if (soilHumidity == null || !soilHumidity.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(soilHumidity);
+        }
+            
     }
 }

@@ -29,5 +29,29 @@ namespace DotNetSQL.Services
             await _context.SaveChangesAsync();
             return temperatureData;
         }
+
+        public async Task<IEnumerable<MeasurementData>> GetAirHumidityAsync()
+        {
+            return await _context.MeasurementData
+                .Select(m => new MeasurementData
+                {
+                    Id = m.Id,
+                    AirHumidity = m.AirHumidity,
+                    Timestamp = m.Timestamp
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MeasurementData>> GetSoilHumidityAsync()
+        {
+            return await _context.MeasurementData
+                .Select(m => new MeasurementData
+                {
+                    Id = m.Id,
+                    SoilHumidity = m.SoilHumidity,
+                    Timestamp = m.Timestamp
+                })
+                .ToListAsync();
+        }
     }
 }
