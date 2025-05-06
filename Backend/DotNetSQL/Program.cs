@@ -25,6 +25,7 @@ builder.Services.AddSwaggerGen();
 // Register services before building the app
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
+builder.Services.AddScoped<ILightIntensityService, LightIntensityService>();
 
 
 var connection = string.Empty;
