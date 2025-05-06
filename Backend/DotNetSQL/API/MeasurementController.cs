@@ -40,35 +40,6 @@ namespace DotNetSQL.Controllers
             }
 
             return temperature;
-        }
-
-        [HttpPost("airhumidity")]
-        public async Task<ActionResult<AirHumidityDto>> AddAirHumidity(AirHumidityDto airHumidityDto)
-        {
-        
-            var result = await _temperatureService.AddAirHumidityAsync(airHumidityDto);
-            return CreatedAtAction(nameof(GetMeasurement), new { id = result.Id }, result);
-        }
-
-        [HttpGet("airhumidity")]
-        public async Task<ActionResult<IEnumerable<AirHumidityDto>>> GetAirHumidity()
-        {
-            return Ok(await _temperatureService.GetAirHumidityAsync());
-        }   
-
-
-        [HttpPost("soilhumidity")]
-        public async Task<ActionResult<SoilHumidityDto>> AddSoilHumidity(SoilHumidityDto soilHumidityDto)
-        {
-            var result = await _temperatureService.AddSoilHumidityAsync(soilHumidityDto);
-            return CreatedAtAction(nameof(GetMeasurement), new { id = result.Id }, result);
-        }
-        
-        [HttpGet("soilhumidity")]
-        public async Task<ActionResult<IEnumerable<SoilHumidityDto>>> GetSoilHumidity()
-        {
-            return Ok(await _temperatureService.GetSoilHumidityAsync());
-        }
-            
+        }     
     }
 }

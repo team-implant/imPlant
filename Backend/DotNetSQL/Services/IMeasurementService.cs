@@ -5,17 +5,8 @@ namespace DotNetSQL.Services
 {
     public interface IMeasurementService
     {
-        // ==============
         Task<IEnumerable<MeasurementData>> GetAllMeasurementsAsync();
         Task<MeasurementData?> GetMeasurementByIdAsync(int id);
         Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData);
-
-        // ==============
-
-        Task<AirHumidityDto> AddAirHumidityAsync(AirHumidityDto airHumidityDto);
-        Task<IEnumerable<AirHumidityDto>> GetAirHumidityAsync();
-
-        Task<SoilHumidityDto> AddSoilHumidityAsync(SoilHumidityDto soilHumidityDto);
-        Task<IEnumerable<SoilHumidityDto>> GetSoilHumidityAsync();
     }
 }

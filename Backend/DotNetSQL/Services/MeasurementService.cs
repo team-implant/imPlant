@@ -30,29 +30,5 @@ namespace DotNetSQL.Services
             await _context.SaveChangesAsync();
             return temperatureData;
         }
-
-        public async Task<IEnumerable<AirHumidityDto>> GetAirHumidityAsync()
-        {
-            return await _context.AirHumidityDto.ToListAsync();
-        }
-
-        public async Task<IEnumerable<SoilHumidityDto>> GetSoilHumidityAsync()
-        {
-            return await _context.SoilHumidityDto.ToListAsync();
-        }
-
-        public async Task<AirHumidityDto> AddAirHumidityAsync(AirHumidityDto airHumidityDto)
-        {
-            _context.AirHumidityDto.Add(airHumidityDto);
-            await _context.SaveChangesAsync();
-            return airHumidityDto;
-        }
-
-        public async Task<SoilHumidityDto> AddSoilHumidityAsync(SoilHumidityDto soilHumidityDto)
-        {
-            _context.SoilHumidityDto.Add(soilHumidityDto);
-            await _context.SaveChangesAsync();
-            return soilHumidityDto;
-        }
     }
 }
