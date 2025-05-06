@@ -1,26 +1,42 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
-using DotNetSQL.Services;  // Add this namespace import
+using DotNetSQL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add environment variables and config
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                     .AddEnvironmentVariables();
+
+// CORS policy for frontend (adjust origin if needed)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Adjust if different
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register services before building the app
+// Register MeasurementService and EF Core DbContext
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
-var connection = string.Empty;
-if (builder.Environment.IsDevelopment())
+// Get connection string (same logic for both Dev and Prod)
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrEmpty(connection))
 {
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+    Console.WriteLine("❌ ERROR: Connection string 'AZURE_SQL_CONNECTIONSTRING' not found.");
 }
 else
 {
-    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+    Console.WriteLine($"✅ Using connection string: {connection}");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -30,20 +46,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }));
 
 var app = builder.Build();
-// Remove this line - it's now above before app.Build()
-// builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
-if (app.Environment.IsDevelopment())  // Add parentheses here
+// Enable Swagger only in Development
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
+// Enable middleware
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseCors("AllowFrontend");
+
 app.MapControllers();
 
+// Optional redirect to Swagger UI
 app.MapGet("/swagger", context =>
 {
     context.Response.Redirect("/swagger/index.html");

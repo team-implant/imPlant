@@ -4,9 +4,6 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import axios from 'axios';
-import {useGetAllTemperatures} from "../Hooks/useGetTemperature.jsx";
-
 
 // Mock data and utility functions
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -36,22 +33,10 @@ export default function Dashboard() {
     const [plantTypes, setPlantTypes] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [sensorData, setSensorData] = useState({});
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const {data} = useGetAllTemperatures();
-
-    const fetchTemperatureData = async () => {
-        try {
-            const response = await axios.get('/api/temperature');
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching temperature data:', error);
-            throw error;
-        }
-    };
-
-    // Mock API calls
+    // Mock API calls for now until just to see the dashboard in action
     const fetchPlantTypes = async () => {
         await delay(300);
         return ['Tomato', 'Bell Pepper', 'Chestnut'];
@@ -61,7 +46,7 @@ export default function Dashboard() {
         await delay(400);
         return [
             { id: 1, message: "Water pump level low. Refill soon." },
-            { id: 2, message: "Optimal conditions maintained for the last 24 hours." }
+            { id: 2, message: "Optimal conditions maintained for the last 24 hours." } // this is just a mock  for the modal , real data would come from API call
         ];
     };
 
@@ -71,39 +56,34 @@ export default function Dashboard() {
     };
 
     const updateIrrigationStatus = async (status) => {
-        await delay(200);
-        console.log(`Irrigation status updated to: ${status}`);
-        return { success: true, message: `Irrigation ${status ? 'activated' : 'deactivated'}` };
+    await delay(200);
+    console.log(`Irrigation status updated to: ${status}`);
+    return { success: true, message: `Irrigation ${status ? 'activated' : 'deactivated'}` 
     };
+
+};
 
     useEffect(() => {
         const fetchInitialData = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                const [plantTypesData, notificationsData, temperatureData] = await Promise.all([
+                const [plantTypesData, notificationsData] = await Promise.all([
                     fetchPlantTypes(),
-                    fetchNotifications(),
-                    fetchTemperatureData()
+                    fetchNotifications()
                 ]);
                 setPlantTypes(plantTypesData);
                 setNotifications(notificationsData);
 
-                const sensorTypes = ['humidity', 'light', 'soilMoisture'];
+                const sensorTypes = ['temperature', 'humidity', 'light', 'soilMoisture'];
                 const sensorDataPromises = sensorTypes.map(type => fetchSensorData(type));
                 const sensorDataResults = await Promise.all(sensorDataPromises);
                 
-                const newSensorData = {
-                    temperature: {
-                        labels: temperatureData.map(t => t.timestamp),
-                        values: temperatureData.map(t => t.value)
-                    }
-                };
+                const newSensorData = {};
                 sensorTypes.forEach((type, index) => {
                     newSensorData[type] = sensorDataResults[index];
                 });
                 setSensorData(newSensorData);
-                setIsOnline(true);
             } catch (error) {
                 console.error('Error fetching initial data:', error);
                 setError('Failed to load dashboard data. Please try again later.');
@@ -116,14 +96,6 @@ export default function Dashboard() {
         fetchInitialData();
     }, []);
 
-    if (isLoading) {
-        return <div className="loading">Loading dashboard data...</div>;
-    }
-
-    if (error) {
-        return <div className="error">{error}</div>;
-    }
-
     const handleIrrigationControl = async (activate) => {
         try {
             const result = await updateIrrigationStatus(activate);
@@ -134,13 +106,20 @@ export default function Dashboard() {
         }
     };
 
+    if (isLoading) {
+        return <div className="loading">Loading dashboard data...</div>;
+    }
+
+    if (error) {
+        return <div className="error">{error}</div>;
+    }
+
     return (
         <div className="dashboard-container">
             <TopBar notifications={notifications} />
             <header className="dashboard-header">
                 <h1>PlaceHolder</h1>
                 <p>Greenhouse Monitoring Dashboard</p>
-                <p>{data}</p>
             </header>
             <div className="dashboard-content">
                 <div className="connection-status">

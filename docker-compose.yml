@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    image: team-implant/implant-backend:latest  
+    build:
+      context: ./Backend/DotNetSQL
+      dockerfile: Dockerfile
+    container_name: implant_backend
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  frontend:
+    image: team-implant/implant-frontend:latest  
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: implant_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:80
+      
