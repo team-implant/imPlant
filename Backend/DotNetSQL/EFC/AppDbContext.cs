@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.Entities;
+using DotNetSQL.DTOs;
 
 namespace DotNetSQL.EFC
 {
@@ -10,5 +11,6 @@ namespace DotNetSQL.EFC
         }
 
         public DbSet<MeasurementData> MeasurementData { get; set; }
+        public DbSet<LightIntensityDTO> LightIntensity { get; set; }
     }
 }
