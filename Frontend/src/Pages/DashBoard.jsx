@@ -5,7 +5,7 @@ import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
 
-// Mock data and utility functions
+// Mock data Backend API controller format should match this to keep it as it looks like here
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const mockSensorData = {
@@ -36,7 +36,7 @@ export default function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Mock API calls for now until just to see the dashboard in action
+    // Mock API calls for now until just to see the dashboard in action, again Controller should match
     const fetchPlantTypes = async () => {
         await delay(300);
         return ['Tomato', 'Bell Pepper', 'Chestnut'];
