@@ -1,7 +1,12 @@
 import React from 'react';
 import '../styles/SensorCard.css'
 
-export default function SensorCard({ label, value, icon }) {
+interface SensorCardProps {
+    label: string;
+    value: string | number;
+    icon: React.ReactNode;
+}
+export default function SensorCard({ label, value, icon }:SensorCardProps) {
     return (
         <div className="sensor-card">
             <div className="icon">{icon}</div>

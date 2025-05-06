@@ -1,11 +1,31 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import {Line} from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ChartOptions
+} from 'chart.js';
 import '../styles/ChartPanel.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-export default function ChartPanel({ title, data }) {
+interface ChartData {
+    labels: string[];
+    values: number[];
+}
+
+interface Props {
+    title: string;
+    data: ChartData;
+}
+
+export default function ChartPanel({title, data}: Props) {
     const chartData = {
         labels: data.labels,
         datasets: [
@@ -19,7 +39,7 @@ export default function ChartPanel({ title, data }) {
         ]
     };
 
-    const options = {
+    const options: ChartOptions<'line'> = {
         responsive: true,
         plugins: {
             legend: {
@@ -34,7 +54,7 @@ export default function ChartPanel({ title, data }) {
 
     return (
         <div className="chart-panel">
-            <Line data={chartData} options={options} />
+            <Line data={chartData} options={options}/>
         </div>
     );
 }
