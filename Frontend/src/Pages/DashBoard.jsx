@@ -118,8 +118,7 @@ export default function Dashboard() {
         <div className="dashboard-container">
             <TopBar notifications={notifications} />
             <header className="dashboard-header">
-                <h1>PlaceHolder</h1>
-                <p>Greenhouse Monitoring Dashboard</p>
+                <h1>Welcome back</h1>
             </header>
             <div className="dashboard-content">
                 <div className="connection-status">
@@ -136,7 +135,7 @@ export default function Dashboard() {
                     </select>
                 </div>
                 <div className="sensor-cards">
-                    <SensorCard label="Measurement" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
+                    <SensorCard label="Temperature" value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`} icon="🌡️" />
                     <SensorCard label="Light Intensity" value={`${sensorData.light?.values.slice(-1)[0] || 'N/A'} Lux`} icon="☀️" />
                     <SensorCard label="Air Humidity" value={`${sensorData.humidity?.values.slice(-1)[0] || 'N/A'}%`} icon="💨" />
                     <SensorCard label="Soil Moisture" value={`${sensorData.soilMoisture?.values.slice(-1)[0] || 'N/A'}%`} icon="🌱" />
@@ -144,7 +143,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="charts">
-                    <ChartPanel title="Measurement (24h)" data={sensorData.temperature} />
+                    <ChartPanel title="Temperature (24h)" data={sensorData.temperature} />
                     <ChartPanel title="Humidity (24h)" data={sensorData.humidity} />
                 </div>
 

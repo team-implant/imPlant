@@ -2,7 +2,16 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', sans-serif;
+}
+
+.dashboard-header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 3rem;
+    color: #4a4a4a;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+
+
 }
 
 .top-bar {
@@ -151,9 +160,13 @@ h1 {
 .status-online {
     color: green;
     font-weight: bold;
+    padding-bottom:10px;
+    display: inline-block;
 }
 
 .status-offline {
     color: red;
     font-weight: bold;
+    padding-bottom:15px;
+    display: inline-block;
 }
