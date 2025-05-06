@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.Entities;
 using DotNetSQL.Services;
+using DotNetSQL.DTOs;
 
 namespace DotNetSQL.Controllers
 {
@@ -41,30 +42,32 @@ namespace DotNetSQL.Controllers
             return temperature;
         }
 
-        [HttpGet("airhumidity")]
-        public async Task<ActionResult<IEnumerable<MeasurementData>>> GetAirHumidity()
+        [HttpPost("airhumidity")]
+        public async Task<ActionResult<AirHumidityDto>> AddAirHumidity(AirHumidityDto airHumidityDto)
         {
-            var airHumidity = await _temperatureService.GetAirHumidityAsync();
+        
+            var result = await _temperatureService.AddAirHumidityAsync(airHumidityDto);
+            return CreatedAtAction(nameof(GetMeasurement), new { id = result.Id }, result);
+        }
 
-            if (airHumidity == null || !airHumidity.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(airHumidity);
+        [HttpGet("airhumidity")]
+        public async Task<ActionResult<IEnumerable<AirHumidityDto>>> GetAirHumidity()
+        {
+            return Ok(await _temperatureService.GetAirHumidityAsync());
         }   
 
-        [HttpGet("soilhumidity")]
-        public async Task<ActionResult<IEnumerable<MeasurementData>>> GetSoilHumidity()
+
+        [HttpPost("soilhumidity")]
+        public async Task<ActionResult<SoilHumidityDto>> AddSoilHumidity(SoilHumidityDto soilHumidityDto)
         {
-            var soilHumidity = await _temperatureService.GetSoilHumidityAsync();
-
-            if (soilHumidity == null || !soilHumidity.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(soilHumidity);
+            var result = await _temperatureService.AddSoilHumidityAsync(soilHumidityDto);
+            return CreatedAtAction(nameof(GetMeasurement), new { id = result.Id }, result);
+        }
+        
+        [HttpGet("soilhumidity")]
+        public async Task<ActionResult<IEnumerable<SoilHumidityDto>>> GetSoilHumidity()
+        {
+            return Ok(await _temperatureService.GetSoilHumidityAsync());
         }
             
     }

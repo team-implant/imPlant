@@ -1,13 +1,21 @@
+using DotNetSQL.DTOs;
 using DotNetSQL.Entities;
 
 namespace DotNetSQL.Services
 {
     public interface IMeasurementService
     {
+        // ==============
         Task<IEnumerable<MeasurementData>> GetAllMeasurementsAsync();
         Task<MeasurementData?> GetMeasurementByIdAsync(int id);
         Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData);
-        Task<IEnumerable<MeasurementData>> GetAirHumidityAsync();
-        Task<IEnumerable<MeasurementData>> GetSoilHumidityAsync();
+
+        // ==============
+
+        Task<AirHumidityDto> AddAirHumidityAsync(AirHumidityDto airHumidityDto);
+        Task<IEnumerable<AirHumidityDto>> GetAirHumidityAsync();
+
+        Task<SoilHumidityDto> AddSoilHumidityAsync(SoilHumidityDto soilHumidityDto);
+        Task<IEnumerable<SoilHumidityDto>> GetSoilHumidityAsync();
     }
 }
