@@ -6,6 +6,7 @@
 #include <string.h>
 #include <util/delay.h>
 
+#include "servo.h"
 #include "PC_Comm.h"
 #include "dht11.h"
 #include "env.h"
@@ -16,6 +17,7 @@
 #include "uart.h"
 #include "wifi.h"
 #include "soil.h"
+#include "adxl345.h"
 
 static uint8_t _buff[100];
 static uint8_t _index = 0;
@@ -29,6 +31,10 @@ bool shouldMeasure = false;
 char outbound_buffer[128];
 char inbound_buffer[128];
 bool shouldHandleInboundData = false;
+
+#define PLANT1_ANGLE 30
+#define PLANT2_ANGLE 0
+#define NEUTRAL_ANGLE 155
 
 void console_rx(uint8_t _rx) {
     uart_send_blocking(USART_0, _rx);
@@ -72,12 +78,43 @@ void measureTemp() {
                 humidity_reading, humidity_reading_decimal);
     }
 }
-void measureSoils(int n){
-    sprintf(outbound_buffer, "%sSOIL%d=%d\n", outbound_buffer, (n%2)+1, soil_read(n));
+
+void measureSoils(int n) {
+    sprintf(outbound_buffer + strlen(outbound_buffer),
+            "SOIL%d=%d\n", (n % 2) + 1, soil_read(n));
+}
+
+void measureAcceleration() {
+    int16_t x, y, z;
+    adxl345_read_xyz(&x, &y, &z);
+    sprintf(outbound_buffer + strlen(outbound_buffer),
+            "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", x, y, z);
+}
+
+void waterPlant1() {
+    servo(PLANT1_ANGLE);
+    uart_send_string_blocking(USART_0, "Rotating to Plant 1\r\n");
+    _delay_ms(2000);
+    uart_send_string_blocking(USART_0, "Rotating back to neutral position\r\n");
+    servo(NEUTRAL_ANGLE);
+}
+
+void waterPlant2() {
+    servo(PLANT2_ANGLE);
+    uart_send_string_blocking(USART_0, "Rotating to Plant 2\r\n");
+    _delay_ms(2000);
+    uart_send_string_blocking(USART_0, "Rotating back to neutral position\r\n");
+    servo(NEUTRAL_ANGLE);
 }
 
 void handle_incoming_wifi_data() {
-    pc_comm_send_array_blocking(inbound_buffer, strlen(inbound_buffer));
+    send_data(inbound_buffer);
+
+    if (strcmp(inbound_buffer, "WATER1") == 0) {
+        waterPlant1();
+    } else if (strcmp(inbound_buffer, "WATER2") == 0) {
+        waterPlant2();
+    }
 }
 
 void turnOffAll() {
@@ -92,7 +129,7 @@ void startWifi() {
     leds_turnOn(1);
     wifi_command_join_AP(WIFI_NAME, WIFI_PASSWORD);
     leds_turnOn(2);
-    wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23, 
+    wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23,
                                         // NULL , NULL);
                                        &incomingDataDetected, inbound_buffer);
     leds_turnOn(3);
@@ -103,7 +140,8 @@ void inits() {
     leds_init();
     dht11_init();
     soil_init();
-    // pc_comm_init(9600, NULL);
+    adxl345_init();
+    //     pc_comm_init(9600, console_rx);
     sei();
 }
 
@@ -128,6 +166,7 @@ int main() {
             measureSoils(8);
             _delay_ms(100);
             measureSoils(9);
+            measureAcceleration();
             send_data(outbound_buffer);
             shouldMeasure = false;
         }
