@@ -6,10 +6,12 @@
 #include <string.h>
 #include <util/delay.h>
 
+#include "Buttons.h"
 #include "servo.h"
 #include "PC_Comm.h"
 #include "dht11.h"
 #include "env.h"
+#include "hc_sr04.h"
 #include "includes.h"
 #include "leds.h"
 #include "light.h"
@@ -31,6 +33,7 @@ bool shouldMeasure = false;
 char outbound_buffer[128];
 char inbound_buffer[128];
 bool shouldHandleInboundData = false;
+bool calibrating_water_level = false;
 
 #define PLANT1_ANGLE 30
 #define PLANT2_ANGLE 0
@@ -62,7 +65,12 @@ void incomingDataDetected() { shouldHandleInboundData = true; }
 
 void measureLight() {
     uint32_t ans = 1024 - light_read();
-    sprintf(outbound_buffer, "%sLIGHT=%d\n", outbound_buffer, ans);
+    sprintf(outbound_buffer, "%sLIGHT=%ld\n", outbound_buffer, ans);
+}
+
+void measureDist() {
+    uint16_t distance = hc_sr04_takeMeasurement();
+    sprintf(outbound_buffer, "%sDIST=%d\n", outbound_buffer, distance);
 }
 
 void measureTemp() {
@@ -139,9 +147,12 @@ void startWifi() {
 void inits() {
     leds_init();
     dht11_init();
+    hc_sr04_init();
     soil_init();
     adxl345_init();
-    //     pc_comm_init(9600, console_rx);
+    light_init();
+    buttons_init();
+    // allow for interrupts
     sei();
 }
 
@@ -152,17 +163,18 @@ int main() {
     startWifi();
     int perMinute = 20;
     void (*pointer)(void) = &enableMeasure;
-    // initiate a timer with the [measureTemp] function at [perMinute]
+    // initiate a timer with the [enableMeasure] function at [perMinute]
     periodic_task_init_c(pointer, (60000 / perMinute));
 
     while (1) {
         _delay_ms(100);
         leds_turnOff(4);
-        if (shouldMeasure) {
+        if (shouldMeasure && !calibrating_water_level) {
             leds_turnOn(4);
             sprintf(outbound_buffer, "");
             measureTemp();
             measureLight();
+            measureDist();
             measureSoils(8);
             _delay_ms(100);
             measureSoils(9);
@@ -171,9 +183,50 @@ int main() {
             shouldMeasure = false;
         }
 
-        if (shouldHandleInboundData) {
+        if (shouldHandleInboundData && !calibrating_water_level) {
             handle_incoming_wifi_data();
             shouldHandleInboundData = false;
+        }
+
+        if (buttons_1_pressed()) {
+            calibrating_water_level = true;
+            turnOffAll();
+            _delay_ms(250);
+            leds_turnOn(1);
+            while (!buttons_1_pressed()) {
+            }
+            uint16_t measurement_epmty = hc_sr04_takeMeasurement();
+            leds_turnOn(2);
+            _delay_ms(250);
+            while (!buttons_1_pressed()) {
+            }
+            uint16_t measurement_full = hc_sr04_takeMeasurement();
+            _delay_ms(250);
+            leds_turnOn(3);
+
+            sprintf(outbound_buffer,
+                    "EMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
+                    measurement_epmty, measurement_full);
+
+            send_data(outbound_buffer);
+
+            // Ending animation:
+            _delay_ms(1000);
+            leds_turnOn(4);
+            _delay_ms(1000);
+            turnOffAll();
+            _delay_ms(1000);
+            leds_turnOn(1);
+            leds_turnOn(2);
+            leds_turnOn(3);
+            leds_turnOn(4);
+            _delay_ms(1000);
+            turnOffAll();
+            _delay_ms(1000);
+            leds_turnOn(1);
+            leds_turnOn(2);
+            leds_turnOn(3);
+            calibrating_water_level = false;
         }
     }
 
