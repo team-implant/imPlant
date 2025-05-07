@@ -29,7 +29,7 @@ void soil_init()
 
     // Disable digital input on SOIL_ADC_CHANNEL (page 287)
     // This will reduce power consumption on the pin
-    DIDR2 = (1 << SOIL_ADC_CHANNEL);
+    DIDR2 = ((1 << SOIL_ADC_CHANNEL) | 1 << SOIL_ADC_CHANNEL_ALT);
 }
 
 /**
@@ -40,12 +40,19 @@ void soil_init()
  * 
  * @return 10-bit ADC value read from the Soil Moisture sensor
  */
-uint16_t soil_read()
+uint16_t soil_read(int n)
 {
     uint32_t timeout = 40000;//if 2cc for incrementing and evaluation the timeout is 5ms
     // The  MUX0:5 should be set to 100000 for choosing ADC8 (look at page 283)
-    ADMUX &= ~((1<<MUX4)|(1<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0));
-    ADCSRB |= (1<<MUX5);
+    if (n == 9){
+        ADMUX |= (1<<MUX0);
+        ADMUX &= ~((1<<MUX4)|(1<<MUX3)|(1<<MUX2)|(1<<MUX1));
+        ADCSRB |= ((1<<MUX5) | (1<<MUX0));
+    }
+    else {
+        ADMUX &= ~((1<<MUX4)|(1<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0));
+        ADCSRB |= (1<<MUX5);
+    }
 
     // Start the conversion
     ADCSRA |= (1 << ADSC);
