@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 
-namespace TcpGrpcBridgeServer;
+namespace TcpGrpcServer;
 
 public static class TcpClientManager
 {

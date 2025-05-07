@@ -10,21 +10,11 @@ public class TcpBridgeService : TcpBridge.TcpBridgeBase
     {
         string message = request.Content;
         byte[] data = Encoding.ASCII.GetBytes(message + "\n");
-        int sentCount = 0;
 
-        foreach (var stream in TcpClientManager.ConnectedClients)
+        await TcpServer.SendMessageToTcpClientsAsync(message);
+
+        return new MessageReply
         {
-            try
-            {
-                await stream.WriteAsync(data);
-                sentCount++;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to send to a TCP client: {ex.Message}");
-            }
-        }
-
-        return new MessageReply { Status = $"Message sent to {sentCount} TCP client(s)." };
-    }
+            Status = $"Message sent to TCP clients: {message}"
+        }; }
 }

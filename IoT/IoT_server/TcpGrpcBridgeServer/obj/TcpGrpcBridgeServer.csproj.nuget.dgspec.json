@@ -43,6 +43,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Google.Protobuf": {
+              "target": "Package",
+              "version": "[3.30.2, )"
+            },
             "Grpc.AspNetCore": {
               "target": "Package",
               "version": "[2.71.0, )"
@@ -56,6 +60,10 @@
             "Microsoft.AspNetCore.Server.Kestrel.Core": {
               "target": "Package",
               "version": "[2.3.0, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[6.0.2, )"
             }
           },
           "imports": [
