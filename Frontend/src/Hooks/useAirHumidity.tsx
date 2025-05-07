@@ -9,11 +9,28 @@ interface AirHumidityData {
     timestamp: string;
 }
 
-const getAirHumidity = async (): Promise<AirHumidityData[]> => {
+interface AirHumidityChartData {
+    labels: string[];
+    values: number[];
+}
+
+interface AirHumidityResponse {
+    apiData: AirHumidityData[];
+    chartData: AirHumidityChartData;
+}
+
+const getAirHumidity = async (): Promise<AirHumidityResponse> => {
     const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/airhumidity`);
-    return response.data;
+    const apiData = response.data;
+
+    const chartData: AirHumidityChartData = {
+        labels: apiData.map(item => new Date(item.timestamp).toLocaleTimeString()),
+        values: apiData.map(item => item.airHumidity)
+    };
+
+    return { apiData, chartData };
 };
 
-export const useGetAirHumidity = (): UseQueryResult<AirHumidityData[], Error> => {
-    return useQuery<AirHumidityData[], Error>(['getAirHumidity'], getAirHumidity);
+export const useGetAirHumidity = (): UseQueryResult<AirHumidityResponse, Error> => {
+    return useQuery<AirHumidityResponse, Error>(['getAirHumidity'], getAirHumidity);
 };
