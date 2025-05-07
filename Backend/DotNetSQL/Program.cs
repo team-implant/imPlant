@@ -26,6 +26,11 @@ builder.Services.AddSwaggerGen();
 
 // Register MeasurementService and EF Core DbContext
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
+builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
+builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
+builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
+
+
 
 // Get connection string (same logic for both Dev and Prod)
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
