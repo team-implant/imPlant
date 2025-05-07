@@ -20,6 +20,7 @@
 #include "wifi.h"
 #include "soil.h"
 #include "adxl345.h"
+#include "waterPump.h"
 
 static uint8_t _buff[100];
 static uint8_t _index = 0;
@@ -35,9 +36,9 @@ char inbound_buffer[128];
 bool shouldHandleInboundData = false;
 bool calibrating_water_level = false;
 
-#define PLANT1_ANGLE 30
-#define PLANT2_ANGLE 0
-#define NEUTRAL_ANGLE 155
+#define PLANT1_ANGLE 70
+#define PLANT2_ANGLE 105
+#define NEUTRAL_ANGLE 87
 
 void console_rx(uint8_t _rx) {
     uart_send_blocking(USART_0, _rx);
@@ -99,29 +100,39 @@ void measureAcceleration() {
             "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", x, y, z);
 }
 
+void runWaterPump(){
+    _delay_ms(500); //wait to complete move
+    pump_start();
+    uint32_t timeout = 10000;
+    while (timeout > 0){timeout--;_delay_ms(1);}
+    pump_stop();
+    _delay_ms(1000); //wait for water to empty before returning 
+}
+
 void waterPlant1() {
     servo(PLANT1_ANGLE);
-    uart_send_string_blocking(USART_0, "Rotating to Plant 1\r\n");
-    _delay_ms(2000);
-    uart_send_string_blocking(USART_0, "Rotating back to neutral position\r\n");
+    runWaterPump();
     servo(NEUTRAL_ANGLE);
 }
 
 void waterPlant2() {
     servo(PLANT2_ANGLE);
-    uart_send_string_blocking(USART_0, "Rotating to Plant 2\r\n");
-    _delay_ms(2000);
-    uart_send_string_blocking(USART_0, "Rotating back to neutral position\r\n");
+    runWaterPump();
+    servo(NEUTRAL_ANGLE);
+}
+void neutral(){
     servo(NEUTRAL_ANGLE);
 }
 
 void handle_incoming_wifi_data() {
-    send_data(inbound_buffer);
-
+    // send_data(inbound_buffer);
     if (strcmp(inbound_buffer, "WATER1") == 0) {
         waterPlant1();
     } else if (strcmp(inbound_buffer, "WATER2") == 0) {
         waterPlant2();
+    }
+    else if (strcmp(inbound_buffer, "NEUTRAL") == 0) {
+        neutral();
     }
 }
 
@@ -152,6 +163,7 @@ void inits() {
     adxl345_init();
     light_init();
     buttons_init();
+    pump_init();
     // allow for interrupts
     sei();
 }
