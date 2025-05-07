@@ -15,6 +15,7 @@
 #include "periodic_task.h"
 #include "uart.h"
 #include "wifi.h"
+#include "soil.h"
 
 static uint8_t _buff[100];
 static uint8_t _index = 0;
@@ -59,8 +60,6 @@ void measureLight() {
 }
 
 void measureTemp() {
-    // in here do the getting + sending to TCP, since timers need a void
-    // function
     DHT11_ERROR_MESSAGE_t status =
         dht11_get(&humidity_reading, &humidity_reading_decimal,
                   &temperature_reading, &temperature_reading_decimal);
@@ -72,6 +71,9 @@ void measureTemp() {
                 temperature_reading, temperature_reading_decimal,
                 humidity_reading, humidity_reading_decimal);
     }
+}
+void measureSoils(int n){
+    sprintf(outbound_buffer, "%sSOIL%d=%d\n", outbound_buffer, (n%2)+1, soil_read(n));
 }
 
 void handle_incoming_wifi_data() {
@@ -90,7 +92,8 @@ void startWifi() {
     leds_turnOn(1);
     wifi_command_join_AP(WIFI_NAME, WIFI_PASSWORD);
     leds_turnOn(2);
-    wifi_command_create_TCP_connection(IP_ADDRESS_OLEK_WIFI_OLEK, 23,
+    wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23, 
+                                        // NULL , NULL);
                                        &incomingDataDetected, inbound_buffer);
     leds_turnOn(3);
 }
@@ -99,9 +102,8 @@ void startWifi() {
 void inits() {
     leds_init();
     dht11_init();
-    pc_comm_init(9600, NULL);
-    // light_init();
-    // allow for interrupts
+    soil_init();
+    // pc_comm_init(9600, NULL);
     sei();
 }
 
@@ -120,8 +122,12 @@ int main() {
         leds_turnOff(4);
         if (shouldMeasure) {
             leds_turnOn(4);
+            sprintf(outbound_buffer, "");
             measureTemp();
-            // measureLight();
+            measureLight();
+            measureSoils(8);
+            _delay_ms(100);
+            measureSoils(9);
             send_data(outbound_buffer);
             shouldMeasure = false;
         }
