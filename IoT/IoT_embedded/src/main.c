@@ -6,6 +6,7 @@
 #include <string.h>
 #include <util/delay.h>
 
+#include "Buttons.h"
 #include "PC_Comm.h"
 #include "dht11.h"
 #include "env.h"
@@ -29,6 +30,7 @@ bool shouldMeasure = false;
 char outbound_buffer[128];
 char inbound_buffer[128];
 bool shouldHandleInboundData = false;
+bool calibrating_water_level = false;
 
 void console_rx(uint8_t _rx) {
     uart_send_blocking(USART_0, _rx);
@@ -108,6 +110,7 @@ void inits() {
     hc_sr04_init();
     pc_comm_init(9600, NULL);
     light_init();
+    buttons_init();
     // allow for interrupts
     sei();
 }
@@ -125,7 +128,7 @@ int main() {
     while (1) {
         _delay_ms(100);
         leds_turnOff(4);
-        if (shouldMeasure) {
+        if (shouldMeasure && !calibrating_water_level) {
             leds_turnOn(4);
             measureTemp();
             measureLight();
@@ -134,9 +137,50 @@ int main() {
             shouldMeasure = false;
         }
 
-        if (shouldHandleInboundData) {
+        if (shouldHandleInboundData && !calibrating_water_level) {
             handle_incoming_wifi_data();
             shouldHandleInboundData = false;
+        }
+
+        if (buttons_1_pressed()) {
+            calibrating_water_level = true;
+            turnOffAll();
+            _delay_ms(250);
+            leds_turnOn(1);
+            while (!buttons_1_pressed()) {
+            }
+            uint16_t measurement_epmty = hc_sr04_takeMeasurement();
+            leds_turnOn(2);
+            _delay_ms(250);
+            while (!buttons_1_pressed()) {
+            }
+            uint16_t measurement_full = hc_sr04_takeMeasurement();
+            _delay_ms(250);
+            leds_turnOn(3);
+
+            sprintf(outbound_buffer,
+                    "EMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
+                    measurement_epmty, measurement_full);
+
+            send_data(outbound_buffer);
+
+            // Ending animation:
+            _delay_ms(1000);
+            leds_turnOn(4);
+            _delay_ms(1000);
+            turnOffAll();
+            _delay_ms(1000);
+            leds_turnOn(1);
+            leds_turnOn(2);
+            leds_turnOn(3);
+            leds_turnOn(4);
+            _delay_ms(1000);
+            turnOffAll();
+            _delay_ms(1000);
+            leds_turnOn(1);
+            leds_turnOn(2);
+            leds_turnOn(3);
+            calibrating_water_level = false;
         }
     }
 
