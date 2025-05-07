@@ -18,14 +18,12 @@ namespace DotNetSQL.EFC
         {
             modelBuilder.Entity<AirHumidityDto>(entity =>
             {
-                entity.ToTable("AirHumidity");
-                entity.Property(e => e.AirHumidity).HasColumnName("humidity"); 
+                entity.Property(e => e.AirHumidity).HasColumnName("AirHumidity"); // Map to new column name
             });
 
             modelBuilder.Entity<SoilHumidityDto>(entity =>
             {
-                entity.ToTable("SoilHumidity");
-                entity.Property(e => e.SoilHumidity).HasColumnName("soil"); 
+                entity.Property(e => e.SoilHumidity).HasColumnName("SoilHumidity"); // Map to new column name
             });
         }
 
