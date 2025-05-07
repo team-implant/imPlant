@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.Entities;
 using DotNetSQL.Services;
+using DotNetSQL.DTOs;
 
 namespace DotNetSQL.Controllers
 {
@@ -39,6 +40,6 @@ namespace DotNetSQL.Controllers
             }
 
             return temperature;
-        }
+        }     
     }
 }
