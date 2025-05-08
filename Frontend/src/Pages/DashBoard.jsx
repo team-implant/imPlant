@@ -5,10 +5,12 @@ import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
 import {useGetAirHumidity} from '../Hooks/useAirHumidity';
+import {useGetAllTemperatures} from "../Hooks/useGetTemperature";
+import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
+import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
 
-// Mock data Backend API controller format should match this to keep it as it looks like here
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
+//Mock data
 const mockSensorData = {
     temperature: {
         labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -28,20 +30,50 @@ const mockSensorData = {
     }
 };
 
+const EnlargedChartView = ({title, data, onClose}) => (
+    <div className="enlarged-chart-overlay">
+        <div className="enlarged-chart-container">
+            <button className="close-button" onClick={onClose}>Close</button>
+            <ChartPanel title={title} data={data} isEnlarged={true}/>
+        </div>
+    </div>
+);
+
 export default function Dashboard() {
     const [isOnline, setIsOnline] = useState(true);
-    const [plantType, setPlantType] = useState('Bell Pepper');
+    const [selectedPlant, setSelectedPlant] = useState({id: 1, name: 'Tomato'});
     const [plantTypes, setPlantTypes] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [sensorData, setSensorData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const {data: airHumidityData} = useGetAirHumidity();
     const [error, setError] = useState(null);
+    const [enlargedChart, setEnlargedChart] = useState(null);
 
-    // Mock API calls for now until just to see the dashboard in action, again Controller should match
+    const {data: airHumidityData} = useGetAirHumidity(selectedPlant.id);
+    const {
+        data: temperatureData,
+        loading: temperatureLoading,
+        error: temperatureError
+    } = useGetAllTemperatures(selectedPlant.id);
+    const {
+        data: soilHumidityData,
+        isLoading: soilHumidityLoading,
+        error: soilHumidityError
+    } = useGetSoilHumidity(selectedPlant.id);
+    const {
+        data: lightIntensityData,
+        loading: lightIntensityLoading,
+        error: lightIntensityError
+    } = useGetAllLightIntensities(selectedPlant.id);
+
+
     const fetchPlantTypes = async () => {
         await delay(300);
-        return ['Tomato', 'Bell Pepper', 'Chestnut'];
+        return [
+            {id: 1, name: 'Tomato'},
+            {id: 2, name: 'Bell Pepper'},
+            {id: 3, name: 'Chestnut'}
+        ];
     };
 
     const fetchNotifications = async () => {
@@ -51,7 +83,7 @@ export default function Dashboard() {
             {
                 id: 2,
                 message: "Optimal conditions maintained for the last 24 hours."
-            } // this is just a mock  for the modal , real data would come from API call
+            } // this is just a mock  for the modal
         ];
     };
 
@@ -70,11 +102,6 @@ export default function Dashboard() {
 
     };
 
-
-
-
-
-
     useEffect(() => {
         const fetchInitialData = async () => {
             setIsLoading(true);
@@ -85,6 +112,7 @@ export default function Dashboard() {
                     fetchNotifications()
                 ]);
                 setPlantTypes(plantTypesData);
+                setSelectedPlant(plantTypesData[0]); // Set the default selected plant
                 setNotifications(notificationsData);
 
                 const sensorTypes = ['temperature', 'humidity', 'light', 'soilMoisture'];
@@ -108,6 +136,13 @@ export default function Dashboard() {
         fetchInitialData();
     }, []);
 
+    useEffect(() => {
+        if (temperatureError) console.error('Error fetching temperature data:', temperatureError);
+        if (lightIntensityError) console.error('Error fetching light intensity data:', lightIntensityError);
+        if (soilHumidityError) console.error('Error fetching soil humidity data:', soilHumidityError);
+        if (airHumidityData?.error) console.error('Error fetching air humidity data:', airHumidityData.error);
+    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]);
+
     const handleIrrigationControl = async (activate) => {
         try {
             const result = await updateIrrigationStatus(activate);
@@ -116,6 +151,10 @@ export default function Dashboard() {
         } catch (error) {
             console.error('Error updating irrigation status:', error);
         }
+    };
+
+    const handleChartClick = (chartTitle) => {
+        setEnlargedChart(enlargedChart === chartTitle ? null : chartTitle);
     };
 
     if (isLoading) {
@@ -141,38 +180,66 @@ export default function Dashboard() {
                 </div>
                 <div className="plant-type">
                     <label>Plant Type: </label>
-                    <select value={plantType}
-                            onChange={(e) => setPlantType(e.target.value)}>
+                    <select value={selectedPlant.id}
+                            onChange={(e) => {
+                                const plant = plantTypes.find(p => p.id === Number(e.target.value));
+                                setSelectedPlant(plant);
+                            }}>
                         {plantTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
+                            <option key={type.id} value={type.id}>{type.name}</option>
                         ))}
                     </select>
                 </div>
                 <div className="sensor-cards">
-                    <SensorCard label="Temperature"
-                                value={`${sensorData.temperature?.values.slice(-1)[0] || 'N/A'}°C`}
-                                icon="🌡️"/>
-                    <SensorCard label="Light Intensity"
-                                value={`${sensorData.light?.values.slice(-1)[0] || 'N/A'} Lux`}
-                                icon="☀️"/>
+                    <SensorCard
+                        label="Temperature"
+                        value={`${temperatureData?.apiData[temperatureData.apiData.length - 1]?.temperature || 'N/A'}°C`}
+                        icon="🌡️"
+                    />
+                    <SensorCard
+                        label="Light Intensity"
+                        value={`${lightIntensityData ? lightIntensityData[lightIntensityData.length - 1]?.value || 'N/A' : 'N/A'} Lux`}
+                        icon="☀️"
+                    />
                     <SensorCard
                         label="Air Humidity"
                         value={`${airHumidityData?.apiData[airHumidityData.apiData.length - 1]?.airHumidity || 'N/A'}%`}
                         icon="💨"
                     />
-                    <SensorCard label="Soil Moisture"
-                                value={`${sensorData.soilMoisture?.values.slice(-1)[0] || 'N/A'}%`}
-                                icon="🌱"/>
+                    <SensorCard
+                        label="Soil Moisture"
+                        value={`${soilHumidityData ? soilHumidityData[soilHumidityData.length - 1]?.soilHumidity || 'N/A' : 'N/A'}%`}
+                        icon="🌱"
+                    />
                     <SensorCard label="Water Pump Level" value="70%" icon="🚰"/>
                 </div>
 
                 <div className="charts">
-                    <ChartPanel title="Temperature (24h)"
-                                data={sensorData.temperature}/>
                     <ChartPanel
-                        title="Humidity (24h)"
-                        data={airHumidityData?.chartData || sensorData.humidity}
+                        title={`Temperature (24h) - ${selectedPlant.name}`}
+                        data={temperatureData ? {
+                            labels: temperatureData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                            values: temperatureData.map(d => d.temperature)
+                        } : sensorData.temperature}
+                        onClick={() => handleChartClick("Temperature (24h)")}
+                        isEnlarged={enlargedChart === "Temperature (24h)"}
                     />
+                    <ChartPanel
+                        title={`Humidity (24h) - ${selectedPlant.name}`}
+                        data={airHumidityData?.chartData || sensorData.humidity}
+                        onClick={() => handleChartClick("Humidity (24h)")}
+                        isEnlarged={enlargedChart === "Humidity (24h)"}
+                    />
+                    <ChartPanel
+                        title={`Soil Moisture (24h) - ${selectedPlant.name}`}
+                        data={soilHumidityData ? {
+                            labels: soilHumidityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                            values: soilHumidityData.map(d => d.soilHumidity)
+                        } : sensorData.soilMoisture}
+                        onClick={() => handleChartClick("Soil Moisture (24h)")}
+                        isEnlarged={enlargedChart === "Soil Moisture (24h)"}
+                    />
+
                 </div>
 
                 <InsightsPanel/>
@@ -189,6 +256,29 @@ export default function Dashboard() {
                     </button>
                 </div>
             </div>
+
+            {enlargedChart && (
+                <EnlargedChartView
+                    title={enlargedChart}
+                    data={
+                        enlargedChart === "Temperature (24h)" ? (temperatureData ? {
+                                labels: temperatureData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                                values: temperatureData.map(d => d.temperature)
+                            } : sensorData.temperature) :
+                            enlargedChart === "Humidity (24h)" ? (airHumidityData?.chartData || sensorData.humidity) :
+                                enlargedChart === "Soil Moisture (24h)" ? (soilHumidityData ? {
+                                        labels: soilHumidityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                                        values: soilHumidityData.map(d => d.soilHumidity)
+                                    } : sensorData.soilMoisture) :
+                                    enlargedChart === "Light Intensity (24h)" ? (lightIntensityData ? {
+                                            labels: lightIntensityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                                            values: lightIntensityData.map(d => d.value)
+                                        } : sensorData.light) :
+                                        null
+                    }
+                    onClose={() => setEnlargedChart(null)}
+                />
+            )}
         </div>
     );
 }

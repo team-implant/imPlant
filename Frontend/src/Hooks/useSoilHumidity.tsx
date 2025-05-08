@@ -7,13 +7,20 @@ interface SoilHumidityData {
     id: number;
     soilHumidity: number;
     timestamp: string;
+    plantId: number;
 }
 
-const getSoilHumidity = async (): Promise<SoilHumidityData[]> => {
-    const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soilhumidity`);
+const getSoilHumidity = async (plantId: number): Promise<SoilHumidityData[]> => {
+    const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soilhumidity?plantId=${plantId}`);
     return response.data;
 };
 
-export const useGetSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
-    return useQuery<SoilHumidityData[], Error>(['getSoilHumidity'], getSoilHumidity);
+export const useGetSoilHumidity = (plantId: number): UseQueryResult<SoilHumidityData[], Error> => {
+    return useQuery<SoilHumidityData[], Error>(
+        ['getSoilHumidity', plantId],
+        () => getSoilHumidity(plantId),
+        {
+            enabled: !!plantId, // Only run the query if plantId is provided
+        }
+    );
 };

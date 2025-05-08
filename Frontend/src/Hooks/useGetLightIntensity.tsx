@@ -1,36 +1,43 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
+
+const BASE_URL = 'http://sep4-implant.azurewebsites.net/api/Measurement';
 
 interface LightIntensity {
     id: number;
     value: number;
     timestamp: string;
+    plantId: number;
 }
 
-const getAllLightIntensities = async (): Promise<LightIntensity[]> => {
-    const url = `http://sep4-implant.azurewebsites.net/api/LightIntensity`;
+const getAllLightIntensities = async (plantId: number): Promise<LightIntensity[]> => {
+    const url = `${BASE_URL}/lightintensity?plantId=${plantId}`;
     const response = await axios.get<LightIntensity[]>(url);
     return response.data;
 };
 
-export const useGetAllLightIntensities = () => {
-    const { data, isLoading, error } = useQuery<LightIntensity[], Error>(
-        ['getAllLightIntensities'],
-        getAllLightIntensities
+export const useGetAllLightIntensities = (plantId: number): UseQueryResult<LightIntensity[], Error> => {
+    return useQuery<LightIntensity[], Error>(
+        ['getAllLightIntensities', plantId],
+        () => getAllLightIntensities(plantId),
+        {
+            enabled: !!plantId,
+        }
     );
-    return { data, loading: isLoading, error };
 };
 
-const getLightIntensityById = async (id: number): Promise<LightIntensity> => {
-    const url = `http://sep4-implant.azurewebsites.net/api/LightIntensity/${id}`;
+const getLightIntensityById = async (id: number, plantId: number): Promise<LightIntensity> => {
+    const url = `${BASE_URL}/lightintensity/${id}?plantId=${plantId}`;
     const response = await axios.get<LightIntensity>(url);
     return response.data;
 };
 
-export const useGetLightIntensityById = (id: number) => {
-    const { data, isLoading, error } = useQuery<LightIntensity, Error>(
-        ['getLightIntensityById', id],
-        () => getLightIntensityById(id)
+export const useGetLightIntensityById = (id: number, plantId: number): UseQueryResult<LightIntensity, Error> => {
+    return useQuery<LightIntensity, Error>(
+        ['getLightIntensityById', id, plantId],
+        () => getLightIntensityById(id, plantId),
+        {
+            enabled: !!id && !!plantId, // Only run the query if both id and plantId are there ?
+        }
     );
-    return { data, loading: isLoading, error };
 };

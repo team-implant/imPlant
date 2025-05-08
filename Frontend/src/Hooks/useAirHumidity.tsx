@@ -7,6 +7,7 @@ interface AirHumidityData {
     id: number;
     airHumidity: number;
     timestamp: string;
+    plantId: number;
 }
 
 interface AirHumidityChartData {
@@ -19,8 +20,8 @@ interface AirHumidityResponse {
     chartData: AirHumidityChartData;
 }
 
-const getAirHumidity = async (): Promise<AirHumidityResponse> => {
-    const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/airhumidity`);
+const getAirHumidity = async (plantId: number): Promise<AirHumidityResponse> => {
+    const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/airhumidity?plantId=${plantId}`);
     const apiData = response.data;
 
     const chartData: AirHumidityChartData = {
@@ -31,6 +32,12 @@ const getAirHumidity = async (): Promise<AirHumidityResponse> => {
     return { apiData, chartData };
 };
 
-export const useGetAirHumidity = (): UseQueryResult<AirHumidityResponse, Error> => {
-    return useQuery<AirHumidityResponse, Error>(['getAirHumidity'], getAirHumidity);
+export const useGetAirHumidity = (plantId: number): UseQueryResult<AirHumidityResponse, Error> => {
+    return useQuery<AirHumidityResponse, Error>(
+        ['getAirHumidity', plantId],
+        () => getAirHumidity(plantId),
+        {
+            enabled: !!plantId, // Only run the query if plantId is provided
+        }
+    );
 };

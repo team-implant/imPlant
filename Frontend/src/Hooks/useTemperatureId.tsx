@@ -7,20 +7,21 @@ interface TemperatureData {
     id: number;
     temperature: number;
     timestamp: string;
-    // check
+    plantType: string;
+    // check later if this fits with the backend
 }
 
-const fetchTemperatureById = async (id: number): Promise<TemperatureData> => {
-    const response = await axios.get<TemperatureData>(`${BASE_URL}/${id}`);
+const fetchTemperatureByPlantType = async (plantType: string): Promise<TemperatureData> => {
+    const response = await axios.get<TemperatureData>(`${BASE_URL}/${plantType}`);
     return response.data;
 };
 
-export const useTemperatureId = (id: number): UseQueryResult<TemperatureData, Error> => {
+export const useTemperatureByPlantType = (plantType: string): UseQueryResult<TemperatureData, Error> => {
     return useQuery<TemperatureData, Error>(
-        ['temperatureId', id],
-        () => fetchTemperatureById(id),
+        ['temperatureByPlantType', plantType],
+        () => fetchTemperatureByPlantType(plantType),
         {
-            enabled: !!id,
+            enabled: !!plantType,
         }
     );
 };

@@ -23,9 +23,11 @@ interface ChartData {
 interface Props {
     title: string;
     data: ChartData;
+    onClick?: () => void;
+    isEnlarged?: boolean;
 }
 
-export default function ChartPanel({title, data}: Props) {
+export default function ChartPanel({title, data, onClick, isEnlarged}: Props) {
     const chartData = {
         labels: data.labels,
         datasets: [
@@ -52,8 +54,11 @@ export default function ChartPanel({title, data}: Props) {
         }
     };
 
+    const chartStyle = isEnlarged ? { width: '100%', height: '100%' } : {};
+
     return (
-        <div className="chart-panel">
+        <div className={`chart-panel ${isEnlarged ? 'enlarged' : ''}`} onClick={onClick} style={chartStyle}>
+            <h3>{title}</h3>
             <Line data={chartData} options={options}/>
         </div>
     );
