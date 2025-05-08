@@ -1,4 +1,3 @@
-
 namespace DotNetSQL.Entities
 {
     public class MeasurementData
@@ -9,5 +8,6 @@ namespace DotNetSQL.Entities
         public double SoilHumidity { get; set; }
         public double Light { get; set; } 
         public DateTime Timestamp { get; set; }
+        public double WaterPumpLevel { get; set; }
     }
 }

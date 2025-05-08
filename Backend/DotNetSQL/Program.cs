@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
 using DotNetSQL.Services;
+using DotNetSQL.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,9 +26,7 @@ builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
 builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
-
-
-
+builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -48,20 +47,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseCors("AllowFrontend");
 
 app.MapControllers();
-
 
 app.MapGet("/swagger", context =>
 {
