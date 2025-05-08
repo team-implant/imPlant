@@ -1,3 +1,4 @@
+using DotNetSQL.DTOs;
 using DotNetSQL.Entities;
 
 namespace DotNetSQL.Services

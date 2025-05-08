@@ -26,6 +26,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
 builder.Services.AddScoped<ILightIntensityService, LightIntensityService>();
+builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
+builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
+
 
 
 var connection = string.Empty;
