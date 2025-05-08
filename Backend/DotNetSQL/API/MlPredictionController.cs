@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.IServices;
 using DotNetSQL.DTOs;
 using System.Threading.Tasks;
+using DotNetSQL.Entities;
 
 namespace DotNetSQL.Controllers
 {

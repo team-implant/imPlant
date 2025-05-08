@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508170155_Tables")]
+    [Migration("20250508171232_Tables")]
     partial class Tables
     {
         /// <inheritdoc />
@@ -71,7 +71,6 @@ namespace DotNetSQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PredictionValue")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Timestamp")

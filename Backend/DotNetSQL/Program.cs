@@ -30,6 +30,7 @@ builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 
 // Register ML Prediction Service with HttpClient
 builder.Services.AddHttpClient<IMlPredictionService, MlPredictionService>();
+builder.Services.AddScoped<IMlPredictionService, MlPredictionService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 

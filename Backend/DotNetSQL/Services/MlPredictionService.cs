@@ -1,18 +1,22 @@
 using DotNetSQL.DTOs;
+using DotNetSQL.EFC;
+using DotNetSQL.Entities; // <-- Add this line
+using Microsoft.EntityFrameworkCore;
 using DotNetSQL.IServices;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+
+
 
 namespace DotNetSQL.Services
 {
     public class MlPredictionService : IMlPredictionService
     {
         private readonly HttpClient _httpClient;
+        private readonly AppDbContext _context;
 
-        public MlPredictionService(HttpClient httpClient)
+        public MlPredictionService(HttpClient httpClient, AppDbContext context)
         {
             _httpClient = httpClient;
+            _context = context;
         }
 
         public async Task<MlPredictionDto?> GetMlPredictionAsync()
