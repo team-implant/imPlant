@@ -15,25 +15,25 @@ public class WaterPumpService : IWaterPumpService
 
     public async Task<IEnumerable<WaterPumpDto>> GetWaterPumpAsync()
     {
-        return await _context.MeasurementData
-            .Select(m => new WaterPumpDto
+        return await _context.WaterPumps
+            .Select(wp => new WaterPumpDto
             {
-                Id = m.Id,
-                Level = (float)m.WaterPumpLevel, 
-                Timestamp = m.Timestamp
+                Id = wp.Id,
+                Level = wp.Level,
+                Timestamp = wp.Timestamp
             })
             .ToListAsync();
     }
 
     public async Task<WaterPumpDto?> GetWaterPumpByIdAsync(int id)
     {
-        return await _context.MeasurementData
-            .Where(m => m.Id == id)
-            .Select(m => new WaterPumpDto
+        return await _context.WaterPumps
+            .Where(wp => wp.Id == id)
+            .Select(wp => new WaterPumpDto
             {
-                Id = m.Id,
-                Level = (float)m.WaterPumpLevel, 
-                Timestamp = m.Timestamp
+                Id = wp.Id,
+                Level = wp.Level,
+                Timestamp = wp.Timestamp
             })
             .FirstOrDefaultAsync();
     }

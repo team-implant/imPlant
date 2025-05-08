@@ -1,9 +1,9 @@
-namespace DotNetSQL.DTOs
+namespace DotNetSQL.Entities
 {
-    public class MlPredictionDto
+    public class Prediction
     {
         public int Id { get; set; }
-        public string Prediction { get; set; }
+        public string PredictionValue { get; set; } // e.g. "healthy"
         public double Confidence { get; set; }
         public int PlantId { get; set; }
         public DateTime Timestamp { get; set; }

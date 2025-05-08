@@ -10,6 +10,8 @@ namespace DotNetSQL.EFC
         }
 
         public DbSet<MeasurementData> MeasurementData { get; set; }
+        public DbSet<WaterPump> WaterPumps { get; set; }
+        public DbSet<Prediction> Predictions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
