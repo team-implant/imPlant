@@ -32,7 +32,8 @@ const Dashboard = () => {
     } = useGetAllTemperatures(selectedPlant.id);
     const {
         data: soilHumidityData,
-        isLoading: soilHumidityLoading,
+         isLoading: soilHumidityLoading,
+        
         error: soilHumidityError
     } = useGetSoilHumidity(selectedPlant.id);
     const {
@@ -266,6 +267,6 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
         default:
             return {labels: [], values: []};
     }
-};
-
+}; 
+ 
 export default Dashboard;
