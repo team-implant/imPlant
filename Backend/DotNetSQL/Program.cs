@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
-using DotNetSQL.Services;  // Add this namespace import
+using DotNetSQL.Services;
+using DotNetSQL.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add CORS services
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                     .AddEnvironmentVariables();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -15,31 +18,30 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-// Register services before building the app
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
 builder.Services.AddScoped<ILightIntensityService, LightIntensityService>();
 builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
+builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 
+// Register ML Prediction Service with HttpClient
+builder.Services.AddHttpClient<IMlPredictionService, MlPredictionService>();
+builder.Services.AddScoped<IMlPredictionService, MlPredictionService>();
 
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
-var connection = string.Empty;
-if (builder.Environment.IsDevelopment())
+if (string.IsNullOrEmpty(connection))
 {
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+    Console.WriteLine("ERROR: Connection string 'AZURE_SQL_CONNECTIONSTRING' not found.");
 }
 else
 {
-    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+    Console.WriteLine($"Using connection string: {connection}");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -49,21 +51,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }));
 
 var app = builder.Build();
-// Remove this line - it's now above before app.Build()
-// builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
-if (app.Environment.IsDevelopment())  // Add parentheses here
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.MapControllers();
-
 app.UseCors("AllowFrontend");
+
+app.MapControllers();
 
 app.MapGet("/swagger", context =>
 {
@@ -72,4 +71,3 @@ app.MapGet("/swagger", context =>
 });
 
 app.Run();
-
