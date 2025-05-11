@@ -8,6 +8,9 @@ import {useGetAirHumidity} from '../Hooks/useAirHumidity';
 import {useGetAllTemperatures} from "../Hooks/useGetTemperature";
 import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
 import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
+import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
+import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
+
 
 const Dashboard = () => {
     const [isOnline, setIsOnline] = useState(false);
@@ -17,8 +20,10 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
+   const [waterLevel, setWaterLevel] = useState(29); // Mock percentage
 
-    // Hooks for fetching sensor data
+
+    // Hooks for fetching sensor data 
     const {data: airHumidityData} = useGetAirHumidity(selectedPlant.id);
     const {
         data: temperatureData,
@@ -35,6 +40,11 @@ const Dashboard = () => {
         loading: lightIntensityLoading,
         error: lightIntensityError
     } = useGetAllLightIntensities(selectedPlant.id);
+
+    const { data: waterPumpData, 
+            loading: waterPumpLoading,
+             error: waterPumpError 
+            } = useWaterPumpData();
 
     // Fetch initial dashboard data
     useEffect(() => {
@@ -132,8 +142,18 @@ const Dashboard = () => {
                     <SensorCard label="Soil Moisture"
                                 value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
                                 icon="🌱"/>
-                    <SensorCard label="Water Pump Level" value="--%" icon="🚰"/>
+                    <SensorCard
+                        label="Water Pump Level"
+                        value={`${waterLevel}%`}
+                        icon="🚰"
+                        className="water-pump-card">
+                        <WaterLevelIndicator level={waterLevel} />
+                    </SensorCard>
+
+
                 </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}></div> 
 
                 <div className="charts">
                     <ChartPanel

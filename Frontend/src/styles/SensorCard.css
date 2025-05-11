@@ -1,9 +1,15 @@
 .sensor-card {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    padding: 15px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1 1 200px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease;
 }
 
 .sensor-icon {
@@ -19,4 +25,13 @@
 .sensor-value {
     font-size: 1.2em;
     color: #4CAF50;
+}
+
+.sensor-card .info {
+    margin-bottom: 1rem;
+}
+
+.sensor-card .water-level-container {
+    align-self: flex-end; /* Align the water gauge and number to the right */
+    margin-top: 1rem; /* Optional: adds space between other content and the gauge */
 }
