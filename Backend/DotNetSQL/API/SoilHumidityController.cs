@@ -1,11 +1,11 @@
-
 using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.DTOs;
+using DotNetSQL.IServices;
 
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/soil-humidity")]
     public class SoilHumidityController : ControllerBase
     {
         private readonly ISoilHumidityService _soilHumidityService;
@@ -15,19 +15,17 @@ namespace DotNetSQL.Controllers
             _soilHumidityService = service;
         }
 
-        // [HttpPost("soilhumidity")]
+        // [HttpPost]
         // public async Task<ActionResult<SoilHumidityDto>> AddSoilHumidity(SoilHumidityDto soilHumidityDto)
         // {
-        //     var result = await _soilHumidityService.AddSoilHumidityAsync(soilHumidityDto);
-        //     return CreatedAtAction(nameof(GetSoilHumidity), new { id = result.Id }, result);
+        //     // ...existing code...
         // }
 
-        [HttpGet("soilhumidity")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<SoilHumidityDto>>> GetSoilHumidity()
         {
             return Ok(await _soilHumidityService.GetSoilHumidityAsync());
         }
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSoilHumidityById(int id)
@@ -40,8 +38,5 @@ namespace DotNetSQL.Controllers
 
             return Ok(soilHumidity);
         }
-
     }
-
-
 }

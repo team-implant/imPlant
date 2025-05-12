@@ -1,7 +1,9 @@
 using DotNetSQL.DTOs;
 using DotNetSQL.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace DotNetSQL.Services
+namespace DotNetSQL.IServices
 {
     public interface IMeasurementService
     {

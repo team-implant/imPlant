@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.Entities;
 using DotNetSQL.Services;
 using DotNetSQL.Dtos;
+using DotNetSQL.IServices; 
 
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/temperature")]
     public class TemperatureController : ControllerBase
     {
         private readonly ITemperatureTService _temperatureService;

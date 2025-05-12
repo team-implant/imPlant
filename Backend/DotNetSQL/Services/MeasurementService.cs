@@ -2,6 +2,7 @@ using DotNetSQL.DTOs;
 using DotNetSQL.EFC;
 using DotNetSQL.Entities;
 using Microsoft.EntityFrameworkCore;
+using DotNetSQL.IServices;
 
 namespace DotNetSQL.Services
 {

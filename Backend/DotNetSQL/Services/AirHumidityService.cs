@@ -2,6 +2,8 @@ using DotNetSQL.DTOs;
 using DotNetSQL.EFC;
 using DotNetSQL.Entities;
 using Microsoft.EntityFrameworkCore;
+using DotNetSQL.IServices;
+
 public class AirHumidityService : IAirHumidityService
 {
     private readonly AppDbContext _context;
