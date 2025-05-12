@@ -1,12 +1,13 @@
 using DotNetSQL.Dtos;
-using DotNetSQL.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace DotNetSQL.Services
+namespace DotNetSQL.IServices
 {
     public interface ITemperatureTService
     {
         Task<IEnumerable<TemperatureDto>> GetAllTemperaturesAsync();
         Task<TemperatureDto?> GetTemperatureByIdAsync(int id);
-       // Task<TemperatureDto> AddTemperatureAsync(TemperatureDto temperatureData);
+        // Task<TemperatureDto> AddTemperatureAsync(TemperatureDto temperatureData);
     }
 }
