@@ -5,7 +5,7 @@ using DotNetSQL.IServices;
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/water-pump")]
     public class WaterPumpController : ControllerBase
     {
         private readonly IWaterPumpService _waterPumpService;

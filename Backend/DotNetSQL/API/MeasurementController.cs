@@ -7,7 +7,7 @@ using DotNetSQL.IServices;
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/measurements")]
     public class MeasurementController : ControllerBase
     {
         private readonly IMeasurementService _temperatureService;
