@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DotNetSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class MeasurementData : Migration
+    public partial class InitialMeasurementCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,9 @@ namespace DotNetSQL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Temperature = table.Column<double>(type: "float", nullable: false),
-                    Humidity = table.Column<double>(type: "float", nullable: false),
+                    AirHumidity = table.Column<double>(type: "float", nullable: false),
+                    SoilHumidity = table.Column<double>(type: "float", nullable: false),
+                    Light = table.Column<double>(type: "float", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

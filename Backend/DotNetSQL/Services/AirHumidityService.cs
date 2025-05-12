@@ -1,5 +1,6 @@
 using DotNetSQL.DTOs;
 using DotNetSQL.EFC;
+using DotNetSQL.Entities;
 using Microsoft.EntityFrameworkCore;
 public class AirHumidityService : IAirHumidityService
 {
@@ -10,16 +11,52 @@ public class AirHumidityService : IAirHumidityService
         _context = context;
     }
 
-    public async Task<AirHumidityDto> AddAirHumidityAsync(AirHumidityDto airHumidityDto)
-        {
-            _context.AirHumidityDto.Add(airHumidityDto);
-            await _context.SaveChangesAsync();
-            return airHumidityDto;
-        }
+    // public async Task<AirHumidityDto> AddAirHumidityAsync(AirHumidityDto airHumidityDto)
+    // {
+    //     var entity = new MeasurementData
+    //     {
+    //         AirHumidity = airHumidityDto.AirHumidity,
+    //         Timestamp = airHumidityDto.Timestamp,
+    //         SoilHumidity = 0,
+    //         Temperature = 0,
+    //         Light = 0
+    //     };
+
+    //     _context.MeasurementData.Add(entity);
+    //     await _context.SaveChangesAsync();
+
+    //     return new AirHumidityDto
+    //     {
+    //         Id = entity.Id,
+    //         AirHumidity = entity.AirHumidity,
+    //         Timestamp = entity.Timestamp
+    //     };
+    // }
+
 
 
     public async Task<IEnumerable<AirHumidityDto>> GetAirHumidityAsync()
     {
-        return await _context.AirHumidityDto.ToListAsync();
+        return await _context.MeasurementData
+            .Select(m => new AirHumidityDto
+            {
+                Id = m.Id,
+                AirHumidity = m.AirHumidity,
+                Timestamp = m.Timestamp
+            })
+            .ToListAsync();
+    }
+
+    public async Task<AirHumidityDto?> GetAirHumidityByIdAsync(int id)
+    {
+        return await _context.MeasurementData
+            .Where(m => m.Id == id)
+            .Select(m => new AirHumidityDto
+            {
+                Id = m.Id,
+                AirHumidity = m.AirHumidity,
+                Timestamp = m.Timestamp
+            })
+            .FirstOrDefaultAsync();
     }
 }

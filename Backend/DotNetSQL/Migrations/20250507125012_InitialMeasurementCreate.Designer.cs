@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250507092705_UpdateAirAndSoilHumidityColumns")]
-    partial class UpdateAirAndSoilHumidityColumns
+    [Migration("20250507125012_InitialMeasurementCreate")]
+    partial class InitialMeasurementCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,46 +25,6 @@ namespace DotNetSQL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DotNetSQL.DTOs.AirHumidityDto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("AirHumidity")
-                        .HasColumnType("float")
-                        .HasColumnName("humidity");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AirHumidity", (string)null);
-                });
-
-            modelBuilder.Entity("DotNetSQL.DTOs.SoilHumidityDto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("SoilHumidity")
-                        .HasColumnType("float")
-                        .HasColumnName("soil");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SoilHumidity", (string)null);
-                });
-
             modelBuilder.Entity("DotNetSQL.Entities.MeasurementData", b =>
                 {
                     b.Property<int>("Id")
@@ -74,6 +34,9 @@ namespace DotNetSQL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double>("AirHumidity")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Light")
                         .HasColumnType("float");
 
                     b.Property<double>("SoilHumidity")
