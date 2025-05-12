@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
 using DotNetSQL.Services;
+using DotNetSQL.GrpcClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,10 @@ builder.Services.AddSwaggerGen();
 // Register MeasurementService and EF Core DbContext
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 
+
+builder.Services.AddScoped<IGrpcClientManager, GrpcClientManager>();
+
+
 // Get connection string (same logic for both Dev and Prod)
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -44,6 +49,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         sqlOptions.EnableRetryOnFailure();
     }));
+
+
 
 var app = builder.Build();
 
