@@ -1,35 +1,36 @@
-namespace DefaultNamespace;
-
-using DotNetSQL.Dtos;
+using DotNetSQL.DTOs;
 using DotNetSQL.EFC;
 using DotNetSQL.Entities;
 using Microsoft.EntityFrameworkCore;
+using DotNetSQL.IServices;
 
-
-public class LightIntensityService : ILightIntensityService
+namespace DotNetSQL.Services
 {
-    private readonly AppDbContext _context;
-
-    public LightIntensityService(AppDbContext context)
+    public class LightIntensityService : ILightIntensityService
     {
-        _context = context;
-    }
-
-    public async Task<IEnumerable<LightIntensityDto>> GetAllLightIntensitiesAsync()
-    {
-        return await _context.MeasurementData.Select(q => new LightIntensityDto{
-            Id = q.Id,
-            LightIntensity = q.LightIntensity,
-            Timestamp = q.Timestamp,
-        }).ToListAsync();
-    }
-
-    public async Task<LightIntensityDto?> GetLightIntensityByIdAsync(int id)
-    {
-        return await _context.MeasurementData.Where(q => q.Id == id).Select(q => new LightIntensityDto{
-            Id = q.Id,
-            LightIntensity = q.LightIntensity,
-            Timestamp = q.Timestamp,
-        }).FirstOrDefaultAsync();
+        private readonly AppDbContext _context;
+    
+        public LightIntensityService(AppDbContext context)
+        {
+            _context = context;
+        }
+    
+        public async Task<IEnumerable<LightIntensityDTO>> GetAllLightIntensitiesAsync()
+        {
+            return await _context.MeasurementData.Select(q => new LightIntensityDTO{
+                Id = q.Id,
+                LightIntensity = q.LightIntensity,
+                Timestamp = q.Timestamp,
+            }).ToListAsync();
+        }
+    
+        public async Task<LightIntensityDTO?> GetLightIntensityByIdAsync(int id)
+        {
+            return await _context.MeasurementData.Where(q => q.Id == id).Select(q => new LightIntensityDTO{
+                Id = q.Id,
+                LightIntensity = q.LightIntensity,
+                Timestamp = q.Timestamp,
+            }).FirstOrDefaultAsync();
+        }
     }
 }
