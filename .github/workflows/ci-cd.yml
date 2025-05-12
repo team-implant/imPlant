@@ -2,7 +2,7 @@ name: imPlant CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, dev ]
+    branches: [ main, master, dev, DEV_Backend ]
   pull_request:
     branches: [ main, master, dev ]
 
