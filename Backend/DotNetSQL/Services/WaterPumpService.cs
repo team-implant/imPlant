@@ -20,6 +20,8 @@ public class WaterPumpService : IWaterPumpService
             {
                 Id = wp.Id,
                 Level = wp.Level,
+                MinLevel = wp.MinLevel,
+                MaxLevel = wp.MaxLevel,
                 Timestamp = wp.Timestamp
             })
             .ToListAsync();
@@ -33,6 +35,8 @@ public class WaterPumpService : IWaterPumpService
             {
                 Id = wp.Id,
                 Level = wp.Level,
+                MinLevel = wp.MinLevel,
+                MaxLevel = wp.MaxLevel,
                 Timestamp = wp.Timestamp
             })
             .FirstOrDefaultAsync();

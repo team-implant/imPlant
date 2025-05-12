@@ -5,7 +5,7 @@ using DotNetSQL.IServices;
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/light-intensity")]
     public class LightIntensityController : ControllerBase
     {
         private readonly ILightIntensityService _lightIntensityService;

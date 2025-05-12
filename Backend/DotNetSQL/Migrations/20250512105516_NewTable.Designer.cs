@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508171232_Tables")]
-    partial class Tables
+    [Migration("20250512105516_NewTable")]
+    partial class NewTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,8 +36,9 @@ namespace DotNetSQL.Migrations
                     b.Property<double>("AirHumidity")
                         .HasColumnType("float");
 
-                    b.Property<double>("Light")
-                        .HasColumnType("float");
+                    b.Property<double>("LightIntensity")
+                        .HasColumnType("float")
+                        .HasColumnName("Light");
 
                     b.Property<double>("SoilHumidity")
                         .HasColumnType("float");
@@ -48,15 +49,12 @@ namespace DotNetSQL.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("WaterPumpLevel")
-                        .HasColumnType("float");
-
                     b.HasKey("Id");
 
                     b.ToTable("MeasurementData");
                 });
 
-            modelBuilder.Entity("DotNetSQL.Entities.Prediction", b =>
+            modelBuilder.Entity("DotNetSQL.Entities.SoilHumidity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,21 +62,27 @@ namespace DotNetSQL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Confidence")
-                        .HasColumnType("float");
-
-                    b.Property<int>("PlantId")
+                    b.Property<int>("MaxValue")
                         .HasColumnType("int");
 
-                    b.Property<string>("PredictionValue")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MeasurementDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinValue")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Predictions");
+                    b.HasIndex("MeasurementDataId")
+                        .IsUnique();
+
+                    b.ToTable("SoilHumidities");
                 });
 
             modelBuilder.Entity("DotNetSQL.Entities.WaterPump", b =>
@@ -92,12 +96,38 @@ namespace DotNetSQL.Migrations
                     b.Property<float>("Level")
                         .HasColumnType("real");
 
+                    b.Property<int>("MaxLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(100);
+
+                    b.Property<int>("MinLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("WaterPumps");
+                });
+
+            modelBuilder.Entity("DotNetSQL.Entities.SoilHumidity", b =>
+                {
+                    b.HasOne("DotNetSQL.Entities.MeasurementData", "MeasurementData")
+                        .WithOne("SoilHumidityDetails")
+                        .HasForeignKey("DotNetSQL.Entities.SoilHumidity", "MeasurementDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasurementData");
+                });
+
+            modelBuilder.Entity("DotNetSQL.Entities.MeasurementData", b =>
+                {
+                    b.Navigation("SoilHumidityDetails");
                 });
 #pragma warning restore 612, 618
         }

@@ -29,10 +29,6 @@ builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 
-// Register ML Prediction Service with HttpClient
-builder.Services.AddHttpClient<IMlPredictionService, MlPredictionService>();
-builder.Services.AddScoped<IMlPredictionService, MlPredictionService>();
-
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connection))

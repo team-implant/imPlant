@@ -8,6 +8,8 @@ namespace DotNetSQL.Entities
         public double SoilHumidity { get; set; }
         public double LightIntensity { get; set; } 
         public DateTime Timestamp { get; set; }
-        public double WaterPumpLevel { get; set; }
+        
+        // Navigation property for SoilHumidity - marked as nullable
+        public SoilHumidity? SoilHumidityDetails { get; set; }
     }
 }
