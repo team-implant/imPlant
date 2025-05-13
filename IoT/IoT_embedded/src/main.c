@@ -21,6 +21,7 @@
 #include "soil.h"
 #include "adxl345.h"
 #include "waterPump.h"
+#include "display.h"
 
 static uint8_t _buff[100];
 static uint8_t _index = 0;
@@ -40,30 +41,50 @@ bool calibrating_water_level = false;
 #define PLANT2_ANGLE 105
 #define NEUTRAL_ANGLE 87
 
-void console_rx(uint8_t _rx) {
-    uart_send_blocking(USART_0, _rx);
-    uart_send_blocking(USART_0, _rx);
-    if (('\r' != _rx) && ('\n' != _rx)) {
-        if (_index < 100 - 1) {
-            _buff[_index++] = _rx;
-        }
-    } else {
-        _buff[_index] = '\0';
-        _index = 0;
-        _done = true;
-        uart_send_blocking(USART_0, '\n');
-        //        uart_send_string_blocking(USART_0, (char*)_buff);
-    }
+// Seems like its never used, if you find yourself uncommenting this function delete this comment lol
+// if not deleted TODO: get rid of this function ↓
+// void console_rx(uint8_t _rx) {
+//     uart_send_blocking(USART_0, _rx);
+//     uart_send_blocking(USART_0, _rx);
+//     if (('\r' != _rx) && ('\n' != _rx)) {
+//         if (_index < 100 - 1) {
+//             _buff[_index++] = _rx;
+//         }
+//     } else {
+//         _buff[_index] = '\0';
+//         _index = 0;
+//         _done = true;
+//         uart_send_blocking(USART_0, '\n');
+//         //        uart_send_string_blocking(USART_0, (char*)_buff);
+//     }
+// }
+
+// flavour
+void ledAnimation(){
+    _delay_ms(1000);
+    leds_turnOn(4);
+    _delay_ms(1000);
+    turnOffAll();
+    _delay_ms(1000);
+    leds_turnOn(1);
+    leds_turnOn(2);
+    leds_turnOn(3);
+    leds_turnOn(4);
+    _delay_ms(1000);
+    turnOffAll();
+    _delay_ms(1000);
+    leds_turnOn(1);
+    leds_turnOn(2);
+    leds_turnOn(3);
 }
 
-void send_data(char data[]) {
-    wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
-}
-
+// manages bool switchis for main-while loop
 void enableMeasure() { shouldMeasure = true; }
 
 void incomingDataDetected() { shouldHandleInboundData = true; }
 
+// manages all the sensor and appending answers to outbound buffer string
+// TODO: rework to maybe actually return the answer rather than appending to a global string???????
 void measureLight() {
     uint32_t ans = 1024 - light_read();
     sprintf(outbound_buffer, "%sLIGHT=%ld\n", outbound_buffer, ans);
@@ -100,6 +121,7 @@ void measureAcceleration() {
             "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", x, y, z);
 }
 
+// manages watering pump / servo motor activities
 void runWaterPump(){
     _delay_ms(500); //wait to complete move
     pump_start();
@@ -124,6 +146,10 @@ void neutral(){
     servo(NEUTRAL_ANGLE);
 }
 
+void send_data(char data[]) {
+    wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
+}
+
 void handle_incoming_wifi_data() {
     // send_data(inbound_buffer);
     if (strcmp(inbound_buffer, "WATER1") == 0) {
@@ -143,18 +169,39 @@ void turnOffAll() {
     leds_turnOff(4);
 }
 
-void startWifi() {
+//both the while loops: check if answer from wifi.h is 0 (OK), otherwise try to connect again. If limit is reached return false and show 'dEAd'
+bool startWifi() {
+    int x1 = -1;
+    int cnt = -1;
+    int limit = 2;
     wifi_init();
     leds_turnOn(1);
-    wifi_command_join_AP(WIFI_NAME, WIFI_PASSWORD);
+    while (x1 != 0){
+        x1 = wifi_command_join_AP(WIFI_NAME, WIFI_PASSWORD);
+        if (x1 > 0) {
+            if (++cnt == limit){display_dead(); _delay_ms(250); return false;}
+            display_error(1+(cnt*10)); _delay_ms(500);
+        }
+    }
+    display_empty();
     leds_turnOn(2);
-    wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23,
-                                        // NULL , NULL);
-                                       &incomingDataDetected, inbound_buffer);
+    cnt = -1;
+    int x2 = -1;
+    while (x2 != 0){
+        x2 = wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23,
+                &incomingDataDetected, inbound_buffer);
+                // NULL , NULL);
+        if (x2 > 0) {
+            if (++cnt == limit){display_dead(); _delay_ms(250); return false;}
+            display_error(2+(cnt*10)); _delay_ms(500);
+        }
+    }
     leds_turnOn(3);
+    display_empty();
+    return true;
 }
 
-// initiate the temp and light sensor
+// place all the inits in here please:
 void inits() {
     leds_init();
     dht11_init();
@@ -164,21 +211,35 @@ void inits() {
     light_init();
     buttons_init();
     pump_init();
+    display_init();
+    display_empty();
     // allow for interrupts
     sei();
 }
+/* 
+For now, display shows following errors: 
 
+E-x1 - failed on connection to wifi, tried x + 1 times
+E-x2 - failed on connection to provided TCP port, tried x + 1 times
+
+dEAd - failed completely (reached connection limit), device cannot operate
+
+*/
 int main() {
     inits();
     turnOffAll();
     // initiate wifi connection
-    startWifi();
-    int perMinute = 20;
+    bool working = startWifi();
+    int perMinute = 0;
+    int perHour = 0;
     void (*pointer)(void) = &enableMeasure;
-    // initiate a timer with the [enableMeasure] function at [perMinute]
-    periodic_task_init_c(pointer, (60000 / perMinute));
 
-    while (1) {
+    // manage proper timing
+    if (perMinute == 0 && perHour != 0){periodic_task_init_c(pointer, (3600000 / perHour));}
+    else if (perMinute != 0){periodic_task_init_c(pointer, (60000 / perMinute));}
+    else {working = false; display_dead();}
+
+    while (working) {
         _delay_ms(100);
         leds_turnOff(4);
         if (shouldMeasure && !calibrating_water_level) {
@@ -200,18 +261,17 @@ int main() {
             shouldHandleInboundData = false;
         }
 
+        //calibrate minimum and maximum water levels
         if (buttons_1_pressed()) {
             calibrating_water_level = true;
             turnOffAll();
             _delay_ms(250);
             leds_turnOn(1);
-            while (!buttons_1_pressed()) {
-            }
+            while (!buttons_1_pressed()) {}
             uint16_t measurement_epmty = hc_sr04_takeMeasurement();
             leds_turnOn(2);
             _delay_ms(250);
-            while (!buttons_1_pressed()) {
-            }
+            while (!buttons_1_pressed()) {}
             uint16_t measurement_full = hc_sr04_takeMeasurement();
             _delay_ms(250);
             leds_turnOn(3);
@@ -221,26 +281,10 @@ int main() {
                     measurement_epmty, measurement_full);
 
             send_data(outbound_buffer);
-
-            // Ending animation:
-            _delay_ms(1000);
-            leds_turnOn(4);
-            _delay_ms(1000);
-            turnOffAll();
-            _delay_ms(1000);
-            leds_turnOn(1);
-            leds_turnOn(2);
-            leds_turnOn(3);
-            leds_turnOn(4);
-            _delay_ms(1000);
-            turnOffAll();
-            _delay_ms(1000);
-            leds_turnOn(1);
-            leds_turnOn(2);
-            leds_turnOn(3);
+            ledAnimation();
             calibrating_water_level = false;
         }
     }
-
+    while(1){}
     return 0;
 }

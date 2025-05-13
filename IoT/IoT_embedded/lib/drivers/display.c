@@ -160,3 +160,20 @@ void pulse_latch()
     LATCH_PORT &= ~(1 << LATCH_BIT);
     // _delay_us(1);
 }
+
+void display_error(int16_t errorNumber){
+    if (errorNumber > 9){
+        display_setValues(14, 16, (errorNumber/10),(errorNumber%10));
+    }
+    else {
+        display_setValues(14, 16, 0, errorNumber);
+    }
+}
+
+void display_dead(){
+    display_setValues(13, 14, 10, 13);
+}
+
+void display_empty(){
+    display_setValues(17, 17, 17, 17);
+}
