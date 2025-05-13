@@ -173,7 +173,7 @@ void turnOffAll() {
 bool startWifi() {
     int x1 = -1;
     int cnt = -1;
-    int limit = 2;
+    int limit = 3;
     wifi_init();
     leds_turnOn(1);
     while (x1 != 0){
@@ -228,9 +228,10 @@ dEAd - failed completely (reached connection limit), device cannot operate
 int main() {
     inits();
     turnOffAll();
+    display_empty();
     // initiate wifi connection
     bool working = startWifi();
-    int perMinute = 0;
+    int perMinute = 20;
     int perHour = 0;
     void (*pointer)(void) = &enableMeasure;
 
