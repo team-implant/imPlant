@@ -1,43 +1,38 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-const BASE_URL = 'http://sep4-implant.azurewebsites.net/api/Measurement';
+const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface LightIntensity {
     id: number;
     value: number;
     timestamp: string;
-    plantId: number;
+    // Add other fields as necessary
 }
 
-const getAllLightIntensities = async (plantId: number): Promise<LightIntensity[]> => {
-    const url = `${BASE_URL}/lightintensity?plantId=${plantId}`;
-    const response = await axios.get<LightIntensity[]>(url);
+const getAllLightIntensities = async (): Promise<LightIntensity[]> => {
+    const response = await axios.get<LightIntensity[]>(`${BASE_URL}/light-intensity`);
     return response.data;
 };
 
-export const useGetAllLightIntensities = (plantId: number): UseQueryResult<LightIntensity[], Error> => {
+export const useGetAllLightIntensities = (): UseQueryResult<LightIntensity[], Error> => {
     return useQuery<LightIntensity[], Error>(
-        ['getAllLightIntensities', plantId],
-        () => getAllLightIntensities(plantId),
-        {
-            enabled: !!plantId,
-        }
+        ['getAllLightIntensities'],
+        getAllLightIntensities
     );
 };
 
-const getLightIntensityById = async (id: number, plantId: number): Promise<LightIntensity> => {
-    const url = `${BASE_URL}/lightintensity/${id}?plantId=${plantId}`;
-    const response = await axios.get<LightIntensity>(url);
+const getLightIntensityById = async (id: number): Promise<LightIntensity> => {
+    const response = await axios.get<LightIntensity>(`${BASE_URL}/light-intensity/${id}`);
     return response.data;
 };
 
-export const useGetLightIntensityById = (id: number, plantId: number): UseQueryResult<LightIntensity, Error> => {
+export const useGetLightIntensityById = (id: number): UseQueryResult<LightIntensity, Error> => {
     return useQuery<LightIntensity, Error>(
-        ['getLightIntensityById', id, plantId],
-        () => getLightIntensityById(id, plantId),
+        ['getLightIntensityById', id],
+        () => getLightIntensityById(id),
         {
-            enabled: !!id && !!plantId, // Only run the query if both id and plantId are there ?
+            enabled: !!id,
         }
     );
 };

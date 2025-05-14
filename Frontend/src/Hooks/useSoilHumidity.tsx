@@ -1,26 +1,38 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-const BASE_URL = 'http://sep4-implant.azurewebsites.net/api/Measurement';
+const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface SoilHumidityData {
     id: number;
     soilHumidity: number;
     timestamp: string;
-    plantId: number;
+    // Add other fields as necessary
 }
 
-const getSoilHumidity = async (plantId: number): Promise<SoilHumidityData[]> => {
-    const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soilhumidity?plantId=${plantId}`);
+const getSoilHumidity = async (): Promise<SoilHumidityData[]> => {
+    const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soil-humidity`);
     return response.data;
 };
 
-export const useGetSoilHumidity = (plantId: number): UseQueryResult<SoilHumidityData[], Error> => {
+export const useGetSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
     return useQuery<SoilHumidityData[], Error>(
-        ['getSoilHumidity', plantId],
-        () => getSoilHumidity(plantId),
+        ['getSoilHumidity'],
+        getSoilHumidity
+    );
+};
+
+const getSoilHumidityById = async (id: number): Promise<SoilHumidityData> => {
+    const response = await axios.get<SoilHumidityData>(`${BASE_URL}/soil-humidity/${id}`);
+    return response.data;
+};
+
+export const useGetSoilHumidityById = (id: number): UseQueryResult<SoilHumidityData, Error> => {
+    return useQuery<SoilHumidityData, Error>(
+        ['getSoilHumidityById', id],
+        () => getSoilHumidityById(id),
         {
-            enabled: !!plantId, // Only run the query if plantId is provided
+            enabled: !!id,
         }
     );
 };

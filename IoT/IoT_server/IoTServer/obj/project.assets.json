@@ -1666,19 +1666,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Bibek\\.nuget\\packages\\": {}
+    "C:\\Users\\tony8\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Bibek\\OneDrive\\Desktop\\FourthSemester\\SEP4\\SEP4_Final_Repo\\imPlant\\IoT\\IoT_server\\IoTServer\\IoTServer.csproj",
+      "projectUniqueName": "C:\\Users\\tony8\\WebstormProjects\\ImPlant_mock\\IoT\\IoT_server\\IoTServer\\IoTServer.csproj",
       "projectName": "IoTServer",
-      "projectPath": "C:\\Users\\Bibek\\OneDrive\\Desktop\\FourthSemester\\SEP4\\SEP4_Final_Repo\\imPlant\\IoT\\IoT_server\\IoTServer\\IoTServer.csproj",
-      "packagesPath": "C:\\Users\\Bibek\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Bibek\\OneDrive\\Desktop\\FourthSemester\\SEP4\\SEP4_Final_Repo\\imPlant\\IoT\\IoT_server\\IoTServer\\obj\\",
+      "projectPath": "C:\\Users\\tony8\\WebstormProjects\\ImPlant_mock\\IoT\\IoT_server\\IoTServer\\IoTServer.csproj",
+      "packagesPath": "C:\\Users\\tony8\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tony8\\WebstormProjects\\ImPlant_mock\\IoT\\IoT_server\\IoTServer\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Bibek\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\tony8\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1728,7 +1728,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
