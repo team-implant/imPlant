@@ -37,9 +37,9 @@ char inbound_buffer[128];
 bool shouldHandleInboundData = false;
 bool calibrating_water_level = false;
 
-#define PLANT1_ANGLE 70
-#define PLANT2_ANGLE 105
-#define NEUTRAL_ANGLE 87
+int PLANT1_ANGLE = 70;
+int PLANT2_ANGLE = 105;
+int NEUTRAL_ANGLE = 87;
 
 // Seems like its never used, if you find yourself uncommenting this function delete this comment lol
 // if not deleted TODO: get rid of this function ↓
@@ -76,6 +76,19 @@ void ledAnimation(){
     leds_turnOn(1);
     leds_turnOn(2);
     leds_turnOn(3);
+}
+bool first;
+void displayAndDie(){
+    if (!first){
+        display_empty();
+        disable_timer_b();  
+    }
+    first = false;
+}
+void asyncDisableDisplayAfterMs(int ms){
+    first = true;
+    void (*disablePointer)(void) = &displayAndDie;
+    periodic_task_init_b(disablePointer, ms);
 }
 
 // manages bool switchis for main-while loop
@@ -223,7 +236,6 @@ E-x1 - failed on connection to wifi, tried x + 1 times
 E-x2 - failed on connection to provided TCP port, tried x + 1 times
 
 dEAd - failed completely (reached connection limit), device cannot operate
-
 */
 int main() {
     inits();
@@ -243,7 +255,7 @@ int main() {
     while (working) {
         _delay_ms(100);
         leds_turnOff(4);
-        if (shouldMeasure && !calibrating_water_level) {
+        if (shouldMeasure) {
             leds_turnOn(4);
             sprintf(outbound_buffer, "");
             measureTemp();
@@ -257,13 +269,15 @@ int main() {
             shouldMeasure = false;
         }
 
-        if (shouldHandleInboundData && !calibrating_water_level) {
+        if (shouldHandleInboundData) {
             handle_incoming_wifi_data();
             shouldHandleInboundData = false;
         }
 
         //calibrate minimum and maximum water levels
         if (buttons_1_pressed()) {
+            //since its single threaded, once we are in here, the arduino wont be able to go with the other functions anyway
+            // so calibrating_water_level seems pointeless
             calibrating_water_level = true;
             turnOffAll();
             _delay_ms(250);
@@ -284,6 +298,56 @@ int main() {
             send_data(outbound_buffer);
             ledAnimation();
             calibrating_water_level = false;
+        }
+        if (buttons_2_pressed()){
+            display_setValues(18, 20, 18, 1);
+            bool done = false;
+            servo(PLANT1_ANGLE);
+            while (!done){
+                _delay_ms(100);
+                if(buttons_1_pressed()){
+                    PLANT1_ANGLE = PLANT1_ANGLE + 1;
+                    servo(PLANT1_ANGLE);
+                    display_int(PLANT1_ANGLE);
+                    _delay_ms(500);
+                    display_setValues(18, 20, 18, 1);
+                }
+                else if (buttons_2_pressed()){
+                    PLANT1_ANGLE = PLANT1_ANGLE - 1;
+                    servo(PLANT1_ANGLE);
+                    display_int(PLANT1_ANGLE);
+                    _delay_ms(500);
+                    display_setValues(18, 20, 18, 1);
+                }
+                else if (buttons_3_pressed()){
+                    done = true;
+                }
+            }
+            display_setValues(18, 20, 18, 2);
+            done = false;
+            servo(PLANT2_ANGLE);
+            while (!done){
+                _delay_ms(100);
+                if(buttons_1_pressed()){
+                    PLANT2_ANGLE = PLANT2_ANGLE + 1;
+                    servo(PLANT2_ANGLE);
+                    display_int(PLANT2_ANGLE);
+                    _delay_ms(500);
+                    display_setValues(18, 20, 18, 2);
+                }
+                else if (buttons_2_pressed()){
+                    PLANT2_ANGLE = PLANT2_ANGLE - 1;
+                    servo(PLANT2_ANGLE);
+                    display_int(PLANT2_ANGLE);
+                    _delay_ms(500);
+                    display_setValues(18, 20, 18, 2);
+                }
+                else if (buttons_3_pressed()){
+                    display_setValues(13, 21, 20, 14);
+                    asyncDisableDisplayAfterMs(5000);
+                    done = true;
+                }
+            }
         }
     }
     while(1){}
