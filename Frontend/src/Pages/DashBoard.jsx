@@ -75,13 +75,15 @@ const Dashboard = () => {
     }, [airHumidityData, temperatureData, soilHumidityData, lightIntensityData]);
 
 
+
     // Handle errors
     useEffect(() => {
         if (temperatureError) console.error('Temperature error:', temperatureError);
         if (lightIntensityError) console.error('Light error:', lightIntensityError);
         if (soilHumidityError) console.error('Soil error:', soilHumidityError);
         if (airHumidityData?.error) console.error('Air humidity error:', airHumidityData.error);
-    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]);
+    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]); 
+    
 
     // Irrigation control
     const handleIrrigationControl = async (activate) => {
