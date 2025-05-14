@@ -32,10 +32,11 @@ uint8_t humidity_reading;
 uint8_t humidity_reading_decimal;
 bool temp_hum_error = false;
 bool shouldMeasure = false;
-char outbound_buffer[128];
+char outbound_buffer[256];
 char inbound_buffer[128];
 bool shouldHandleInboundData = false;
 bool calibrating_water_level = false;
+volatile bool sensorBusy = false;
 
 int PLANT1_ANGLE = 70;
 int PLANT2_ANGLE = 105;
@@ -77,6 +78,7 @@ void ledAnimation(){
     leds_turnOn(2);
     leds_turnOn(3);
 }
+
 bool first;
 void displayAndDie(){
     if (!first){
@@ -85,12 +87,12 @@ void displayAndDie(){
     }
     first = false;
 }
+
 void asyncDisableDisplayAfterMs(int ms){
     first = true;
     void (*disablePointer)(void) = &displayAndDie;
     periodic_task_init_b(disablePointer, ms);
 }
-
 // manages bool switchis for main-while loop
 void enableMeasure() { shouldMeasure = true; }
 
@@ -104,22 +106,38 @@ void measureLight() {
 }
 
 void measureDist() {
+    while(sensorBusy) { _delay_ms(1); }
+    sensorBusy = true;
     uint16_t distance = hc_sr04_takeMeasurement();
-    sprintf(outbound_buffer, "%sDIST=%d\n", outbound_buffer, distance);
+    sprintf(outbound_buffer + strlen(outbound_buffer), "DIST=%d\n", distance);
+    sensorBusy = false;
 }
 
 void measureTemp() {
-    DHT11_ERROR_MESSAGE_t status =
-        dht11_get(&humidity_reading, &humidity_reading_decimal,
-                  &temperature_reading, &temperature_reading_decimal);
-    if (status == DHT11_FAIL)
+    while(sensorBusy) { _delay_ms(1); }
+    sensorBusy = true;
+    uint8_t retries = 5;
+    DHT11_ERROR_MESSAGE_t status;
+    
+    cli();
+    do {
+        status = dht11_get(&humidity_reading, &humidity_reading_decimal,
+                         &temperature_reading, &temperature_reading_decimal);
+        if (status == DHT11_OK) break;
+        _delay_ms(200);
+    } while (--retries > 0);
+    sei();
+    
+    if (status != DHT11_OK) {
         temp_hum_error = true;
-    else {
+        sprintf(outbound_buffer, "DHT11_ERROR=%d\n", status);
+    } else {
         temp_hum_error = false;
         sprintf(outbound_buffer, "TEMP=%d.%d\nHUMIDITY=%d.%d\n",
                 temperature_reading, temperature_reading_decimal,
                 humidity_reading, humidity_reading_decimal);
     }
+    sensorBusy = false;
 }
 
 void measureSoils(int n) {
@@ -133,15 +151,14 @@ void measureAcceleration() {
     sprintf(outbound_buffer + strlen(outbound_buffer),
             "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", x, y, z);
 }
-
 // manages watering pump / servo motor activities
 void runWaterPump(){
-    _delay_ms(500); //wait to complete move
+    _delay_ms(500);
     pump_start();
     uint32_t timeout = 10000;
     while (timeout > 0){timeout--;_delay_ms(1);}
     pump_stop();
-    _delay_ms(1000); //wait for water to empty before returning 
+    _delay_ms(1000);
 }
 
 void waterPlant1() {
@@ -155,6 +172,7 @@ void waterPlant2() {
     runWaterPump();
     servo(NEUTRAL_ANGLE);
 }
+
 void neutral(){
     servo(NEUTRAL_ANGLE);
 }
@@ -164,7 +182,6 @@ void send_data(char data[]) {
 }
 
 void handle_incoming_wifi_data() {
-    // send_data(inbound_buffer);
     if (strcmp(inbound_buffer, "WATER1") == 0) {
         waterPlant1();
     } else if (strcmp(inbound_buffer, "WATER2") == 0) {
@@ -203,7 +220,7 @@ bool startWifi() {
     while (x2 != 0){
         x2 = wifi_command_create_TCP_connection(MY_IP_ADDRESS, 23,
                 &incomingDataDetected, inbound_buffer);
-                // NULL , NULL);
+                                // NULL , NULL);
         if (x2 > 0) {
             if (++cnt == limit){display_dead(); _delay_ms(250); return false;}
             display_error(2+(cnt*10)); _delay_ms(500);
@@ -216,8 +233,11 @@ bool startWifi() {
 
 // place all the inits in here please:
 void inits() {
+    sei();
     leds_init();
+    turnOffAll();
     dht11_init();
+    _delay_ms(2500);
     hc_sr04_init();
     soil_init();
     adxl345_init();
@@ -226,8 +246,6 @@ void inits() {
     pump_init();
     display_init();
     display_empty();
-    // allow for interrupts
-    sei();
 }
 /* 
 For now, display shows following errors: 
@@ -253,6 +271,7 @@ int main() {
     else {working = false; display_dead();}
     display_setValues(17, 17, 22, 1);
     asyncDisableDisplayAfterMs(5000);
+    
     while (working) {
         _delay_ms(100);
         leds_turnOff(4);
@@ -277,7 +296,7 @@ int main() {
 
         //calibrate minimum and maximum water levels
         if (buttons_1_pressed()) {
-            //since its single threaded, once we are in here, the arduino wont be able to go with the other functions anyway
+              //since its single threaded, once we are in here, the arduino wont be able to go with the other functions anyway
             // so calibrating_water_level seems pointeless
             calibrating_water_level = true;
             turnOffAll();
@@ -301,7 +320,7 @@ int main() {
             calibrating_water_level = false;
         }
 
-        //calibrate the sprinklers aim
+         //calibrate the sprinklers aim
         if (buttons_2_pressed()){
             display_setValues(18, 20, 18, 1);
             bool done = false;
