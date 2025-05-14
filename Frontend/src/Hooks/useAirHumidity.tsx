@@ -1,13 +1,13 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-const BASE_URL = 'http://sep4-implant.azurewebsites.net/api/Measurement';
+const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface AirHumidityData {
     id: number;
     airHumidity: number;
     timestamp: string;
-    plantId: number;
+    // Add other fields as necessary
 }
 
 interface AirHumidityChartData {
@@ -20,24 +20,29 @@ interface AirHumidityResponse {
     chartData: AirHumidityChartData;
 }
 
-const getAirHumidity = async (plantId: number): Promise<AirHumidityResponse> => {
-    const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/airhumidity?plantId=${plantId}`);
-    const apiData = response.data;
-
-    const chartData: AirHumidityChartData = {
-        labels: apiData.map(item => new Date(item.timestamp).toLocaleTimeString()),
-        values: apiData.map(item => item.airHumidity)
-    };
-
-    return { apiData, chartData };
+const getAirHumidity = async (): Promise<AirHumidityData[]> => {
+    const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/air-humidity`);
+    return response.data;
 };
 
-export const useGetAirHumidity = (plantId: number): UseQueryResult<AirHumidityResponse, Error> => {
-    return useQuery<AirHumidityResponse, Error>(
-        ['getAirHumidity', plantId],
-        () => getAirHumidity(plantId),
+export const useGetAirHumidity = (): UseQueryResult<AirHumidityData[], Error> => {
+    return useQuery<AirHumidityData[], Error>(
+        ['getAirHumidity'],
+        getAirHumidity
+    );
+};
+
+const getAirHumidityById = async (id: number): Promise<AirHumidityData> => {
+    const response = await axios.get<AirHumidityData>(`${BASE_URL}/air-humidity/${id}`);
+    return response.data;
+};
+
+export const useGetAirHumidityById = (id: number): UseQueryResult<AirHumidityData, Error> => {
+    return useQuery<AirHumidityData, Error>(
+        ['getAirHumidityById', id],
+        () => getAirHumidityById(id),
         {
-            enabled: !!plantId, // Only run the query if plantId is provided
+            enabled: !!id,
         }
     );
 };
