@@ -20,7 +20,7 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
-   const [waterLevel, setWaterLevel] = useState(29); // Mock percentage
+    const [waterLevel, setWaterLevel] = useState(15); // Mock percentage
 
 
     // Hooks for fetching sensor data 
@@ -68,7 +68,7 @@ const Dashboard = () => {
         };
         fetchInitialData();
     }, []);
-// check if the greenhouse is online
+  // check if the greenhouse is online
     useEffect(() => {
         const hasData = airHumidityData || temperatureData || soilHumidityData || lightIntensityData;
         setIsOnline(!!hasData);
