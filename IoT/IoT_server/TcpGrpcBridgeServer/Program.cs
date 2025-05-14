@@ -10,6 +10,7 @@ namespace TcpGrpcBridgeServer
     {
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("Starting TCP and gRPC servers...");
             // Run both TCP server and gRPC server concurrently
             Task tcpTask = TcpServer.StartAsync();
             Task grpcTask = CreateHostBuilder(args).Build().RunAsync();

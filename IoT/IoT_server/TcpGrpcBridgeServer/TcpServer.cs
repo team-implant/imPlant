@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using System.Globalization;
+using System.Net.NetworkInformation;
+using System.Collections.Generic;
 
 namespace TcpGrpcBridgeServer
 {
@@ -13,9 +15,41 @@ namespace TcpGrpcBridgeServer
         // 1. Start TCP server
         public static async Task StartAsync()
         {
-            TcpListener server = new TcpListener(IPAddress.Any, 23);
+            Console.WriteLine("Starting TCP server...");
+
+            IPAddress ipAddr = IPAddress.Any; // Default to any address
+
+            foreach(NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+            if(ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+            {
+                Console.WriteLine(ni.Name);
+                if(ni.Name == "Wi-Fi" || ni.Name == "wlan0"){
+                    ipAddr = ni.GetIPProperties().UnicastAddresses[0].Address;
+                    Console.WriteLine(ipAddr.ToString());
+                }
+                foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        Console.WriteLine(ip.Address.ToString());
+                    }
+                }
+            }  
+            }
+            Console.WriteLine("CREATING TCP LISTENER");
+            TcpListener server = new TcpListener(ipAddr, 23);
+            Console.WriteLine("THE SERVER WILL START SOON");
+            try{
             server.Start();
-            Console.WriteLine("TCP Server started on port 23...");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error starting TCP server: " + ex.Message);
+                return;
+            }
+            Console.WriteLine("THE SERVER HAS STARTED");
+            Console.WriteLine($"TCP Server started at {ipAddr}:23...");
 
             while (true)
             {
@@ -67,7 +101,9 @@ namespace TcpGrpcBridgeServer
                 string? tempLine = lines.FirstOrDefault(l => l.StartsWith("TEMP="));
                 string? humidityLine = lines.FirstOrDefault(l => l.StartsWith("HUMIDITY="));
                 string? lightLine = lines.FirstOrDefault(l => l.StartsWith("LIGHT="));
+               //string? distanceLine = lines.FirstOrDefault(l => l.StartsWith("DIST="));
                 string? soilLine = lines.FirstOrDefault(l => l.StartsWith("SOIL="));
+                //string? soilLine2 = lines.FirstOrDefault(l => l.StartsWith("SOIL2="));
 
                 if (tempLine == null || humidityLine == null || lightLine == null || soilLine == null)
                 {
