@@ -10,13 +10,6 @@ import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
 import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
 import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
 import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
-
-import { useGetAirHumidity } from '../Hooks/useAirHumidity';
-import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
-import { useGetSoilHumidity } from '../Hooks/useSoilHumidity';
-import { useGetAllLightIntensities } from '../Hooks/useGetLightIntensity';
-
-
 import toast from 'react-hot-toast'
 
 
@@ -31,9 +24,6 @@ const Dashboard = () => {
     const [enlargedChart, setEnlargedChart] = useState(null);
     const [waterLevel, setWaterLevel] = useState(15); // Mock percentage
 
-
-    // Hooks for fetching sensor data 
-    const {data: airHumidityData} = useGetAirHumidity(selectedPlant.id);
 
 
 
@@ -203,10 +193,6 @@ const Dashboard = () => {
                         <WaterLevelIndicator level={waterLevel} />
                     </SensorCard>
 
-
-                        value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
-                        icon="🌱" />
-                    <SensorCard label="Water Pump Level" value="--%" icon="🚰" />
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}></div> 
