@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
 using DotNetSQL.Services;
-using DotNetSQL.IServices;
+using DotNetSQL.GrpcClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,11 @@ builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 
+
+builder.Services.AddScoped<IGrpcClientManager, GrpcClientManager>();
+
+
+// Get connection string (same logic for both Dev and Prod)
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connection))
@@ -45,6 +50,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         sqlOptions.EnableRetryOnFailure();
     }));
+
+
 
 var app = builder.Build();
 
