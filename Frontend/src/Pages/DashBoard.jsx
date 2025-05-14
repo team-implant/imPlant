@@ -4,6 +4,13 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
+import {useGetAirHumidity} from '../Hooks/useAirHumidity';
+import {useGetAllTemperatures} from "../Hooks/useGetTemperature";
+import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
+import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
+import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
+import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
+
 import { useGetAirHumidity } from '../Hooks/useAirHumidity';
 import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
 import { useGetSoilHumidity } from '../Hooks/useSoilHumidity';
@@ -11,6 +18,7 @@ import { useGetAllLightIntensities } from '../Hooks/useGetLightIntensity';
 
 
 import toast from 'react-hot-toast'
+
 
 
 const Dashboard = () => {
@@ -21,6 +29,11 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
+    const [waterLevel, setWaterLevel] = useState(15); // Mock percentage
+
+
+    // Hooks for fetching sensor data 
+    const {data: airHumidityData} = useGetAirHumidity(selectedPlant.id);
 
 
 
@@ -34,7 +47,8 @@ const Dashboard = () => {
     } = useGetAllTemperatures(selectedPlant.id);
     const {
         data: soilHumidityData,
-        isLoading: soilHumidityLoading,
+         isLoading: soilHumidityLoading,
+        
         error: soilHumidityError
     } = useGetSoilHumidity(selectedPlant.id);
     const {
@@ -42,6 +56,11 @@ const Dashboard = () => {
         loading: lightIntensityLoading,
         error: lightIntensityError
     } = useGetAllLightIntensities(selectedPlant.id);
+
+    const { data: waterPumpData, 
+            loading: waterPumpLoading,
+             error: waterPumpError 
+            } = useWaterPumpData();
 
     // Fetch initial dashboard data
     useEffect(() => {
@@ -66,6 +85,7 @@ const Dashboard = () => {
 
 
     }, []);
+  // check if the greenhouse is online
     // check if the greenhouse is online
     useEffect(() => {
         const hasData = airHumidityData || temperatureData || soilHumidityData || lightIntensityData;
@@ -105,13 +125,15 @@ const Dashboard = () => {
 
 
 
+
     // Handle errors
     useEffect(() => {
         if (temperatureError) console.error('Temperature error:', temperatureError);
         if (lightIntensityError) console.error('Light error:', lightIntensityError);
         if (soilHumidityError) console.error('Soil error:', soilHumidityError);
         if (airHumidityData?.error) console.error('Air humidity error:', airHumidityData.error);
-    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]);
+    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]); 
+    
 
     // Irrigation control
     const handleIrrigationControl = async (activate) => {
@@ -171,10 +193,23 @@ const Dashboard = () => {
                         value={`${airHumidityData?.apiData?.at(-1)?.airHumidity ?? '--'}%`}
                         icon="💨" />
                     <SensorCard label="Soil Moisture"
+                                value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
+                                icon="🌱"/>
+                    <SensorCard
+                        label="Water Pump Level"
+                        value={`${waterLevel}%`}
+                        icon="🚰"
+                        className="water-pump-card">
+                        <WaterLevelIndicator level={waterLevel} />
+                    </SensorCard>
+
+
                         value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
                         icon="🌱" />
                     <SensorCard label="Water Pump Level" value="--%" icon="🚰" />
                 </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}></div> 
 
                 <div className="charts">
                     <ChartPanel
@@ -289,6 +324,6 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
         default:
             return { labels: [], values: [] };
     }
-};
-
+}; 
+ 
 export default Dashboard;
