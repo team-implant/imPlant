@@ -251,7 +251,8 @@ int main() {
     if (perMinute == 0 && perHour != 0){periodic_task_init_c(pointer, (3600000 / perHour));}
     else if (perMinute != 0){periodic_task_init_c(pointer, (60000 / perMinute));}
     else {working = false; display_dead();}
-
+    display_setValues(17, 17, 22, 1);
+    asyncDisableDisplayAfterMs(5000);
     while (working) {
         _delay_ms(100);
         leds_turnOff(4);
@@ -299,6 +300,8 @@ int main() {
             ledAnimation();
             calibrating_water_level = false;
         }
+
+        //calibrate the sprinklers aim
         if (buttons_2_pressed()){
             display_setValues(18, 20, 18, 1);
             bool done = false;
