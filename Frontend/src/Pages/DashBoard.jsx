@@ -82,38 +82,34 @@ const Dashboard = () => {
         setIsOnline(!!hasData);
     }, [airHumidityData, temperatureData, soilHumidityData, lightIntensityData]);
 
-    //alart system 
+     //alart system 
     useEffect(() => {
         const temp = temperatureData?.at(-1)?.temperature;
         const soil = soilHumidityData?.at(-1)?.soilHumidity;
-        const air = airHumidityData?.apiData?.at(-1)?.airHumidity;
-        const light = lightIntensityData?.at(-1)?.value ;
+        const air = airHumidityData?.at(-1)?.airHumidity;
+        const light = lightIntensityData?.at(-1)?.lightIntensity;
+
 
         console.log("Temp:", temp, "Soil:", soil, "Air:", air, "Light:", light);
 
-        // 🌡️ Temperature
-        if (temp > 35) toast.error("🌡️ High temperature detected!");
-        else if (temp < 10) toast.error("❄️ Low temperature detected!");
+        //  Temperature
+        if (temp > 35) toast.error(" High temperature detected!");
+        else if (temp < 10) toast.error(" Low temperature detected!");
 
 
-        // 🌱 Soil Humidity
-        if (soil < 30) toast.error("🌱 Soil moisture too low!");
-        else if (soil > 70) toast.error("🌧️ Soil moisture too high!");
+        //  Soil Humidity
+        if (soil < 30) toast.error(" Soil moisture too low!");
+        else if (soil > 70) toast.error(" Soil moisture too high!");
 
-        // 💨 Air Humidity
-        if (air < 40) toast.error("💨 Air humidity too low!");
-        else if (air > 70) toast.error("💧 Air humidity too high!");
+        //  Air Humidity
+        if (air < 40) toast.error(" Air humidity too low!");
+        else if (air > 70) toast.error(" Air humidity too high!");
 
-        // 🔆 Light Intensity
-        if (light < 200) toast.error("🌑 Light intensity too low!");
-        else if (light > 800) toast.error("🌞 Light intensity too high!");
+        //  Light Intensity
+        if (light < 200) toast.error(" Light intensity too low!");
+        else if (light > 800) toast.error(" Light intensity too high!");
 
     }, [temperatureData, soilHumidityData, airHumidityData, lightIntensityData]);
-
-
-
-
-
 
 
     // Handle errors
@@ -177,10 +173,11 @@ const Dashboard = () => {
                         value={`${temperatureData?.at(-1)?.temperature ?? '--'}°C`}
                         icon="🌡️" />
                     <SensorCard label="Light Intensity"
-                        value={`${lightIntensityData?.at(-1)?.value ?? '--'} Lux`}
+                        value={`${lightIntensityData?.at(-1)?.lightIntensity ?? '--'} Lux`}
                         icon="☀️" />
-                    <SensorCard label="Air Humidity"
-                        value={`${airHumidityData?.apiData?.at(-1)?.airHumidity ?? '--'}%`}
+
+                     <SensorCard label="Air Humidity"
+                        value={`${airHumidityData?.at(-1)?.airHumidity ?? '--'}%`}
                         icon="💨" />
                     <SensorCard label="Soil Moisture"
                                 value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
