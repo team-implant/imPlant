@@ -12,9 +12,9 @@ def get_light_intensity_route():
         return jsonify({"error": str(e)}), 500
     
 @light_intensity_bp.route("/lightintensity/<int:lightIntesity_id>", methods=["GET"])
-def get_light_intensity_by_id(lightintensity_id):
+def get_light_intensity_by_id(light_id):
     try:
-        data = get_light_intensity_by_id(lightintensity_id)
+        data = get_light_intensity_by_id(light_id)
         if data:
             return jsonify(data), 200
         else:
