@@ -3,7 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import NotificationIcon from './NotificationIcon';
 import '../styles/TopBar.css';
 
-export default function TopBar({ notifications }) {
+
+interface TopBarProps {
+    notifications: Notification[];
+}
+
+export default function TopBar({ notifications }:TopBarProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation();
     const isDashboard = location.pathname === '/';
@@ -26,7 +31,7 @@ export default function TopBar({ notifications }) {
             </div>
 
             <div className="notification-area">
-                <NotificationIcon notifications={notifications} />
+                <NotificationIcon notifications={notifications as any } />
             </div>
         </div>
     );
