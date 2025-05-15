@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/WaterLevelIndicator.css'; // Adjust the path as necessary
+import '../../styles/WaterLevelIndicator.css'; // Make sure this path is correct
 
 interface WaterLevelIndicatorProps {
     level: number; // percentage from 0 to 100
@@ -12,15 +12,15 @@ const getColor = (level: number): string => {
 };
 
 const WaterLevelIndicator: React.FC<WaterLevelIndicatorProps> = ({ level }) => {
-    const barHeight = `${level}%`;
+    const barWidth = `${level}%`;
     const color = getColor(level);
 
     return (
         <div className="water-level-container">
-            <div className="water-bar">
+            <div className="water-bar-horizontal">
                 <div
-                    className="water-fill"
-                    style={{ height: barHeight, backgroundColor: color }}
+                    className="water-fill-horizontal"
+                    style={{ width: barWidth, backgroundColor: color }}
                 />
             </div>
             <div className="level-label">{level}%</div>

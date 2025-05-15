@@ -15,7 +15,7 @@ const fetchWaterPumpById = async (id: number): Promise<WaterPumpData> => {
   return response.data;
 };
 
-// React Query hook
+// React Query hookk ma 
 export const useWaterPumpData = (id: number): UseQueryResult<WaterPumpData, Error> => {
   return useQuery<WaterPumpData, Error>(
     ['waterPumpData', id],

@@ -20,7 +20,7 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
-    const [waterLevel, setWaterLevel] = useState(15); // Mock percentage
+    const [waterLevel, setWaterLevel] = useState(100); // Mock percentage
 
 
     // Hooks for fetching sensor data 
@@ -147,7 +147,6 @@ const Dashboard = () => {
                                 icon="🌱"/>
                     <SensorCard
                         label="Water Pump Level"
-                        value={`${waterLevel}%`}
                         icon="🚰"
                         className="water-pump-card">
                         <WaterLevelIndicator level={waterLevel} />
