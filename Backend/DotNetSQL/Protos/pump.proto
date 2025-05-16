@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "TcpGrpcBridgeServer.Protos";
+option csharp_namespace = "DotNetSQL.Protos";
 
 service GreenHouse {
   rpc TriggerAction (GreenHouseAction) returns (MessageReply);
