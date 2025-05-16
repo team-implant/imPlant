@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import '../styles/CustomizeThresholds.css';
 import TopBar from '../components/TopBar';
 
+interface Notification {
+    message: string;
+}
+
 export default function CustomizeThresholds() {
     const [thresholds, setThresholds] = useState({
         temperature: 25,
@@ -11,16 +15,16 @@ export default function CustomizeThresholds() {
         lightIntensity: 300
     });
 
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const handleSave = () => {
         // This will be a job for the backend guys , then perhaps just display a notification
-        setNotifications([...notifications, "Thresholds saved successfully"]);
+        setNotifications([...notifications, { message: "Thresholds saved successfully" }]);
     };
 
     return (
         <div className="customize-thresholds-page">
-            <TopBar notifications={notifications} />
+            <TopBar notifications={notifications as any} />
             <div className="customize-thresholds-content">
                 <h1>Customise Thresholds</h1>
                 <div className="thresholds-form">

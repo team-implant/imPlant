@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import '../styles/NotificationIcon.css';
 
-export default function NotificationIcon({ notifications }) {
+
+interface Notification {
+    id: string | number;
+    message: string;
+}
+
+interface Props {
+    notifications: Notification[];
+}
+
+export default function NotificationIcon({notifications}: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [hasNewNotifications, setHasNewNotifications] = useState(false);
 
@@ -11,7 +21,7 @@ export default function NotificationIcon({ notifications }) {
         }
     }, [notifications]);
 
-    const handleToggle = (e) => {
+    const handleToggle = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         setIsOpen(!isOpen);
@@ -24,12 +34,16 @@ export default function NotificationIcon({ notifications }) {
 
     return (
         <div className="notification-icon">
-            <button onClick={handleToggle} className={hasNewNotifications ? 'pulse' : ''}>
-                <span className="notification-count">{notifications.length}</span>
+            <button onClick={handleToggle}
+                    className={hasNewNotifications ? 'pulse' : ''}>
+                <span
+                    className="notification-count">{notifications.length}</span>
             </button>
             {isOpen && (
                 <div className="modal-overlay" onClick={handleToggle}>
-                    <div className={`modal-content ${isOpen ? 'modal-enter' : ''}`} onClick={(e) => e.stopPropagation()}>
+                    <div
+                        className={`modal-content ${isOpen ? 'modal-enter' : ''}`}
+                        onClick={(e) => e.stopPropagation()}>
                         <h2>Notifications</h2>
                         {notifications.map((notification) => (
                             <p key={notification.id}>{notification.message}</p>
