@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Login from './Pages/Login';
 import Dashboard from './Pages/DashBoard';
@@ -15,13 +15,13 @@ const queryClient= new QueryClient();
 function AnimatedRoutes() {
   const location = useLocation();
 
-
   return (
     <TransitionGroup>
       <CSSTransition key={location.pathname} classNames="fade" timeout={300}>
         <Routes location={location}>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<History />} />
           <Route path="/ml-insights" element={<MLInsights />} />
           <Route path="/customize-thresholds" element={<CustomizeThresholds />} />
@@ -34,11 +34,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-      <QueryClientProvider client={queryClient}>
-    <Router>
-      <AnimatedRoutes />
-    </Router>
-      </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AnimatedRoutes />
+      </Router>
+    </QueryClientProvider>
   );
 }
 

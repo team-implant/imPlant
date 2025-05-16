@@ -13,7 +13,7 @@ const Login: React.FC = () => {
         // login logic here later
         //
         localStorage.setItem('isLoggedIn', 'true');
-        navigate('/Dashboard');
+        navigate('/dashboard');
     };
 
     return (
