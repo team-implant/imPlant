@@ -24,15 +24,14 @@ namespace TcpGrpcBridgeServer.Protos {
     static MessageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChRQcm90b3MvbWVzc2FnZS5wcm90byIhCg5NZXNzYWdlUmVxdWVzdBIPCgdj",
-            "b250ZW50GAEgASgJIh4KDE1lc3NhZ2VSZXBseRIOCgZzdGF0dXMYASABKAky",
-            "OgoJVGNwQnJpZGdlEi0KC1NlbmRNZXNzYWdlEg8uTWVzc2FnZVJlcXVlc3Qa",
-            "DS5NZXNzYWdlUmVwbHlCHaoCGlRjcEdycGNCcmlkZ2VTZXJ2ZXIuUHJvdG9z",
-            "YgZwcm90bzM="));
+            "ChRQcm90b3MvbWVzc2FnZS5wcm90byIYCgVQbGFudBIPCgdwbGFudElkGAEg",
+            "ASgFIh4KDE1lc3NhZ2VSZXBseRIOCgZzdGF0dXMYASABKAkyMwoJV2F0ZXJQ",
+            "dW1wEiYKDVF1ZXVlV2F0ZXJpbmcSBi5QbGFudBoNLk1lc3NhZ2VSZXBseUId",
+            "qgIaVGNwR3JwY0JyaWRnZVNlcnZlci5Qcm90b3NiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::TcpGrpcBridgeServer.Protos.MessageRequest), global::TcpGrpcBridgeServer.Protos.MessageRequest.Parser, new[]{ "Content" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::TcpGrpcBridgeServer.Protos.Plant), global::TcpGrpcBridgeServer.Protos.Plant.Parser, new[]{ "PlantId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::TcpGrpcBridgeServer.Protos.MessageReply), global::TcpGrpcBridgeServer.Protos.MessageReply.Parser, new[]{ "Status" }, null, null, null, null)
           }));
     }
@@ -41,16 +40,16 @@ namespace TcpGrpcBridgeServer.Protos {
   }
   #region Messages
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class MessageRequest : pb::IMessage<MessageRequest>
+  public sealed partial class Plant : pb::IMessage<Plant>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<MessageRequest> _parser = new pb::MessageParser<MessageRequest>(() => new MessageRequest());
+    private static readonly pb::MessageParser<Plant> _parser = new pb::MessageParser<Plant>(() => new Plant());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<MessageRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<Plant> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -66,7 +65,7 @@ namespace TcpGrpcBridgeServer.Protos {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MessageRequest() {
+    public Plant() {
       OnConstruction();
     }
 
@@ -74,45 +73,45 @@ namespace TcpGrpcBridgeServer.Protos {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MessageRequest(MessageRequest other) : this() {
-      content_ = other.content_;
+    public Plant(Plant other) : this() {
+      plantId_ = other.plantId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MessageRequest Clone() {
-      return new MessageRequest(this);
+    public Plant Clone() {
+      return new Plant(this);
     }
 
-    /// <summary>Field number for the "content" field.</summary>
-    public const int ContentFieldNumber = 1;
-    private string content_ = "";
+    /// <summary>Field number for the "plantId" field.</summary>
+    public const int PlantIdFieldNumber = 1;
+    private int plantId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Content {
-      get { return content_; }
+    public int PlantId {
+      get { return plantId_; }
       set {
-        content_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        plantId_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as MessageRequest);
+      return Equals(other as Plant);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(MessageRequest other) {
+    public bool Equals(Plant other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Content != other.Content) return false;
+      if (PlantId != other.PlantId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -120,7 +119,7 @@ namespace TcpGrpcBridgeServer.Protos {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Content.Length != 0) hash ^= Content.GetHashCode();
+      if (PlantId != 0) hash ^= PlantId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -139,9 +138,9 @@ namespace TcpGrpcBridgeServer.Protos {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Content.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Content);
+      if (PlantId != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlantId);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -153,9 +152,9 @@ namespace TcpGrpcBridgeServer.Protos {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Content.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Content);
+      if (PlantId != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlantId);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -167,8 +166,8 @@ namespace TcpGrpcBridgeServer.Protos {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Content.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Content);
+      if (PlantId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlantId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -178,12 +177,12 @@ namespace TcpGrpcBridgeServer.Protos {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(MessageRequest other) {
+    public void MergeFrom(Plant other) {
       if (other == null) {
         return;
       }
-      if (other.Content.Length != 0) {
-        Content = other.Content;
+      if (other.PlantId != 0) {
+        PlantId = other.PlantId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -204,8 +203,8 @@ namespace TcpGrpcBridgeServer.Protos {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Content = input.ReadString();
+          case 8: {
+            PlantId = input.ReadInt32();
             break;
           }
         }
@@ -227,8 +226,8 @@ namespace TcpGrpcBridgeServer.Protos {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
-            Content = input.ReadString();
+          case 8: {
+            PlantId = input.ReadInt32();
             break;
           }
         }

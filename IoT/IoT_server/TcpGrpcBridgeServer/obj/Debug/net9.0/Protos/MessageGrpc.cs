@@ -8,9 +8,9 @@
 using grpc = global::Grpc.Core;
 
 namespace TcpGrpcBridgeServer.Protos {
-  public static partial class TcpBridge
+  public static partial class WaterPump
   {
-    static readonly string __ServiceName = "TcpBridge";
+    static readonly string __ServiceName = "WaterPump";
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static void __Helper_SerializeMessage(global::Google.Protobuf.IMessage message, grpc::SerializationContext context)
@@ -46,16 +46,16 @@ namespace TcpGrpcBridgeServer.Protos {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::TcpGrpcBridgeServer.Protos.MessageRequest> __Marshaller_MessageRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TcpGrpcBridgeServer.Protos.MessageRequest.Parser));
+    static readonly grpc::Marshaller<global::TcpGrpcBridgeServer.Protos.Plant> __Marshaller_Plant = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TcpGrpcBridgeServer.Protos.Plant.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::TcpGrpcBridgeServer.Protos.MessageReply> __Marshaller_MessageReply = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TcpGrpcBridgeServer.Protos.MessageReply.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::TcpGrpcBridgeServer.Protos.MessageRequest, global::TcpGrpcBridgeServer.Protos.MessageReply> __Method_SendMessage = new grpc::Method<global::TcpGrpcBridgeServer.Protos.MessageRequest, global::TcpGrpcBridgeServer.Protos.MessageReply>(
+    static readonly grpc::Method<global::TcpGrpcBridgeServer.Protos.Plant, global::TcpGrpcBridgeServer.Protos.MessageReply> __Method_QueueWatering = new grpc::Method<global::TcpGrpcBridgeServer.Protos.Plant, global::TcpGrpcBridgeServer.Protos.MessageReply>(
         grpc::MethodType.Unary,
         __ServiceName,
-        "SendMessage",
-        __Marshaller_MessageRequest,
+        "QueueWatering",
+        __Marshaller_Plant,
         __Marshaller_MessageReply);
 
     /// <summary>Service descriptor</summary>
@@ -64,12 +64,12 @@ namespace TcpGrpcBridgeServer.Protos {
       get { return global::TcpGrpcBridgeServer.Protos.MessageReflection.Descriptor.Services[0]; }
     }
 
-    /// <summary>Base class for server-side implementations of TcpBridge</summary>
-    [grpc::BindServiceMethod(typeof(TcpBridge), "BindService")]
-    public abstract partial class TcpBridgeBase
+    /// <summary>Base class for server-side implementations of WaterPump</summary>
+    [grpc::BindServiceMethod(typeof(WaterPump), "BindService")]
+    public abstract partial class WaterPumpBase
     {
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::TcpGrpcBridgeServer.Protos.MessageReply> SendMessage(global::TcpGrpcBridgeServer.Protos.MessageRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::TcpGrpcBridgeServer.Protos.MessageReply> QueueWatering(global::TcpGrpcBridgeServer.Protos.Plant request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -79,10 +79,10 @@ namespace TcpGrpcBridgeServer.Protos {
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public static grpc::ServerServiceDefinition BindService(TcpBridgeBase serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(WaterPumpBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_SendMessage, serviceImpl.SendMessage).Build();
+          .AddMethod(__Method_QueueWatering, serviceImpl.QueueWatering).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -90,9 +90,9 @@ namespace TcpGrpcBridgeServer.Protos {
     /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public static void BindService(grpc::ServiceBinderBase serviceBinder, TcpBridgeBase serviceImpl)
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, WaterPumpBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SendMessage, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::TcpGrpcBridgeServer.Protos.MessageRequest, global::TcpGrpcBridgeServer.Protos.MessageReply>(serviceImpl.SendMessage));
+      serviceBinder.AddMethod(__Method_QueueWatering, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::TcpGrpcBridgeServer.Protos.Plant, global::TcpGrpcBridgeServer.Protos.MessageReply>(serviceImpl.QueueWatering));
     }
 
   }

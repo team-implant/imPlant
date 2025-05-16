@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TcpGrpcBridgeServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b87664d1ee627bb10ebbb9b1ac092699a5352554")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+251c3180c7178738c69a5aef444a3e912946342e")]
 [assembly: System.Reflection.AssemblyProductAttribute("TcpGrpcBridgeServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TcpGrpcBridgeServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

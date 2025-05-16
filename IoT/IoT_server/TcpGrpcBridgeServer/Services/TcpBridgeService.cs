@@ -1,6 +1,7 @@
 using Grpc.Core;
 using TcpGrpcBridgeServer.Protos;
 using System.Text;
+using TcpGrpcBridgeServer.Network;
 
 namespace TcpGrpcBridgeServer.Services;
 
@@ -16,5 +17,6 @@ public class TcpBridgeService : WaterPump.WaterPumpBase
         return new MessageReply
         {
             Status = $"Message sent to TCP clients: {message}"
-        }; }
+        };
+    }
 }
