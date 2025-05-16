@@ -1,20 +1,22 @@
 using Grpc.Core;
 using TcpGrpcBridgeServer.Protos;
 using System.Text;
+using TcpGrpcBridgeServer.Network;
 
 namespace TcpGrpcBridgeServer.Services;
 
-public class TcpBridgeService : TcpBridge.TcpBridgeBase
+public class TcpBridgeService : WaterPump.WaterPumpBase
 {
-    public override async Task<MessageReply> SendMessage(MessageRequest request, ServerCallContext context)
+    public override async Task<MessageReply> QueueWatering(Plant request, ServerCallContext context)
     {
-        string message = request.Content;
+        int message = request.PlantId;
         byte[] data = Encoding.ASCII.GetBytes(message + "\n");
 
-        await TcpServer.SendMessageToTcpClientsAsync(message);
+        await TcpServer.SendMessageToTcpClientsAsync(message.ToString());
 
         return new MessageReply
         {
             Status = $"Message sent to TCP clients: {message}"
-        }; }
+        };
+    }
 }

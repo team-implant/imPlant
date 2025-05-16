@@ -33,3 +33,4 @@ void periodic_task_init_b(void (*user_function_b)(void), uint32_t interval_ms_b)
 
 void periodic_task_init_c(void (*user_function_c)(void), uint32_t interval_ms_c);
 
+void disable_timer_b();
