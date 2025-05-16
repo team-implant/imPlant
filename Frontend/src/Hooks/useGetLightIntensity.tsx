@@ -1,7 +1,8 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
+import { BASE_URL } from '../config';
 
-const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
+
 
 interface LightIntensity {
     id: number;

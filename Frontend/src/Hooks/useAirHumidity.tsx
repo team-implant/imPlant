@@ -1,7 +1,6 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
-
-const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
+import { BASE_URL } from '../config';
 
 interface AirHumidityData {
     id: number;
