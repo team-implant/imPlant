@@ -12,8 +12,6 @@ import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
 import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
 import toast from 'react-hot-toast'
 
-
-
 const Dashboard = () => {
     const [isOnline, setIsOnline] = useState(false);
     const [selectedPlant, setSelectedPlant] = useState({ id: 1, name: 'Tomato' });
@@ -22,8 +20,8 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
-    const [waterLevel, setWaterLevel] = useState(100); 
-
+    const [waterLevel, setWaterLevel] = useState(0); 
+    const [isAnchorVisible, setIsAnchorVisible] = useState(true);
 
     // Hooks for fetching sensor data
     const { data: airHumidityData } = useGetAirHumidity(selectedPlant.id);
@@ -45,9 +43,9 @@ const Dashboard = () => {
     } = useGetAllLightIntensities(selectedPlant.id);
 
     const { data: waterPumpData, 
-            loading: waterPumpLoading,
+            isLoading: waterPumpLoading,
              error: waterPumpError 
-            } = useWaterPumpData();
+            } = useWaterPumpData(1);
 
     // Fetch initial dashboard data
     useEffect(() => {
@@ -69,30 +67,26 @@ const Dashboard = () => {
             }
         };
         fetchInitialData();
-
-
     }, []);
-  // check if the greenhouse is online
+
     // check if the greenhouse is online
     useEffect(() => {
         const hasData = airHumidityData || temperatureData || soilHumidityData || lightIntensityData;
         setIsOnline(!!hasData);
     }, [airHumidityData, temperatureData, soilHumidityData, lightIntensityData]);
 
-     //alart system 
+    //alert system 
     useEffect(() => {
         const temp = temperatureData?.at(-1)?.temperature;
         const soil = soilHumidityData?.at(-1)?.soilHumidity;
         const air = airHumidityData?.at(-1)?.airHumidity;
         const light = lightIntensityData?.at(-1)?.lightIntensity;
 
-
         console.log("Temp:", temp, "Soil:", soil, "Air:", air, "Light:", light);
 
         //  Temperature
         if (temp > 35) toast.error(" High temperature detected!");
         else if (temp < 10) toast.error(" Low temperature detected!");
-
 
         //  Soil Humidity
         if (soil < 30) toast.error(" Soil moisture too low!");
@@ -108,7 +102,6 @@ const Dashboard = () => {
 
     }, [temperatureData, soilHumidityData, airHumidityData, lightIntensityData]);
 
-
     // Handle errors
     useEffect(() => {
         if (temperatureError) console.error('Temperature error:', temperatureError);
@@ -116,7 +109,6 @@ const Dashboard = () => {
         if (soilHumidityError) console.error('Soil error:', soilHumidityError);
         if (airHumidityData?.error) console.error('Air humidity error:', airHumidityData.error);
     }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]); 
-    
 
     // Irrigation control
     const handleIrrigationControl = async (activate) => {
@@ -133,13 +125,44 @@ const Dashboard = () => {
         setEnlargedChart(enlargedChart === title ? null : title);
     };
 
-    if (isLoading) return <div className="loading">Loading dashboard
-        data...</div>;
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition > 100) {
+                setIsAnchorVisible(false);
+            } else {
+                setIsAnchorVisible(true);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        if (waterPumpData) {
+            setWaterLevel(waterPumpData.level);
+        }
+    }, [waterPumpData]);
+
+    if (isLoading) return <div className="loading">Loading dashboard data...</div>;
     if (error) return <div className="error">{error}</div>;
 
     return (
         <div className="dashboard-container">
             <TopBar notifications={notifications} />
+            
+            {/* New Irrigation Control Section */}
+            <div className={`irrigation-control-anchor ${isAnchorVisible ? '' : 'fade-out'}`}>
+                <h2>Irrigation Control</h2>
+                <button onClick={() => handleIrrigationControl(true)}>
+                    Activate Irrigation
+                </button>
+                <button onClick={() => handleIrrigationControl(false)}>
+                    Deactivate Irrigation
+                </button>
+            </div>
+
             <header className="dashboard-header">
                 <h1>Welcome back</h1>
             </header>
@@ -202,11 +225,11 @@ const Dashboard = () => {
                     />
                     <ChartPanel
                         title={`Humidity (24h) - ${selectedPlant.name}`}
-                        data={airHumidityData?.chartData || {
-                            labels: [],
-                            values: []
-                        }}
-                        onClick={() => handleChartClick("Humidity (24h)")}
+                        data={airHumidityData ? {
+                            labels: airHumidityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                            values: airHumidityData.map(d => d.airHumidity)
+                        } : { labels: [], values: [] }}
+                        onClick={() => handleChartClick("Humidity (24h)" )}
                         isEnlarged={enlargedChart === "Humidity (24h)"}
                     />
                     <ChartPanel
@@ -215,24 +238,14 @@ const Dashboard = () => {
                             labels: soilHumidityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
                             values: soilHumidityData.map(d => d.soilHumidity)
                         } : { labels: [], values: [] }}
-                        onClick={() => handleChartClick("Soil Moisture (24h)")}
+                        onClick={() => handleChartClick("Soil Moisture (24h)" )}
                         isEnlarged={enlargedChart === "Soil Moisture (24h)"}
                     />
+
                 </div>
 
                 <InsightsPanel />
 
-                <div className="controls">
-                    <h2>Irrigation Control</h2>
-                    <button
-                        onClick={() => handleIrrigationControl(true)}>Activate
-                        Irrigation
-                    </button>
-                    <button
-                        onClick={() => handleIrrigationControl(false)}>Deactivate
-                        Irrigation
-                    </button>
-                </div>
             </div>
 
             {enlargedChart && (
@@ -249,7 +262,6 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-
 
         </div>
     );
@@ -289,7 +301,10 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
                 values: temperature.map(d => d.temperature)
             } : { labels: [], values: [] };
         case "Humidity (24h)":
-            return humidity?.chartData || { labels: [], values: [] };
+            return humidity ? {
+                labels: humidity.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                values: humidity.map(d => d.airHumidity)
+            } : { labels: [], values: [] };
         case "Soil Moisture (24h)":
             return soil ? {
                 labels: soil.map(d => new Date(d.timestamp).toLocaleTimeString()),
@@ -298,7 +313,7 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
         case "Light Intensity (24h)":
             return light ? {
                 labels: light.map(d => new Date(d.timestamp).toLocaleTimeString()),
-                values: light.map(d => d.value)
+                values: light.map(d => d.lightIntensity)
             } : { labels: [], values: [] };
         default:
             return { labels: [], values: [] };
