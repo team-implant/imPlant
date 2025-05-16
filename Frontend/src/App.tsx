@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import Login from './Pages/Login';
 import Dashboard from './Pages/DashBoard';
 import History from './Pages/History';
 import MLInsights from './Pages/MLInsights';
@@ -19,7 +20,8 @@ function AnimatedRoutes() {
     <TransitionGroup>
       <CSSTransition key={location.pathname} classNames="fade" timeout={300}>
         <Routes location={location}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/history" element={<History />} />
           <Route path="/ml-insights" element={<MLInsights />} />
           <Route path="/customize-thresholds" element={<CustomizeThresholds />} />

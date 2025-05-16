@@ -21,7 +21,7 @@ export default function TopBar({ notifications }:TopBarProps) {
                 </button>
                 {isMenuOpen && (
                     <div className="dropdown-menu">
-                        <Link to="/" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
+                        <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                         <Link to="/history" onClick={() => setIsMenuOpen(false)}>History</Link>
                         <Link to="/ml-insights" onClick={() => setIsMenuOpen(false)}>Insights</Link>
                         <Link to="/customize-thresholds" onClick={() => setIsMenuOpen(false)}>Customise Thresholds</Link>
