@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLogin } from '../api/auth';
 import '../styles/Login.css';
 
 const Login: React.FC = () => {
@@ -7,11 +8,22 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const navigate = useNavigate();
+    const loginMutation = useLogin();
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        localStorage.setItem('isLoggedIn', 'true');
-        navigate('/dashboard');
+        try {
+            const result = await loginMutation.mutateAsync({ email, password });
+            if (result.token) {
+                if (rememberMe) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                }
+                navigate('/dashboard');
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            // Handle login error (e.g., show error message to user)
+        }
     };
 
     return (
@@ -59,8 +71,15 @@ const Login: React.FC = () => {
                             Remember Me
                         </label>
                     </div>
-                    <button type="submit">Login</button>
+                    <button type="submit" disabled={loginMutation.isLoading}>
+                        {loginMutation.isLoading ? 'Logging in...' : 'Login'}
+                    </button>
                 </form>
+                {loginMutation.isError && (
+                    <div className="error-message">
+                        Login failed. Please check your credentials and try again.
+                    </div>
+                )}
                 <a href="#" className="forgot-password">Forgot password?</a>
             </div>
         </>
