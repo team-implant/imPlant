@@ -22,6 +22,8 @@ const Dashboard = () => {
     const [enlargedChart, setEnlargedChart] = useState(null);
     const [waterLevel, setWaterLevel] = useState(0); 
     const [isAnchorVisible, setIsAnchorVisible] = useState(true);
+    const [isIrrigationMenuOpen, setIsIrrigationMenuOpen] = useState(false);
+    const [isIrrigationActive, setIsIrrigationActive] = useState(false);
 
     // Hooks for fetching sensor data
     const { data: airHumidityData } = useGetAirHumidity(selectedPlant.id);
@@ -111,13 +113,21 @@ const Dashboard = () => {
     }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]); 
 
     // Irrigation control
-    const handleIrrigationControl = async (activate) => {
+    const handleIrrigationControl = async () => {
         try {
-            const res = await updateIrrigationStatus(activate);
+            const newState = !isIrrigationActive;
+            const res = await updateIrrigationStatus(newState);
             console.log(res.message);
+            setIsIrrigationActive(newState);
+            toast.success(`Irrigation ${newState ? 'activated' : 'deactivated'}`);
         } catch (err) {
             console.error('Irrigation error:', err);
+            toast.error('Failed to update irrigation status');
         }
+    };
+
+    const toggleIrrigationMenu = () => {
+        setIsIrrigationMenuOpen(!isIrrigationMenuOpen);
     };
 
     // Handle chart enlargement
@@ -150,17 +160,25 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
+            <div className="dashboard-background"></div>
             <TopBar notifications={notifications} />
             
-            {/* New Irrigation Control Section */}
-            <div className={`irrigation-control-anchor ${isAnchorVisible ? '' : 'fade-out'}`}>
-                <h2>Irrigation Control</h2>
-                <button onClick={() => handleIrrigationControl(true)}>
-                    Activate Irrigation
-                </button>
-                <button onClick={() => handleIrrigationControl(false)}>
-                    Deactivate Irrigation
-                </button>
+            {/* Irrigation Control Section */}
+
+
+            <div className="irrigation-control-fab">
+              <button 
+                className={`fab-button ${isIrrigationActive ? 'activated' : 'deactivated'}`} 
+                onClick={handleIrrigationControl}
+              >
+                💧
+              </button>
+              {isIrrigationMenuOpen && (
+                <div className="fab-menu open">
+                  <h2>Irrigation Control</h2>
+                  <button onClick={() => handleIrrigationControl()}>Toggle Irrigation</button>
+                </div>
+              )}
             </div>
 
             <header className="dashboard-header">
@@ -220,7 +238,7 @@ const Dashboard = () => {
                             labels: temperatureData.map(d => new Date(d.timestamp).toLocaleTimeString()),
                             values: temperatureData.map(d => d.temperature)
                         } : { labels: [], values: [] }}
-                        onClick={() => handleChartClick("Temperature (24h)")}
+                        onClick={() => handleChartClick("Temperature (24h)" )}
                         isEnlarged={enlargedChart === "Temperature (24h)"}
                     />
                     <ChartPanel
