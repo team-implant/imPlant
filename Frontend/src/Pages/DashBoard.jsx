@@ -4,13 +4,14 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import {useGetAirHumidity} from '../Hooks/useAirHumidity';
-import {useGetAllTemperatures} from "../Hooks/useGetTemperature";
-import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
-import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
+import { useGetAirHumidity } from '../Hooks/useAirHumidity';
+import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
+import { useGetSoilHumidity } from '../Hooks/useSoilHumidity';
+import { useGetAllLightIntensities } from '../Hooks/useGetLightIntensity';
 import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
 import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
 import toast from 'react-hot-toast'
+
 
 
 
@@ -22,8 +23,22 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enlargedChart, setEnlargedChart] = useState(null);
-    const [waterLevel, setWaterLevel] = useState(100); 
+    const [waterLevel, setWaterLevel] = useState(100);
 
+
+
+    // State for thresholds
+    const [thresholds, setThresholds] = useState({
+        temperature: { min: 20, max: 35 },
+        humidity: { min: 40, max: 70 },
+        soilMoisture: { min: 30, max: 70 },
+        lightIntensity: { min: 200, max: 800 }
+    });
+    // State for auto mode
+    const [isAutoMode, setIsAutoMode] = useState(() => {
+        const stored = localStorage.getItem('autoMode');
+        return stored ? JSON.parse(stored) : false; // default to true if nothing saved
+    });
 
     // Hooks for fetching sensor data
     const { data: airHumidityData } = useGetAirHumidity(selectedPlant.id);
@@ -34,8 +49,8 @@ const Dashboard = () => {
     } = useGetAllTemperatures(selectedPlant.id);
     const {
         data: soilHumidityData,
-         isLoading: soilHumidityLoading,
-        
+        isLoading: soilHumidityLoading,
+
         error: soilHumidityError
     } = useGetSoilHumidity(selectedPlant.id);
     const {
@@ -44,10 +59,12 @@ const Dashboard = () => {
         error: lightIntensityError
     } = useGetAllLightIntensities(selectedPlant.id);
 
-    const { data: waterPumpData, 
-            loading: waterPumpLoading,
-             error: waterPumpError 
-            } = useWaterPumpData();
+    const { data: waterPumpData,
+        loading: waterPumpLoading,
+        error: waterPumpError
+    } = useWaterPumpData();
+
+
 
     // Fetch initial dashboard data
     useEffect(() => {
@@ -72,41 +89,49 @@ const Dashboard = () => {
 
 
     }, []);
-  // check if the greenhouse is online
+
     // check if the greenhouse is online
     useEffect(() => {
         const hasData = airHumidityData || temperatureData || soilHumidityData || lightIntensityData;
         setIsOnline(!!hasData);
     }, [airHumidityData, temperatureData, soilHumidityData, lightIntensityData]);
 
-     //alart system 
+    //Thresholds
+    useEffect(() => {
+        const stored = localStorage.getItem('thresholds');
+        if (stored) {
+            setThresholds(JSON.parse(stored));
+        }
+    }, []);
+    useEffect(() => {
+        localStorage.setItem('autoMode', JSON.stringify(isAutoMode));
+    }, [isAutoMode]);
+
+
+
+    //alart system 
     useEffect(() => {
         const temp = temperatureData?.at(-1)?.temperature;
-        const soil = soilHumidityData?.at(-1)?.soilHumidity;
+        const rawSoil = soilHumidityData?.at(-1)?.soilHumidity;
+        const soil = rawSoil ? normalizeSoil(rawSoil) : undefined;
+
         const air = airHumidityData?.at(-1)?.airHumidity;
         const light = lightIntensityData?.at(-1)?.lightIntensity;
 
+        if (temp > thresholds.temperature.max) toast.error("High temperature detected!");
+        else if (temp < thresholds.temperature.min) toast.error("Low temperature detected!");
 
-        console.log("Temp:", temp, "Soil:", soil, "Air:", air, "Light:", light);
+        if (soil > thresholds.soilMoisture.max) toast.error("Soil moisture too high!");
+        else if (soil < thresholds.soilMoisture.min) toast.error("Soil moisture too low!");
 
-        //  Temperature
-        if (temp > 35) toast.error(" High temperature detected!");
-        else if (temp < 10) toast.error(" Low temperature detected!");
+        if (air > thresholds.humidity.max) toast.error("Air humidity too high!");
+        else if (air < thresholds.humidity.min) toast.error("Air humidity too low!");
+
+        if (light > thresholds.lightIntensity.max) toast.error("Light intensity too high!");
+        else if (light < thresholds.lightIntensity.min) toast.error("Light intensity too low!");
+    }, [temperatureData, soilHumidityData, airHumidityData, lightIntensityData, thresholds]);
 
 
-        //  Soil Humidity
-        if (soil < 30) toast.error(" Soil moisture too low!");
-        else if (soil > 70) toast.error(" Soil moisture too high!");
-
-        //  Air Humidity
-        if (air < 40) toast.error(" Air humidity too low!");
-        else if (air > 70) toast.error(" Air humidity too high!");
-
-        //  Light Intensity
-        if (light < 200) toast.error(" Light intensity too low!");
-        else if (light > 800) toast.error(" Light intensity too high!");
-
-    }, [temperatureData, soilHumidityData, airHumidityData, lightIntensityData]);
 
 
     // Handle errors
@@ -115,17 +140,40 @@ const Dashboard = () => {
         if (lightIntensityError) console.error('Light error:', lightIntensityError);
         if (soilHumidityError) console.error('Soil error:', soilHumidityError);
         if (airHumidityData?.error) console.error('Air humidity error:', airHumidityData.error);
-    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]); 
-    
+    }, [temperatureError, lightIntensityError, soilHumidityError, airHumidityData]);
+
 
     // Irrigation control
     const handleIrrigationControl = async (activate) => {
         try {
             const res = await updateIrrigationStatus(activate);
-            console.log(res.message);
+            toast.success(res.message);
         } catch (err) {
             console.error('Irrigation error:', err);
+            toast.error('Failed to update irrigation status');
         }
+    };
+    // Auto irrigation logic (ONLY if Auto Mode is ON)
+    useEffect(() => {
+        if (!isAutoMode) return;
+
+        const rawSoil = soilHumidityData?.at(-1)?.soilHumidity;
+        const soil = rawSoil ? normalizeSoil(rawSoil) : undefined;
+
+        if (soil === undefined) return;
+
+        if (soil < thresholds.soilMoisture.min) {
+            handleIrrigationControl(true); // turn ON
+        } else if (soil > thresholds.soilMoisture.max) {
+            handleIrrigationControl(false); // turn OFF
+        }
+    }, [soilHumidityData, thresholds, isAutoMode]);
+
+
+    //soil normalization
+    const normalizeSoil = (rawValue) => {
+        const percent = Math.round((1 - rawValue / 1023) * 100);
+        return Math.min(Math.max(percent, 0), 100); // clamp between 0–100%
     };
 
     // Handle chart enlargement
@@ -152,6 +200,7 @@ const Dashboard = () => {
                     </span>
                 </div>
 
+
                 <div className="plant-type">
                     <label>Plant Type: </label>
                     <select value={selectedPlant.id} onChange={(e) => {
@@ -173,12 +222,18 @@ const Dashboard = () => {
                         value={`${lightIntensityData?.at(-1)?.lightIntensity ?? '--'} Lux`}
                         icon="☀️" />
 
-                     <SensorCard label="Air Humidity"
+                    <SensorCard label="Air Humidity"
                         value={`${airHumidityData?.at(-1)?.airHumidity ?? '--'}%`}
                         icon="💨" />
+
                     <SensorCard label="Soil Moisture"
-                                value={`${soilHumidityData?.at(-1)?.soilHumidity ?? '--'}%`}
-                                icon="🌱"/>
+                        value={
+                            soilHumidityData?.at(-1)
+                                ? `${normalizeSoil(soilHumidityData.at(-1).soilHumidity)}%`
+                                : '--'
+                        }
+                        icon="🌱" />
+
                     <SensorCard
                         label="Water Pump Level"
                         icon="🚰"
@@ -188,7 +243,7 @@ const Dashboard = () => {
 
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}></div> 
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}></div>
 
                 <div className="charts">
                     <ChartPanel
@@ -222,16 +277,32 @@ const Dashboard = () => {
 
                 <InsightsPanel />
 
+
                 <div className="controls">
+
                     <h2>Irrigation Control</h2>
+                    <div className="irrigation-mode-toggle">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={isAutoMode}
+                                onChange={(e) => setIsAutoMode(e.target.checked)}
+                            />
+                            {isAutoMode ? 'Auto Mode' : 'Manual Mode'}
+                        </label>
+                    </div>
+
                     <button
-                        onClick={() => handleIrrigationControl(true)}>Activate
-                        Irrigation
+                        disabled={isAutoMode}
+                        onClick={() => handleIrrigationControl(true)}>
+                        Activate Irrigation
                     </button>
                     <button
-                        onClick={() => handleIrrigationControl(false)}>Deactivate
-                        Irrigation
+                        disabled={isAutoMode}
+                        onClick={() => handleIrrigationControl(false)}>
+                        Deactivate Irrigation
                     </button>
+
                 </div>
             </div>
 
@@ -274,12 +345,21 @@ const fetchNotifications = async () => {
 };
 
 const updateIrrigationStatus = async (status) => {
-    // Replace with actual API call
-    return {
-        success: true,
-        message: `Irrigation ${status ? 'activated' : 'deactivated'}`
-    };
+    const res = await fetch('/api/irrigation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isOn: status }) // or { status }
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to update irrigation status');
+    }
+
+    return await res.json(); // expects { success: true, message: "..." }
 };
+
 
 const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
     switch (title) {
@@ -303,6 +383,6 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
         default:
             return { labels: [], values: [] };
     }
-}; 
- 
+};
+
 export default Dashboard;
