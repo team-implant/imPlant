@@ -18,6 +18,7 @@ const Login: React.FC = () => {
                 if (rememberMe) {
                     localStorage.setItem('isLoggedIn', 'true');
                 }
+                localStorage.setItem('userRole', result.user.role);
                 navigate('/dashboard');
             }
         } catch (error) {
