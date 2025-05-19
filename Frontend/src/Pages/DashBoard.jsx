@@ -345,8 +345,15 @@ const Dashboard = () => {
                         isEnlarged={enlargedChart === "Soil Moisture (24h)"}
                     />
 
-
-
+                    <ChartPanel
+                        title={`Light Intensity (24h) - ${selectedPlant.name}`}
+                        data={lightIntensityData ? {
+                            labels: lightIntensityData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                            values: lightIntensityData.map(d => d.lightIntensity ?? d.light ?? d.value) // depending on your API response
+                        } : { labels: [], values: [] }}
+                        onClick={() => handleChartClick("Light Intensity (24h)")}
+                        isEnlarged={enlargedChart === "Light Intensity (24h)"}
+                    />
                 </div>
 
                 <InsightsPanel />
