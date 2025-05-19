@@ -28,7 +28,7 @@ h1 {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .threshold-input {
@@ -62,4 +62,16 @@ h1 {
 
 .save-button:hover {
     background-color: #2980b9;
+}
+
+.inline-inputs {
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.threshold-input.block-label label {
+    display: block;
+    width: auto;
+    margin-bottom: 5px;
 }
