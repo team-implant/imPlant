@@ -4,3 +4,7 @@ pyodbc
 pydantic
 azure-identity
 config
+matplotlib
+numpy
+pandas
+scikit-learn

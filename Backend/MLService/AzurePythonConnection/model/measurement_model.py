@@ -1,5 +1,4 @@
 from pydantic import BaseModel # type: ignore
-from typing import Optional
 from datetime import datetime
 
 class Measurement(BaseModel):

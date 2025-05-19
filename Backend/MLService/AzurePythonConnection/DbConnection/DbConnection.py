@@ -1,6 +1,5 @@
-import pyodbc
-import struct
-from azure.identity import DefaultAzureCredential
+import pyodbc  # type: ignore
+from azure.identity import DefaultAzureCredential # type: ignore
 from AzurePythonConnection.config.settings import CONNECTION_STRING 
 
 def get_conn():
