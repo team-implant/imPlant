@@ -33,7 +33,8 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' followed by a space and your JWT token."
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -106,6 +107,7 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+// ✅ Swagger visible, but protected endpoints require token to call
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -119,6 +121,7 @@ app.UseCors("AllowFrontend");
 
 app.MapControllers();
 
+// Optional: redirect /swagger to index.html
 app.MapGet("/swagger", context =>
 {
     context.Response.Redirect("/swagger/index.html");
