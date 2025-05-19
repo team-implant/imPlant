@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "TcpGrpcBridgeServer.Protos";
+
+service WaterPump {
+  rpc QueueWatering (Plant) returns (MessageReply);
+}
+
+message Plant {
+  int32 plantId = 1;
+}
+
+message MessageReply {
+  string status = 1;
+}

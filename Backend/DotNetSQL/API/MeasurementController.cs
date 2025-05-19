@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.Entities;
 using DotNetSQL.Services;
+using DotNetSQL.DTOs;
+using DotNetSQL.IServices;
 
 namespace DotNetSQL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/measurements")]
     public class MeasurementController : ControllerBase
     {
         private readonly IMeasurementService _temperatureService;
@@ -39,6 +41,6 @@ namespace DotNetSQL.Controllers
             }
 
             return temperature;
-        }
+        }     
     }
 }

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "DotNetSQL.Protos";
+
+service GreenHouse {
+  rpc TriggerAction (GreenHouseAction) returns (MessageReply);
+}
+
+message GreenHouseAction {
+  int32 actionId = 1;
+}
+
+message MessageReply {
+  string status = 1;
+}
