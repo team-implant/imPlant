@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from Backend.MLService.ML.models.LightIntensity_models.lightIntensity_linearRegression import run_light_intensity_regression
 from ML.data.lightIntensity_data import fetch_light_intensity_data
 from ML.utills.jsonify import jsonify_predictions
 
