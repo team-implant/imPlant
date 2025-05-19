@@ -37,6 +37,8 @@
     "react-toastify": "^11.0.5",
     "react-transition-group": "^4.4.5",
     "tanstack": "^1.0.0"
+    
+
   },
   "jest": {
     "testEnvironment": "jsdom",

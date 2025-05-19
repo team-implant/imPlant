@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';

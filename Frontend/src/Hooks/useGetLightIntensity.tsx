@@ -1,5 +1,29 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import axios from 'axios';
+import axios from 'axios'; 
+import { BASE_URL } from '../config';
+
+
+
+interface LightIntensity {
+    id: number;
+    value: number;
+    timestamp: string;
+    // Add other fields as necessary
+}
+
+const getAllLightIntensities = async (): Promise<LightIntensity[]> => {
+    const response = await axios.get<LightIntensity[]>(`${BASE_URL}/light-intensity`);
+    return response.data;
+};
+
+export const useGetAllLightIntensities = (): UseQueryResult<LightIntensity[], Error> => {
+    return useQuery<LightIntensity[], Error>(
+        ['getAllLightIntensities'],
+        getAllLightIntensities
+    );
+};
+
+
 
 const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
