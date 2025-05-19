@@ -114,7 +114,7 @@ const Dashboard = () => {
 
 
 
-    //alart system 
+    //alert system
     useEffect(() => {
         const temp = temperatureData?.at(-1)?.temperature;
         const rawSoil = soilHumidityData?.at(-1)?.soilHumidity;

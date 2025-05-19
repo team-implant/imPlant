@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import '../styles/ThirdPartyControl.css';
 import TopBar from '../components/TopBar';
 
+//NOTE : this page will end up being deleted
+
 export default function ThirdPartyControl() {
     const [thirdPartyDevice, setThirdPartyDevice] = useState(false);
     const [notifications, setNotifications] = useState([]);
