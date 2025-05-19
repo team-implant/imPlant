@@ -12,6 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     
+    # Add step to force image update by disabling caching
+    - name: Generate random string to force build
+      id: random
+      run: echo "CACHE_BUST=$(date +%s%N | sha256sum | head -c 8)" >> $GITHUB_ENV
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
@@ -30,7 +35,8 @@ jobs:
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
         platforms: linux/amd64
-    
+        no-cache: true  # Disable caching to force rebuilding
+        
     # Build ARM64 backend using a different approach
     - name: Create ARM Dockerfile
       run: |
@@ -61,6 +67,7 @@ jobs:
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
         platforms: linux/arm64
+        no-cache: true  # Disable caching to force rebuilding
     
     - name: Build and push MLService
       uses: docker/build-push-action@v4
@@ -68,6 +75,7 @@ jobs:
         context: ./Backend/MLService
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-mlservice:latest
+        no-cache: true  # Disable caching to force rebuilding
         
     - name: Build and push Frontend
       uses: docker/build-push-action@v4
@@ -75,3 +83,4 @@ jobs:
         context: ./Frontend
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-frontend:latest
+        no-cache: true  # Disable caching to force rebuilding
