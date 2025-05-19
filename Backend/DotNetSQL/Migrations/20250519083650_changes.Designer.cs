@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250514122815_FinalTable")]
-    partial class FinalTable
+    [Migration("20250519083650_changes")]
+    partial class changes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,10 @@ namespace DotNetSQL.Migrations
                         .HasColumnType("float")
                         .HasColumnName("Light");
 
+                    b.Property<int?>("PlantId")
+                        .HasColumnType("int")
+                        .HasColumnName("plant_id");
+
                     b.Property<double>("SoilHumidity")
                         .HasColumnType("float");
 
@@ -52,10 +56,6 @@ namespace DotNetSQL.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("PlantId")
-                        .HasColumnType("int")
-                        .HasColumnName("plant_id");
 
                     b.HasKey("Id");
 

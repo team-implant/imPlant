@@ -27,6 +27,14 @@ namespace DotNetSQL.EFC
             modelBuilder.Entity<MeasurementData>()
                 .Property(m => m.TankFillLevel)
                 .HasColumnName("tank_fill_level");
+            modelBuilder.Entity<MeasurementData>()
+                .Property(m => m.PlantId)
+                .HasColumnName("plant_id");
+
+            modelBuilder.Entity<MeasurementData>()
+                .HasOne(m => m.Plant)
+                .WithMany()
+                .HasForeignKey(m => m.PlantId);
 
             // Add min/max columns to WaterPump
             modelBuilder.Entity<WaterPump>()

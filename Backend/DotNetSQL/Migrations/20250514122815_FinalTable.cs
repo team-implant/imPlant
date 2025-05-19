@@ -88,15 +88,15 @@ namespace DotNetSQL.Migrations
                     Light = table.Column<double>(type: "float", nullable: false),
                     tank_fill_level = table.Column<double>(type: "float", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SoilHumidityDetailsId = table.Column<int>(type: "int", nullable: true)
+                    plant_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MeasurementData", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MeasurementData_Soil_Humidity_Thresholds_SoilHumidityDetailsId",
-                        column: x => x.SoilHumidityDetailsId,
-                        principalTable: "Soil_Humidity_Thresholds",
+                        name: "FK_MeasurementData_Plants_plant_id",
+                        column: x => x.plant_id,
+                        principalTable: "Plants",
                         principalColumn: "Id");
                 });
 
@@ -126,9 +126,9 @@ namespace DotNetSQL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MeasurementData_SoilHumidityDetailsId",
+                name: "IX_MeasurementData_plant_id",
                 table: "MeasurementData",
-                column: "SoilHumidityDetailsId");
+                column: "plant_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Soil_Humidity_Thresholds_plant_id",
