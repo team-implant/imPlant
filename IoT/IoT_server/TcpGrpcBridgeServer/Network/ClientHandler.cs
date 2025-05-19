@@ -1,5 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
+using TcpGrpcBridgeServer.Models;
 using TcpGrpcBridgeServer.Services;
 
 namespace TcpGrpcBridgeServer.Network
@@ -23,6 +24,12 @@ namespace TcpGrpcBridgeServer.Network
 
                     var sensorDataList = SensorDataParser.ParseSensorData(received);
                     await DatabaseService.InsertSensorDataAsync(sensorDataList);
+
+                    var measurements = new List<SoilMeasurement>
+                    {
+                        new() { PlantId = 1, MeasureId = 1, Value = sensorDataList[0].SoilHumidity },
+                        new() { PlantId = 2, MeasureId = 2, Value = sensorDataList[1].SoilHumidity }
+                    };
                 }
             }
             catch (Exception ex)

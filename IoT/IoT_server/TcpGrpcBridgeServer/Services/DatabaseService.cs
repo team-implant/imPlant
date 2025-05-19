@@ -39,5 +39,28 @@ namespace TcpGrpcBridgeServer.Services
 
             Console.WriteLine("Inserted sensor data.");
         }
+
+        public static async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
+        {
+            await using var connection = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+
+            foreach (var measurement in measurements)
+            {
+                var query = @"INSERT INTO Soil_Measurements 
+                            (plant_id, measure_id, value) 
+                            VALUES (@PlantId, @MeasureId, @Value)";
+
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@PlantId", measurement.PlantId);
+                command.Parameters.AddWithValue("@MeasureId", measurement.MeasureId);
+                command.Parameters.AddWithValue("@Value", measurement.Value);
+
+                await command.ExecuteNonQueryAsync();
+            }
+
+            Console.WriteLine("Inserted soil measurements.");
+        }
+
     }
 }
