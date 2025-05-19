@@ -53,13 +53,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
 builder.Services.AddScoped<ILightIntensityService, LightIntensityService>();
 builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 

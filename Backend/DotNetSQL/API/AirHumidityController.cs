@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.DTOs;
 using DotNetSQL.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetSQL.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/air-humidity")]
     public class AirHumidityController : ControllerBase
