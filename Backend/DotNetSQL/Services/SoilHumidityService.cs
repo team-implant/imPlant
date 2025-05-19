@@ -37,11 +37,12 @@ public class SoilHumidityService : ISoilHumidityService
 
     public async Task<IEnumerable<SoilHumidityDto>> GetSoilHumidityAsync()
     {
-        return await _context.MeasurementData
+        return await _context.SoilHumidities
             .Select(m => new SoilHumidityDto
             {
                 Id = m.Id,
-                SoilHumidity = m.SoilHumidity,
+                PlantId = m.PlantId,
+                MinValue = m.MinValue,
                 Timestamp = m.Timestamp
             })
             .ToListAsync();
@@ -49,12 +50,13 @@ public class SoilHumidityService : ISoilHumidityService
 
     public async Task<SoilHumidityDto?> GetSoilHumidityByIdAsync(int id)
     {
-        return await _context.MeasurementData
+        return await _context.SoilHumidities
             .Where(m => m.Id == id)
             .Select(m => new SoilHumidityDto
             {
                 Id = m.Id,
-                SoilHumidity = m.SoilHumidity,
+                PlantId = m.PlantId,
+                MinValue = m.MinValue,
                 Timestamp = m.Timestamp
             })
             .FirstOrDefaultAsync();
