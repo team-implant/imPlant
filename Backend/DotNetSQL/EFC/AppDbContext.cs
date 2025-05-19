@@ -15,6 +15,7 @@ namespace DotNetSQL.EFC
         public DbSet<SoilMeasurement> SoilMeasurements { get; set; }
         public DbSet<ServoCalibration> ServoCalibrations { get; set; }
         public DbSet<Plant> Plants { get; set; } // new
+        public DbSet<PredictionResult> PredictionResults { get; set; } // new
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -89,6 +90,18 @@ namespace DotNetSQL.EFC
                 .ToTable("Plants")
                 .Property(p => p.Name)
                 .HasColumnName("name");
+
+            // PredictionResult table mapping
+            modelBuilder.Entity<PredictionResult>()
+                .ToTable("PredictionResults")
+                .Property(p => p.IrrigationRecommendation)
+                .HasColumnName("irrigation_recommendation");
+            modelBuilder.Entity<PredictionResult>()
+                .Property(p => p.PlantHealth)
+                .HasColumnName("plant_health");
+            modelBuilder.Entity<PredictionResult>()
+                .Property(p => p.AirHumidity)
+                .HasColumnName("air_humidity");
 
             // SoilMeasurement foreign keys
             modelBuilder.Entity<SoilMeasurement>()

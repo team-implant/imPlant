@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetSQL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250519083650_changes")]
-    partial class changes
+    [Migration("20250519122238_AddPredictionResultsTable")]
+    partial class AddPredictionResultsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,45 @@ namespace DotNetSQL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Plants", (string)null);
+                });
+
+            modelBuilder.Entity("DotNetSQL.Entities.PredictionResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("AirHumidity")
+                        .HasColumnType("float")
+                        .HasColumnName("air_humidity");
+
+                    b.Property<string>("IrrigationRecommendation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("irrigation_recommendation");
+
+                    b.Property<double>("LightIntensity")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PlantHealth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("plant_health");
+
+                    b.Property<double>("SoilHumidity")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Temperature")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PredictionResults", (string)null);
                 });
 
             modelBuilder.Entity("DotNetSQL.Entities.ServoCalibration", b =>
