@@ -3,6 +3,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from ML.data.lightIntensity_data import fetch_light_intensity_data
+from ML.utills.jsonify import jsonify_predictions
 
 def run_light_intensity_regression():
     df = fetch_light_intensity_data()
@@ -20,3 +21,16 @@ def run_light_intensity_regression():
     print("MSE on test data is", mean_squared_error(y_test, y_pred))
 
     return model, X_test, y_test, y_pred, df
+
+
+def get_light_intensity_predictions_json():
+    model, X_test, y_test, y_pred, df = run_light_intensity_regression()
+    return jsonify_predictions(
+        df, 
+        X_test.index, 
+        y_pred, 
+        id_col="Id", 
+        value_col="predictedLightIntensity", 
+        timestamp_col="Timestamp", 
+        output_value_name="predictedLightIntensity"
+    )
