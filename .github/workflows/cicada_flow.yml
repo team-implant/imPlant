@@ -28,7 +28,7 @@ jobs:
       with:
         context: ./Backend/DotNetSQL
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest-amd64
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
         platforms: linux/amd64
     
     # Build ARM64 backend using a different approach
@@ -59,17 +59,8 @@ jobs:
         context: ./Backend/DotNetSQL
         file: ./Backend/DotNetSQL/Dockerfile.arm64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest-arm64
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
         platforms: linux/arm64
-    
-    # Create a manifest to unite the two architectures
-    - name: Create and push multi-arch manifest
-      if: ${{ github.event_name != 'pull_request' }}
-      run: |
-        docker manifest create ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest \
-          ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest-amd64 \
-          ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest-arm64
-        docker manifest push ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
     
     - name: Build and push MLService
       uses: docker/build-push-action@v4
