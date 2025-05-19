@@ -1,9 +1,6 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-
-
-
 const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface SoilHumidityData {
@@ -13,9 +10,18 @@ interface SoilHumidityData {
 }
 
 const getAllSoilHumidity = async (): Promise<SoilHumidityData[]> => {
-  const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soil-humidity`);
-  return response.data;
+  const response = await axios.get(`${BASE_URL}/measurements`);
+  const allMeasurements = response.data;
+
+  const soilHumidityData: SoilHumidityData[] = allMeasurements.map((m: any) => ({
+    id: m.id,
+    soilHumidity: m.soilHumidity,
+    timestamp: m.timestamp,
+  }));
+
+  return soilHumidityData;
 };
+
 
 export const useGetAllSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
   return useQuery(['getAllSoilHumidity'], getAllSoilHumidity);
