@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-const BASE_URL = 'http://sep4-implant.azurewebsites.net/api/Temperature';
+const BASE_URL = 'http://sep4-implant.azurewebsites.net/api';
 
 interface TemperatureData {
     id: number;
