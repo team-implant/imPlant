@@ -4,22 +4,18 @@ import axios from 'axios';
 const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface SoilHumidityData {
-    id: number;
-    soilHumidity: number;
-    timestamp: string;
-    // Add other fields as necessary
+  id: number;
+  soilHumidity: number;
+  timestamp: string;
 }
 
-const getSoilHumidity = async (): Promise<SoilHumidityData[]> => {
-    const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soil-humidity`);
-    return response.data;
+const getAllSoilHumidity = async (): Promise<SoilHumidityData[]> => {
+  const response = await axios.get<SoilHumidityData[]>(`${BASE_URL}/soil-humidity`);
+  return response.data;
 };
 
-export const useGetSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
-    return useQuery<SoilHumidityData[], Error>(
-        ['getSoilHumidity'],
-        getSoilHumidity
-    );
+export const useGetAllSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
+  return useQuery(['getAllSoilHumidity'], getAllSoilHumidity);
 };
 
 const getSoilHumidityById = async (id: number): Promise<SoilHumidityData> => {

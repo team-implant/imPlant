@@ -4,33 +4,20 @@ import axios from 'axios';
 const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface AirHumidityData {
-    id: number;
-    airHumidity: number;
-    timestamp: string;
-    // Add other fields as necessary
+  id: number;
+  airHumidity: number;
+  timestamp: string;
 }
 
-interface AirHumidityChartData {
-    labels: string[];
-    values: number[];
-}
-
-interface AirHumidityResponse {
-    apiData: AirHumidityData[];
-    chartData: AirHumidityChartData;
-}
-
-const getAirHumidity = async (): Promise<AirHumidityData[]> => {
-    const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/air-humidity`);
-    return response.data;
+const getAllAirHumidity = async (): Promise<AirHumidityData[]> => {
+  const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/air-humidity`);
+  return response.data;
 };
 
-export const useGetAirHumidity = (): UseQueryResult<AirHumidityData[], Error> => {
-    return useQuery<AirHumidityData[], Error>(
-        ['getAirHumidity'],
-        getAirHumidity
-    );
+export const useGetAllAirHumidity = (): UseQueryResult<AirHumidityData[], Error> => {
+  return useQuery(['getAllAirHumidity'], getAllAirHumidity);
 };
+
 
 const getAirHumidityById = async (id: number): Promise<AirHumidityData> => {
     const response = await axios.get<AirHumidityData>(`${BASE_URL}/air-humidity/${id}`);

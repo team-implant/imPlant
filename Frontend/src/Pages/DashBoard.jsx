@@ -4,10 +4,10 @@ import ChartPanel from '../components/ChartPanel';
 import InsightsPanel from '../components/InsightsPanel';
 import TopBar from '../components/TopBar';
 import '../styles/dashboard.css';
-import {useGetAirHumidity} from '../Hooks/useAirHumidity';
+import {useGetAllAirHumidity} from '../Hooks/useAirHumidity';
 import {useGetAllTemperatures} from "../Hooks/useGetTemperature";
-import {useGetSoilHumidity} from '../Hooks/useSoilHumidity';
-import {useGetAllLightIntensities} from '../Hooks/useGetLightIntensity';
+import {useGetAllSoilHumidity} from '../Hooks/useSoilHumidity';
+import {useGetAllLightIntensity} from '../Hooks/useGetLightIntensity';
 import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
 import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
 import toast from 'react-hot-toast'
@@ -26,7 +26,7 @@ const Dashboard = () => {
 
 
     // Hooks for fetching sensor data
-    const { data: airHumidityData } = useGetAirHumidity(selectedPlant.id);
+    const { data: airHumidityData } = useGetAllAirHumidity(selectedPlant.id);
     const {
         data: temperatureData,
         loading: temperatureLoading,
@@ -37,12 +37,12 @@ const Dashboard = () => {
          isLoading: soilHumidityLoading,
         
         error: soilHumidityError
-    } = useGetSoilHumidity(selectedPlant.id);
+    } = useGetAllSoilHumidity(selectedPlant.id);
     const {
         data: lightIntensityData,
         loading: lightIntensityLoading,
         error: lightIntensityError
-    } = useGetAllLightIntensities(selectedPlant.id);
+    } = useGetAllLightIntensity(selectedPlant.id);
 
     const { data: waterPumpData, 
             loading: waterPumpLoading,
