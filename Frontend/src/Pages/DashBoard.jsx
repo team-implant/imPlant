@@ -17,7 +17,7 @@ import toast from 'react-hot-toast'
 
 const Dashboard = () => {
     const [isOnline, setIsOnline] = useState(false);
-    const [selectedPlant, setSelectedPlant] = useState({ id: 1, name: 'Tomato' });
+    const [selectedPlant, setSelectedPlant] = useState({ id: 1, name: 'Bell Pepper' });
     const [plantTypes, setPlantTypes] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -330,9 +330,8 @@ const Dashboard = () => {
 const fetchPlantTypes = async () => {
     // Replace with actual API call
     return [
-        { id: 1, name: 'Tomato' },
-        { id: 2, name: 'Bell Pepper' },
-        { id: 3, name: 'Chestnut' },
+        { id: 1, name: 'Bell Pepper' },
+        { id: 2, name: 'Chestnut' },
     ];
 };
 
