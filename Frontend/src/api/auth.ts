@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
-const API_URL = 'https://your-api-url.com'; // check with backend guys for actual api endpoint
+const API_URL = 'https://sep4-implant.azurewebsites.net/api\'';
 
 const api = axios.create({
     baseURL: API_URL,
