@@ -14,7 +14,6 @@ import toast from 'react-hot-toast';
 
 
 
-
 const Dashboard = () => {
     const [isOnline, setIsOnline] = useState(false);
     const [selectedPlant, setSelectedPlant] = useState({ id: 1, name: 'Bell Pepper' });
@@ -53,7 +52,6 @@ const Dashboard = () => {
     const {
         data: soilHumidityData,
         isLoading: soilHumidityLoading,
-
         error: soilHumidityError
     } = useGetAllSoilHumidity(selectedPlant.id);
     const {
