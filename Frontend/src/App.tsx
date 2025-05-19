@@ -65,7 +65,6 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-
     <QueryClientProvider client={queryClient}>
       <Router>
         <AnimatedRoutes />
@@ -76,13 +75,4 @@ function App() {
 
 export default App;
 
-      <QueryClientProvider client={queryClient}>
-    <Router>
-      <AnimatedRoutes />
-    </Router>
-      </QueryClientProvider>
-  );
-}
-
-export default App;
 
