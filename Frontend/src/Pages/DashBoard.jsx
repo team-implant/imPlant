@@ -453,7 +453,9 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
             } : { labels: [], values: [] };
         case "Humidity (24h)":
 
-            return humidity?.chartData || { labels: [], values: [] };
+            return humidity? { labels: humidity.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                values: humidity.map(d => d.airHumidity)
+            } : { labels: [], values: []  };
 
         case "Soil Moisture (24h)":
             return soil ? {
@@ -464,7 +466,7 @@ const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
             return light ? {
                 labels: light.map(d => new Date(d.timestamp).toLocaleTimeString()),
 
-                values: light.map(d => d.value)
+                values: light.map(d => d.lightIntensity)
 
             } : { labels: [], values: [] };
         default:

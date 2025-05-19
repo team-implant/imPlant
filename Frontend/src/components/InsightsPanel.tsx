@@ -35,6 +35,13 @@ export default function InsightsPanel() {
         }
     }, [isLoading]);
 
+    useEffect(() => {
+        console.log('Temperature data:', temperatureData);
+        console.log('Soil humidity data:', soilHumidityData);
+        console.log('Light intensity data:', lightIntensityData);
+        console.log('Water pump data:', waterPumpData);
+    }, [temperatureData, soilHumidityData, lightIntensityData, waterPumpData]);
+
     const LoadingText = () => <span className="loading-text">Loading{loadingDots}</span>;
     const ErrorText = () => <span className="error-text">Failed to load data. Please try again.</span>;
 
