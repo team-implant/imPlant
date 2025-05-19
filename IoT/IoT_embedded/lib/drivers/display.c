@@ -27,15 +27,36 @@ const static uint8_t hex_digits[] = {
     0b01111111, // 8
     0b01101111, // 9
     0b01110111, // A
-    0b01111100, // B
+    0b01111100, // b
     0b00111001, // C
-    0b01011110, // D
+    0b01011110, // d
     0b01111001, // E
     0b01110001, // F
     0b01000000, // '-' (Negative sign)
-    0b00000000  // (Empty space)
+    0b00000000, // (Empty space)
+    //custom signs ↓
+    0b01110011, // P - 18
+    0b00011100, // u - 19
+    0b01010100, // n - 20
+    0b01011100 // 0 -21
 };
-
+/* 0b abcdefgh
+dbf
+______
+|chg |
+| b  |
+|def |
+|   a|
+------
+a = little dot
+b = middle-middle
+c = top-left
+d = bottom-left
+e = bottom-middle
+f = bottom-right
+g = top-right
+h = top-top
+*/
 uint8_t static display_data[] = {0x3, 0x3, 0x3, 0x3};
 
 void display_setValues(uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t seg4)
@@ -159,4 +180,21 @@ void pulse_latch()
     //_delay_us(1);
     LATCH_PORT &= ~(1 << LATCH_BIT);
     // _delay_us(1);
+}
+
+void display_error(int16_t errorNumber){
+    if (errorNumber > 9){
+        display_setValues(14, 16, (errorNumber/10),(errorNumber%10));
+    }
+    else {
+        display_setValues(14, 16, 0, errorNumber);
+    }
+}
+
+void display_dead(){
+    display_setValues(13, 14, 10, 13);
+}
+
+void display_empty(){
+    display_setValues(17, 17, 17, 17);
 }

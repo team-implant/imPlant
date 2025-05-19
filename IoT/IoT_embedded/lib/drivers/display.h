@@ -18,3 +18,9 @@ void display_setValues(uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t seg4 );
  * @param value between -999 to 9999
  */
 void display_int(int16_t value);
+
+void display_error(int16_t errorNumber);
+
+void display_dead();
+
+void display_empty();
