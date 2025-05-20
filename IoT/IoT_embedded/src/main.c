@@ -23,8 +23,8 @@
 #include "waterPump.h"
 #include "display.h"
 
-static uint8_t _buff[100];
-static uint8_t _index = 0;
+// static uint8_t _buff[100];
+// static uint8_t _index = 0;
 volatile static bool _done = false;
 uint8_t temperature_reading;
 uint8_t temperature_reading_decimal;
@@ -61,6 +61,13 @@ int NEUTRAL_ANGLE = 87;
 // }
 
 // flavour
+void turnOffAll() {
+    leds_turnOff(1);
+    leds_turnOff(2);
+    leds_turnOff(3);
+    leds_turnOff(4);
+}
+
 void ledAnimation(){
     _delay_ms(1000);
     leds_turnOn(4);
@@ -177,6 +184,7 @@ void neutral(){
     servo(NEUTRAL_ANGLE);
 }
 
+// manages all the wifi connections
 void send_data(char data[]) {
     wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
 }
@@ -190,20 +198,17 @@ void handle_incoming_wifi_data() {
     else if (strcmp(inbound_buffer, "NEUTRAL") == 0) {
         neutral();
     }
-}
-
-void turnOffAll() {
-    leds_turnOff(1);
-    leds_turnOff(2);
-    leds_turnOff(3);
-    leds_turnOff(4);
+    else {
+        display_setValues(17, 22, 19, 22);
+        asyncDisableDisplayAfterMs(2000);
+    }
 }
 
 //both the while loops: check if answer from wifi.h is 0 (OK), otherwise try to connect again. If limit is reached return false and show 'dEAd'
 bool startWifi() {
     int x1 = -1;
     int cnt = -1;
-    int limit = 3;
+    int limit = 2;
     wifi_init();
     leds_turnOn(1);
     while (x1 != 0){
@@ -269,15 +274,16 @@ int main() {
     if (perMinute == 0 && perHour != 0){periodic_task_init_c(pointer, (3600000 / perHour));}
     else if (perMinute != 0){periodic_task_init_c(pointer, (60000 / perMinute));}
     else {working = false; display_dead();}
-    display_setValues(17, 17, 22, 1);
-    asyncDisableDisplayAfterMs(5000);
     
+    //print Hi
+    if (working){display_setValues(17, 17, 22, 1);asyncDisableDisplayAfterMs(5000);}
+
     while (working) {
         _delay_ms(100);
         leds_turnOff(4);
         if (shouldMeasure) {
             leds_turnOn(4);
-            sprintf(outbound_buffer, "");
+            strcpy(outbound_buffer, "DATA;")
             measureTemp();
             measureLight();
             measureDist();
@@ -296,6 +302,7 @@ int main() {
 
         //calibrate minimum and maximum water levels
         if (buttons_1_pressed()) {
+            strcpy(outbound_buffer, "WC;")
               //since its single threaded, once we are in here, the arduino wont be able to go with the other functions anyway
             // so calibrating_water_level seems pointeless
             calibrating_water_level = true;
