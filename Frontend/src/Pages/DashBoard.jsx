@@ -278,9 +278,11 @@ const Dashboard = () => {
                 </div>
 
                 <div className="sensor-cards">
-                    <SensorCard label="Temperature"
-                        value={`${temperatureData?.at(-1)?.temperature ?? '--'}°C`}
-                        icon="🌡️" />
+                    <SensorCard
+                        label="Temperature"
+                        value={`${temperatureData?.at(-1)?.temperature ? temperatureData.at(-1).temperature.toFixed(1) : '--'}°C`}
+                        icon="🌡️"
+                    />
                     <SensorCard label="Light Intensity"
                         value={`${lightIntensityData?.at(-1)?.lightIntensity ?? '--'} Lux`}
                         icon="☀️" />
