@@ -81,12 +81,12 @@ describe('Dashboard', () => {
     const temperatureChart = screen.getByText('Temperature (24h) - Bell Pepper');
     expect(temperatureChart).not.toHaveClass('enlarged');
 
-    userEvent.click(temperatureChart);
+    await userEvent.click(temperatureChart);
     expect(screen.getByText('Temperature (24h)')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 
     const closeButton = screen.getByRole('button', { name: 'Close' });
-    userEvent.click(closeButton);
+    await userEvent.click(closeButton);
     expect(screen.queryByText('Temperature (24h)')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
