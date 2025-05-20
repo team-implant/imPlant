@@ -79,9 +79,11 @@ export default function History() {
     soilChartData.values.length === 0;
 
   return (
-    <div className="page">
+    <div className="history-page">
       <TopBar notifications={notifications} />
       <div className="history-content">
+        <div className="dashboard-background"></div>
+
         <h1>Sensor Data History</h1>
 
         <div className="date-picker">
