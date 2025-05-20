@@ -9,7 +9,7 @@ def run_measurement_random_forest():
     df = fetch_measurement_data()
     df["TimestampOrdinal"] = df["Timestamp"].map(lambda x: x.toordinal())
     X = df[["TimestampOrdinal"]]
-    y = df[["Temperature", "AirHumidity", "SoilHumidity", "LightIntensity"]]
+    y = df[["Temperature", "AirHumidity", "SoilHumidity", "Light"]]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
     model = MultiOutputRegressor(RandomForestRegressor(n_estimators=100, random_state=1))
