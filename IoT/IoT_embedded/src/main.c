@@ -109,7 +109,7 @@ void incomingDataDetected() { shouldHandleInboundData = true; }
 // TODO: rework to maybe actually return the answer rather than appending to a global string???????
 void measureLight() {
     uint32_t ans = 1024 - light_read();
-    sprintf(outbound_buffer, "%sLIGHT=%ld\n", outbound_buffer, ans);
+    sprintf(outbound_buffer + strlen(outbound_buffer), "LIGHT=%ld\n", ans);
 }
 
 void measureDist() {
@@ -137,10 +137,10 @@ void measureTemp() {
     
     if (status != DHT11_OK) {
         temp_hum_error = true;
-        sprintf(outbound_buffer, "DHT11_ERROR=%d\n", status);
+        sprintf(outbound_buffer + strlen(outbound_buffer), "DHT11_ERROR=%d\n", status);
     } else {
         temp_hum_error = false;
-        sprintf(outbound_buffer, "TEMP=%d.%d\nHUMIDITY=%d.%d\n",
+        sprintf(outbound_buffer + strlen(outbound_buffer), "TEMP=%d.%d\nHUMIDITY=%d.%d\n",
                 temperature_reading, temperature_reading_decimal,
                 humidity_reading, humidity_reading_decimal);
     }
@@ -283,7 +283,7 @@ int main() {
         leds_turnOff(4);
         if (shouldMeasure) {
             leds_turnOn(4);
-            strcpy(outbound_buffer, "DATA;")
+            strcpy(outbound_buffer, "DATA;");
             measureTemp();
             measureLight();
             measureDist();
@@ -302,7 +302,7 @@ int main() {
 
         //calibrate minimum and maximum water levels
         if (buttons_1_pressed()) {
-            strcpy(outbound_buffer, "WC;")
+            strcpy(outbound_buffer, "WC;");
               //since its single threaded, once we are in here, the arduino wont be able to go with the other functions anyway
             // so calibrating_water_level seems pointeless
             calibrating_water_level = true;
