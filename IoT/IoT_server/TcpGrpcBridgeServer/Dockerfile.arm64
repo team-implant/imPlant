@@ -1,0 +1,28 @@
+# 1) Runtime base image - ARM64 compatible
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+
+# 2) Build stage - can use AMD64 for building
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy only the csproj first (for layer caching)
+COPY TcpGrpcBridgeServer.csproj ./
+RUN dotnet restore "./TcpGrpcBridgeServer.csproj"
+
+# Copy the rest of your source code
+COPY . .
+
+# Publish into /app/publish
+RUN dotnet publish "TcpGrpcBridgeServer.csproj" -c Release -o /app/publish
+
+# 3) Final stage - ARM64 compatible
+FROM base AS final
+WORKDIR /app
+
+# Copy the published output
+COPY --from=build /app/publish .
+
+# Launch your app
+EXPOSE 5000 23
+ENTRYPOINT ["dotnet", "TcpGrpcBridgeServer.dll"]

@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.EFC;
-using DotNetSQL.Services;
 using DotNetSQL.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using DotNetSQL.Services;
+using DotNetSQL.GrpcClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -62,6 +64,11 @@ builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
 
+
+builder.Services.AddScoped<IGrpcClientManager, GrpcClientManager>();
+
+
+// Get connection string (same logic for both Dev and Prod)
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connection))
@@ -105,6 +112,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
 });
+
 
 var app = builder.Build();
 

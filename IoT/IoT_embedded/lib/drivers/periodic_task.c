@@ -115,6 +115,10 @@ void periodic_task_init_b(void (*user_function_b)(void), uint32_t interval_ms_b)
     TIMSK3 |= (1 << OCIE3B);
 }
 
+void disable_timer_b(){
+    TIMSK3 &= ~(1 << OCIE3B);
+}
+
 void periodic_task_init_c(void (*user_function_c)(void), uint32_t interval_ms_c) {
     user_func_c = user_function_c;
     init_timer3();
