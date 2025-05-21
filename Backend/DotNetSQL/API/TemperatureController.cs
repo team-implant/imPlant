@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetSQL.Entities;
 using DotNetSQL.Services;
 using DotNetSQL.Dtos;
-using DotNetSQL.IServices; 
+using DotNetSQL.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetSQL.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/temperature")]
     public class TemperatureController : ControllerBase

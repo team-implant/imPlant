@@ -3,9 +3,11 @@ using DotNetSQL.Entities;
 using DotNetSQL.Services;
 using DotNetSQL.DTOs;
 using DotNetSQL.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetSQL.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/measurements")]
     public class MeasurementController : ControllerBase

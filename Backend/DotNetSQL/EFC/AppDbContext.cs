@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetSQL.Entities;
 
+
 namespace DotNetSQL.EFC
 {
     public class AppDbContext : DbContext
@@ -12,19 +13,29 @@ namespace DotNetSQL.EFC
         public DbSet<MeasurementData> MeasurementData { get; set; }
         public DbSet<WaterPump> WaterPumps { get; set; }
         public DbSet<SoilHumidity> SoilHumidities { get; set; }
+        public DbSet<User> Users => Set<User>();
         public DbSet<SoilMeasurement> SoilMeasurements { get; set; }
         public DbSet<ServoCalibration> ServoCalibrations { get; set; }
         public DbSet<Plant> Plants { get; set; } // new
         public DbSet<PredictionResult> PredictionResults { get; set; } // new
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             // Fix any column mapping issues
             modelBuilder.Entity<MeasurementData>()
                 .Property(m => m.LightIntensity)
                 .HasColumnName("Light");
+
+            // Set up relationship between MeasurementData and SoilHumidity
+            // Updated to handle nullable navigation properties
+            modelBuilder.Entity<SoilHumidity>()
+                .HasOne(s => s.MeasurementData)
+                .WithOne(m => m.SoilHumidityDetails)
+                .HasForeignKey<SoilHumidity>(s => s.MeasurementDataId)
+                .IsRequired(); // Foreign key is required even if navigation property is nullable
             modelBuilder.Entity<MeasurementData>()
                 .Property(m => m.TankFillLevel)
                 .HasColumnName("tank_fill_level");
@@ -41,7 +52,7 @@ namespace DotNetSQL.EFC
             modelBuilder.Entity<WaterPump>()
                 .Property(w => w.MinLevel)
                 .HasDefaultValue(0);
-                
+
             modelBuilder.Entity<WaterPump>()
                 .Property(w => w.MaxLevel)
                 .HasDefaultValue(100);
