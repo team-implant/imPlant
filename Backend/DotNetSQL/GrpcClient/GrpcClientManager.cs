@@ -8,26 +8,24 @@ using Grpc.Core;
 public class GrpcClientManager : IGrpcClientManager
 {
     private GrpcChannel channel;
-
-    private GreenHouse.GreenHouseClient grpcService;
+    private WaterPump.WaterPumpClient grpcService;
     
 
 //initializes the grpc connection to the server and the used service
     public GrpcClientManager()
     {
         channel = GrpcChannel.ForAddress("http://localhost:5000");
-        grpcService = new GreenHouse.GreenHouseClient(channel);
+        grpcService = new WaterPump.WaterPumpClient(channel);
     }
     
-    //calling the grpc method from the service
-    public async Task<string> GreenHouseControl(int id)
-    {
-        GreenHouseAction request = new()
+    public async Task<string> IrrigationControl(int id){
+        Plant request = new()
         {
-            ActionId = id
+            PlantId = id
         };
+    //calling the grpc method from the service
 
-        MessageReply reply = await grpcService.TriggerActionAsync(request);
+        MessageReply reply = await grpcService.QueueWateringAsync(request);
 
         return reply.Status;
 
