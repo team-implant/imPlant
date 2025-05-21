@@ -12,11 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     
-    # Add step to force image update by disabling caching
-    - name: Generate random string to force build
-      id: random
-      run: echo "CACHE_BUST=$(date +%s%N | sha256sum | head -c 8)" >> $GITHUB_ENV
-    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
@@ -27,29 +22,16 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    # Setup .NET for all builds
-    - name: Setup .NET for all builds
-      uses: actions/setup-dotnet@v3
+    # Build and push standard Backend
+    - name: Build and push Backend
+      uses: docker/build-push-action@v4
       with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
+        context: ./Backend/DotNetSQL
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
+        no-cache: true
     
-    # Backend ARM64 Build
-    - name: Publish Backend .NET app locally
-      run: |
-        cd ./Backend/DotNetSQL
-        dotnet publish -c Release -o ./publish
-    
-    - name: Create ARM Dockerfile for Backend
-      run: |
-        cat > ./Backend/DotNetSQL/Dockerfile.arm64 << 'EOF'
-        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
-        WORKDIR /app
-        COPY ./publish/ .
-        ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
-        EOF
-    
+    # Build and push Backend ARM64
     - name: Build and push Backend (ARM64)
       uses: docker/build-push-action@v4
       with:
@@ -60,13 +42,7 @@ jobs:
         platforms: linux/arm64
         no-cache: true
     
-    # IoT Server ARM64 Build
-    - name: Publish IoT Server .NET app locally
-      run: |
-        cd ./IoT/IoT_server/TcpGrpcBridgeServer
-        dotnet publish -c Release -o ./publish
-    
-    # IoT Server ARM64 Build - Direct build on GitHub's servers
+    # Build and push IoT Server ARM64
     - name: Build and push IoT Server (ARM64)
       uses: docker/build-push-action@v4
       with:
@@ -77,15 +53,7 @@ jobs:
         platforms: linux/arm64
         no-cache: true
     
-    - name: Build and push Backend (AMD64)
-      uses: docker/build-push-action@v4
-      with:
-        context: ./Backend/DotNetSQL
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
-        platforms: linux/amd64
-        no-cache: true
-    
+    # Build and push MLService
     - name: Build and push MLService
       uses: docker/build-push-action@v4
       with:
@@ -94,6 +62,7 @@ jobs:
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-mlservice:latest
         no-cache: true
         
+    # Build and push Frontend
     - name: Build and push Frontend
       uses: docker/build-push-action@v4
       with:
