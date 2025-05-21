@@ -1,7 +1,7 @@
 name: imPlant CI/CD Pipeline
 on:
   push:
-    branches: [ main, master, develop, DEV_Backend ]
+    branches: [ main, master, develop, DEV_Backend, backend_iot_workflow_wip ]
   pull_request:
     branches: [ main, master, develop ]
 jobs:
@@ -46,3 +46,12 @@ jobs:
         context: ./Frontend
         push: ${{ github.event_name != 'pull_request' }}
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-frontend:latest
+    
+    - name: Build and push IoT Server (ARM64)
+      uses: docker/build-push-action@v4
+      with:
+        context: ./IoT/IoT_server/TcpGrpcBridgeServer
+        file: ./IoT/IoT_server/TcpGrpcBridgeServer/Dockerfile.arm64
+        platforms: linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ghcr.io/${{ github.repository_owner }}/implant/iot-server-arm64:latest
