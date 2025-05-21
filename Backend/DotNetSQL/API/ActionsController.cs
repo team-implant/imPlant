@@ -17,7 +17,7 @@ namespace DotNetSQL.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> GreenHouseAction(int id)
         {
-            var result = await _clientManager.GreenHouseControl(id);
+            var result = await _clientManager.IrrigationControl(id);
             return Ok(result);
         }
     }
