@@ -1,4 +1,4 @@
-name: imPlant CI/CD Pipeline
+name: imPlant CI/CD Pipeline - IoT
 on:
   push:
     branches: [main, master, develop, DEV_IoT]
@@ -31,4 +31,4 @@ jobs:
           context: ./IoT/IoT_server/TcpGrpcBridgeServer
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
+          tags: ghcr.io/${{ github.repository_owner }}/implant/implant-iot-backend:latest

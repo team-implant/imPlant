@@ -24,7 +24,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <Protobuf Include="Protos\message.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\pump.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>
