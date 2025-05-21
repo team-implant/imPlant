@@ -60,6 +60,7 @@ builder.Services.AddScoped<ILightIntensityService, LightIntensityService>();
 builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
+builder.Services.AddScoped<IPlantService, PlantService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
