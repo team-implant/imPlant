@@ -25,6 +25,14 @@ namespace DotNetSQL.Controllers
             return Ok(await _temperatureService.GetAllMeasurementsAsync());
         }
 
+        [HttpGet("by-plant/{plantId}")]
+        public async Task<ActionResult<IEnumerable<MeasurementData>>> GetMeasurementsByPlantId(int plantId)
+        {
+            var allMeasurements = await _temperatureService.GetAllMeasurementsAsync();
+            var filtered = allMeasurements.Where(m => m.PlantId == plantId).ToList();
+            return Ok(filtered);
+        }
+
         [HttpPost]
         public async Task<ActionResult<MeasurementData>> AddMeasurement(MeasurementData temperatureData)
         {
