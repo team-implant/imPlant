@@ -7,7 +7,7 @@ const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
 interface LightIntensity {
   id: number;
-  light: number; // IMPORTANT: match `light` if you're using that key
+  lightIntensity: number; // IMPORTANT: match `light` if you're using that key
   timestamp: string;
 }
 

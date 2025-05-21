@@ -1,62 +1,207 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+    FetchStatus,
+    QueryObserverResult, RefetchOptions, RefetchQueryFilters,
+    useQuery,
+    UseQueryResult
+} from '@tanstack/react-query';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
-
-
 export interface MeasurementData {
     id: number;
-    temperature?: number;
-    humidity?: number;
-    soilMoisture?: number;
-    lightIntensity?: number;
+    temperature: number;
+    airHumidity: number;
+    soilHumidity: number;
+    lightIntensity: number;
+    tankFillLevel: number;
     timestamp: string;
-    plantType: string;
+    plantId: number | null;
+    plant: string | null;
 }
 
-const fetchMeasurementsByPlantType = async (plantType: string): Promise<MeasurementData[]> => {
-    const response = await axios.get<MeasurementData[]>(`${BASE_URL}/${plantType}`);
+const fetchMeasurements = async (): Promise<MeasurementData[]> => {
+    const response = await axios.get<MeasurementData[]>(`${BASE_URL}/measurements`);
     return response.data;
 };
 
-export const useMeasurementsByPlantType = (plantType: string): UseQueryResult<MeasurementData[], Error> => {
+export const useMeasurements = (): UseQueryResult<MeasurementData[], Error> => {
     return useQuery<MeasurementData[], Error>(
-        ['measurementsByPlantType', plantType],
-        () => fetchMeasurementsByPlantType(plantType),
-        {
-            enabled: !!plantType,
-        }
+        ['measurements'],
+        fetchMeasurements
     );
 };
 
-export const useTemperatureByPlantType = (plantType: string): UseQueryResult<number[] | undefined, Error> => {
-    const query = useMeasurementsByPlantType(plantType);
+export const useTemperatures = (): {
+    data: number[] | undefined;
+    error: Error | null;
+    isError: true | false;
+    isLoading: false | true;
+    isLoadingError: false | true;
+    isRefetchError: true | false;
+    isSuccess: false | true;
+    status: "error" | "success" | "loading";
+    dataUpdatedAt: number;
+    errorUpdatedAt: number;
+    failureCount: number;
+    failureReason: Error | null;
+    errorUpdateCount: number;
+    isFetched: boolean;
+    isFetchedAfterMount: boolean;
+    isFetching: boolean;
+    isInitialLoading: boolean;
+    isPaused: boolean;
+    isPlaceholderData: boolean;
+    isPreviousData: boolean;
+    isRefetching: boolean;
+    isStale: boolean;
+    refetch: <TPageData>(options?: (RefetchOptions & RefetchQueryFilters<TPageData>)) => Promise<QueryObserverResult<MeasurementData[], Error>>;
+    remove: () => void;
+    fetchStatus: FetchStatus
+} => {
+    const query = useMeasurements();
     return {
         ...query,
-        data: query.data?.map(measurement => measurement.temperature).filter((temp): temp is number => temp !== undefined),
-    } as UseQueryResult<number[] | undefined, Error>;
+        data: query.data?.map(measurement => measurement.temperature),
+    };
 };
 
-export const useHumidityByPlantType = (plantType: string): UseQueryResult<number[] | undefined, Error> => {
-    const query = useMeasurementsByPlantType(plantType);
+export const useAirHumidity = (): {
+    data: number[] | undefined;
+    error: Error | null;
+    isError: true | false;
+    isLoading: false | true;
+    isLoadingError: false | true;
+    isRefetchError: true | false;
+    isSuccess: false | true;
+    status: "error" | "success" | "loading";
+    dataUpdatedAt: number;
+    errorUpdatedAt: number;
+    failureCount: number;
+    failureReason: Error | null;
+    errorUpdateCount: number;
+    isFetched: boolean;
+    isFetchedAfterMount: boolean;
+    isFetching: boolean;
+    isInitialLoading: boolean;
+    isPaused: boolean;
+    isPlaceholderData: boolean;
+    isPreviousData: boolean;
+    isRefetching: boolean;
+    isStale: boolean;
+    refetch: <TPageData>(options?: (RefetchOptions & RefetchQueryFilters<TPageData>)) => Promise<QueryObserverResult<MeasurementData[], Error>>;
+    remove: () => void;
+    fetchStatus: FetchStatus
+} => {
+    const query = useMeasurements();
     return {
         ...query,
-        data: query.data?.map(measurement => measurement.humidity).filter((humidity): humidity is number => humidity !== undefined),
-    } as UseQueryResult<number[] | undefined, Error>;
+        data: query.data?.map(measurement => measurement.airHumidity),
+    };
 };
 
-export const useSoilMoistureByPlantType = (plantType: string): UseQueryResult<number[] | undefined, Error> => {
-    const query = useMeasurementsByPlantType(plantType);
+export const useSoilHumidity = (): {
+    data: number[] | undefined;
+    error: Error | null;
+    isError: true | false;
+    isLoading: false | true;
+    isLoadingError: false | true;
+    isRefetchError: true | false;
+    isSuccess: false | true;
+    status: "error" | "success" | "loading";
+    dataUpdatedAt: number;
+    errorUpdatedAt: number;
+    failureCount: number;
+    failureReason: Error | null;
+    errorUpdateCount: number;
+    isFetched: boolean;
+    isFetchedAfterMount: boolean;
+    isFetching: boolean;
+    isInitialLoading: boolean;
+    isPaused: boolean;
+    isPlaceholderData: boolean;
+    isPreviousData: boolean;
+    isRefetching: boolean;
+    isStale: boolean;
+    refetch: <TPageData>(options?: (RefetchOptions & RefetchQueryFilters<TPageData>)) => Promise<QueryObserverResult<MeasurementData[], Error>>;
+    remove: () => void;
+    fetchStatus: FetchStatus
+} => {
+    const query = useMeasurements();
     return {
         ...query,
-        data: query.data?.map(measurement => measurement.soilMoisture).filter((moisture): moisture is number => moisture !== undefined),
-    } as UseQueryResult<number[] | undefined, Error>;
+        data: query.data?.map(measurement => measurement.soilHumidity),
+    };
 };
 
-export const useLightIntensityByPlantType = (plantType: string): UseQueryResult<number[] | undefined, Error> => {
-    const query = useMeasurementsByPlantType(plantType);
+export const useLightIntensity = (): {
+    data: number[] | undefined;
+    error: Error | null;
+    isError: true | false;
+    isLoading: false | true;
+    isLoadingError: false | true;
+    isRefetchError: true | false;
+    isSuccess: false | true;
+    status: "error" | "success" | "loading";
+    dataUpdatedAt: number;
+    errorUpdatedAt: number;
+    failureCount: number;
+    failureReason: Error | null;
+    errorUpdateCount: number;
+    isFetched: boolean;
+    isFetchedAfterMount: boolean;
+    isFetching: boolean;
+    isInitialLoading: boolean;
+    isPaused: boolean;
+    isPlaceholderData: boolean;
+    isPreviousData: boolean;
+    isRefetching: boolean;
+    isStale: boolean;
+    refetch: <TPageData>(options?: (RefetchOptions & RefetchQueryFilters<TPageData>)) => Promise<QueryObserverResult<MeasurementData[], Error>>;
+    remove: () => void;
+    fetchStatus: FetchStatus
+} => {
+    const query = useMeasurements();
     return {
         ...query,
-        data: query.data?.map(measurement => measurement.lightIntensity).filter((intensity): intensity is number => intensity !== undefined),
-    } as UseQueryResult<number[] | undefined, Error>;
+        data: query.data?.map(measurement => measurement.lightIntensity),
+    };
+};
+
+export const useTankFillLevel = (): {
+    data: number[] | undefined;
+    error: Error | null;
+    isError: true | false;
+    isLoading: false | true;
+    isLoadingError: false | true;
+    isRefetchError: true | false;
+    isSuccess: false | true;
+    status: "error" | "success" | "loading";
+    dataUpdatedAt: number;
+    errorUpdatedAt: number;
+    failureCount: number;
+    failureReason: Error | null;
+    errorUpdateCount: number;
+    isFetched: boolean;
+    isFetchedAfterMount: boolean;
+    isFetching: boolean;
+    isInitialLoading: boolean;
+    isPaused: boolean;
+    isPlaceholderData: boolean;
+    isPreviousData: boolean;
+    isRefetching: boolean;
+    isStale: boolean;
+    refetch: <TPageData>(options?: (RefetchOptions & RefetchQueryFilters<TPageData>)) => Promise<QueryObserverResult<MeasurementData[], Error>>;
+    remove: () => void;
+    fetchStatus: FetchStatus
+} => {
+    const query = useMeasurements();
+    return {
+        ...query,
+        data: query.data?.map(measurement => measurement.tankFillLevel),
+    };
+};
+
+// If you need to filter by plant type, you can use this helper function
+export const filterMeasurementsByPlantType = (measurements: MeasurementData[], plantType: string): MeasurementData[] => {
+    return measurements.filter(measurement => measurement.plant === plantType);
 };

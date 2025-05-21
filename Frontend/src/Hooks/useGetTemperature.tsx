@@ -10,7 +10,6 @@ interface TemperatureData {
   temperature: number;
   timestamp: string;
 
-  // Add other fields as necessary
 
 }
 
