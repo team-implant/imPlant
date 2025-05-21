@@ -10,7 +10,7 @@
 #include "adxl345.h"
 #include "sensors.h"
 
-char outbound_buffer[256];
+extern char outbound_buffer[256];
 
 void measureTemp() {
     uint8_t temp, temp_dec, hum, hum_dec;

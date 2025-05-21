@@ -5,11 +5,11 @@
 #include "leds.h"
 #include "watering.h"
 #include "wifi_com.h"
-#include "state.h"
 #include "sensors.h"
 #include "env.h"
 
 extern char inbound_buffer[128];
+extern void incomingDataDetected(void);
 
 void send_data(char data[]) {
     wifi_command_TCP_transmit((uint8_t *)data, strlen(data));

@@ -9,14 +9,12 @@
 #include "servo.h"
 #include "watering.h"
 #include "calibration.h"
-#include "sensors.h"
 #include "wifi_com.h"
-#include "state.h"
 
 extern char outbound_buffer[256];
+extern bool calibrating_water_level;
 
 void calibrate_water_levels() {
-    strcpy(outbound_buffer, "WC;");
     calibrating_water_level = true;
     turnOffAll();
     _delay_ms(250);
@@ -34,7 +32,7 @@ void calibrate_water_levels() {
     leds_turnOn(3);
 
     sprintf(outbound_buffer,
-            "EMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
+            "WC;EMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
             measurement_empty, measurement_full);
 
     send_data(outbound_buffer);

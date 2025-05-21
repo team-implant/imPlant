@@ -6,11 +6,25 @@
 #include "display.h"
 #include "leds.h"
 #include "periodic_task.h"
-#include "state.h"
 #include "sensors.h"
 #include "watering.h"
 #include "wifi_com.h"
 #include "calibration.h"
+
+char outbound_buffer[256];
+char inbound_buffer[128];
+
+bool shouldMeasure = false;
+bool shouldHandleInboundData = false;
+bool calibrating_water_level = false;
+
+void enableMeasure(void) {
+    shouldMeasure = true;
+}
+
+void incomingDataDetected(void) {
+    shouldHandleInboundData = true;
+}
 
 void inits() {
     sei();
