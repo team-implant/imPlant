@@ -7,7 +7,7 @@ namespace DotNetSQL.Entities
         public double Value { get; set; }
 
         // Navigation properties
-        public Plant Plant { get; set; }
-        public MeasurementData MeasurementData { get; set; }
+        public Plant? Plant { get; set; }
+        public MeasurementData? MeasurementData { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 # 1) Runtime base image - ARM64 compatible
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8 AS base
 WORKDIR /app
+EXPOSE 80
 EXPOSE 8080
 
 # 2) Build stage - can use AMD64 for building
