@@ -3,42 +3,22 @@ import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../../config';
 
 interface MLLightIntensityData {
-    id: number;
     lightIntensity: number;
     timestamp: string;
-    anomaly: boolean;
+    anomaly?: boolean;
     prediction?: number;
     recommendation?: string;
 }
 
-const getMLLightIntensity = async (): Promise<MLLightIntensityData[]> => {
+const getMLLightIntensityPredictions = async (): Promise<MLLightIntensityData[]> => {
     try {
-        const response = await axios.get<MLLightIntensityData[]>(`${BASE_URL}/lightintensity`);
+        const response = await axios.get<MLLightIntensityData[]>(`${BASE_URL}/predictions/lightintensity`);
         return response.data;
     } catch (error) {
-        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch light intensity data');
+        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch light intensity predictions');
     }
 };
 
-export const useGetMLLightIntensity = (): UseQueryResult<MLLightIntensityData[], Error> => {
-    return useQuery<MLLightIntensityData[], Error>(['mlLightIntensity'], getMLLightIntensity);
-};
-
-const getMLLightIntensityById = async (id: number): Promise<MLLightIntensityData> => {
-    try {
-        const response = await axios.get<MLLightIntensityData>(`${BASE_URL}/lightintensity/${id}`);
-        return response.data;
-    } catch (error) {
-        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch light intensity data');
-    }
-};
-
-export const useGetMLLightIntensityById = (id: number): UseQueryResult<MLLightIntensityData, Error> => {
-    return useQuery<MLLightIntensityData, Error>(
-        ['mlLightIntensity', id],
-        () => getMLLightIntensityById(id),
-        {
-            enabled: !!id,
-        }
-    );
+export const useGetMLLightIntensityPredictions = (): UseQueryResult<MLLightIntensityData[], Error> => {
+    return useQuery<MLLightIntensityData[], Error>(['mlLightIntensityPredictions'], getMLLightIntensityPredictions);
 };

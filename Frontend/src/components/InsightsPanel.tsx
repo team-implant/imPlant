@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/InsightsPanel.css';
-import { useGetMLTemperature } from '../Hooks/ml/useMLTemperature';
-import { useGetMLSoilHumidity } from '../Hooks/ml/useMLSoilHumidity';
-import { useGetMLLightIntensity } from '../Hooks/ml/useMLLightIntensity';
-import { useGetMLWaterPumps } from '../Hooks/ml/useMLWaterPump';
+import { useGetMLTemperaturePredictions } from '../Hooks/ml/useMLTemperature';
+import { useGetMLSoilHumidityPredictions } from '../Hooks/ml/useMLSoilHumidity';
+import { useGetMLLightIntensityPredictions } from '../Hooks/ml/useMLLightIntensity';
+import { useGetMLWaterPumpPredictions } from '../Hooks/ml/useMLWaterPump';
 
 export default function InsightsPanel() {
-    const { data: temperatureData } = useGetMLTemperature();
-    const { data: soilHumidityData } = useGetMLSoilHumidity();
-    const { data: lightIntensityData } = useGetMLLightIntensity();
-    const { data: waterPumpData } = useGetMLWaterPumps();
+    const { data: temperatureData } = useGetMLTemperaturePredictions();
+    const { data: soilHumidityData } = useGetMLSoilHumidityPredictions();
+    const { data: lightIntensityData } = useGetMLLightIntensityPredictions();
+    const { data: waterPumpData } = useGetMLWaterPumpPredictions();
     const [loadingDots, setLoadingDots] = useState('');
     const [error, setError] = useState(false);
     const [showData, setShowData] = useState(false);
 
-    const isLoading = !temperatureData || !soilHumidityData || !lightIntensityData || waterPumpData?.length === 0;
+    const isLoading = !temperatureData || !soilHumidityData || !lightIntensityData || !waterPumpData;
 
     useEffect(() => {
         if (isLoading) {

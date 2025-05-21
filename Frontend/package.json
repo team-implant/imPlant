@@ -38,6 +38,7 @@
     "react-router-dom": "^7.5.0",
     "react-toastify": "^11.0.5",
     "react-transition-group": "^4.4.5",
+    "recharts": "^2.15.3",
     "tanstack": "^1.0.0"
   },
   "jest": {

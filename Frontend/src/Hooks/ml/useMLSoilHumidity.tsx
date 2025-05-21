@@ -3,34 +3,22 @@ import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../../config';
 
 interface MLSoilHumidityData {
-    id: number;
     soilHumidity: number;
     timestamp: string;
-    anomaly: boolean;
+    anomaly?: boolean;
     prediction?: number;
     recommendation?: string;
 }
 
-const getMLSoilHumidity = async (): Promise<MLSoilHumidityData[]> => {
+const getMLSoilHumidityPredictions = async (): Promise<MLSoilHumidityData[]> => {
     try {
-        const response = await axios.get<MLSoilHumidityData[]>(`${BASE_URL}/soilhumidity`);
+        const response = await axios.get<MLSoilHumidityData[]>(`${BASE_URL}/predictions/soilhumidity`);
         return response.data;
     } catch (error) {
-        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch soil humidity data');
+        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch soil humidity predictions');
     }
 };
 
-export const useGetMLSoilHumidity = (): UseQueryResult<MLSoilHumidityData[], Error> => {
-    return useQuery<MLSoilHumidityData[], Error>(['mlSoilHumidity'], getMLSoilHumidity);
-};
-
-const getMLSoilHumidityById = async (id: number): Promise<MLSoilHumidityData> => {
-    const response = await axios.get<MLSoilHumidityData>(`${BASE_URL}/soil-humidity/${id}`);
-    return response.data;
-};
-
-export const useGetMLSoilHumidityById = (id: number): UseQueryResult<MLSoilHumidityData, Error> => {
-    return useQuery<MLSoilHumidityData, Error>(['mlSoilHumidity', id], () => getMLSoilHumidityById(id), {
-        enabled: !!id,
-    });
+export const useGetMLSoilHumidityPredictions = (): UseQueryResult<MLSoilHumidityData[], Error> => {
+    return useQuery<MLSoilHumidityData[], Error>(['mlSoilHumidityPredictions'], getMLSoilHumidityPredictions);
 };

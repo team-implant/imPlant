@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/MLInsights.css';
 import TopBar from '../components/TopBar';
-import { useGetMLTemperature } from '../Hooks/ml/useMLTemperature';
-import { useGetMLSoilHumidity } from '../Hooks/ml/useMLSoilHumidity';
-import { useGetMLLightIntensity } from '../Hooks/ml/useMLLightIntensity';
-import { useGetMLWaterPumps } from '../Hooks/ml/useMLWaterPump';
+import { useGetMLTemperaturePredictions } from '../Hooks/ml/useMLTemperature';
+import { useGetMLSoilHumidityPredictions } from '../Hooks/ml/useMLSoilHumidity';
+import { useGetMLWaterPumpPredictions } from '../Hooks/ml/useMLWaterPump';
+import { useGetMLLightIntensityPredictions } from '../Hooks/ml/useMLLightIntensity';
 
 export default function MLInsights() {
     const [notifications, setNotifications] = useState([]);
-    const { data: temperatureData, isLoading: tempLoading } = useGetMLTemperature();
-    const { data: soilHumidityData, isLoading: soilLoading } = useGetMLSoilHumidity();
-    const { data: lightIntensityData, isLoading: lightLoading } = useGetMLLightIntensity();
-    const { data: waterPumpData, isLoading: pumpLoading } = useGetMLWaterPumps();
+    const { data: temperatureData, isLoading: tempLoading } = useGetMLTemperaturePredictions();
+    const { data: soilHumidityData, isLoading: soilLoading } = useGetMLSoilHumidityPredictions();
+    const { data: waterPumpData, isLoading: pumpLoading } = useGetMLWaterPumpPredictions();
+    const { data: lightIntensityData, isLoading: lightLoading } = useGetMLLightIntensityPredictions();
 
     const latestTemperature = temperatureData?.[0];
     const latestSoilHumidity = soilHumidityData?.[0];

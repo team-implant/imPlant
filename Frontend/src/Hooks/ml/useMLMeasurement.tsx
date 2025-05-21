@@ -3,7 +3,6 @@ import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../../config';
 
 interface MLMeasurementData {
-    id: number;
     temperature: number;
     soilMoisture: number;
     lightIntensity: number;
@@ -13,7 +12,7 @@ interface MLMeasurementData {
 
 const getMLMeasurements = async (): Promise<MLMeasurementData[]> => {
     try {
-        const response = await axios.get<MLMeasurementData[]>(`${BASE_URL}/measurements`);
+        const response = await axios.get<MLMeasurementData[]>(`${BASE_URL}/predictions/measurements`);
         return response.data;
     } catch (error) {
         throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch measurements');
@@ -22,19 +21,4 @@ const getMLMeasurements = async (): Promise<MLMeasurementData[]> => {
 
 export const useGetMLMeasurements = (): UseQueryResult<MLMeasurementData[], Error> => {
     return useQuery<MLMeasurementData[], Error>(['mlMeasurements'], getMLMeasurements);
-};
-
-const getMLMeasurementById = async (id: number): Promise<MLMeasurementData> => {
-    try {
-        const response = await axios.get<MLMeasurementData>(`${BASE_URL}/measurements/${id}`);
-        return response.data;
-    } catch (error) {
-        throw new Error(error instanceof AxiosError ? error.message : 'Failed to fetch measurement');
-    }
-};
-
-export const useGetMLMeasurementById = (id: number): UseQueryResult<MLMeasurementData, Error> => {
-    return useQuery<MLMeasurementData, Error>(['mlMeasurement', id], () => getMLMeasurementById(id), {
-        enabled: !!id,
-    });
 };
