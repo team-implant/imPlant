@@ -12,6 +12,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
@@ -51,9 +54,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
+        dotnet-version: 8.0.x
     
     # ARM64 Backend Build - two-stage approach
     - name: Build Backend .NET app for ARM
@@ -64,13 +65,14 @@ jobs:
     - name: Create simple Dockerfile for ARM Backend
       run: |
         cd ./Backend/DotNetSQL
-        echo 'FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8' > Dockerfile.simple
+        echo 'FROM arm64v8/dotnet:8.0-aspnet-bookworm' > Dockerfile.simple
         echo 'WORKDIR /app' >> Dockerfile.simple
         echo 'COPY ./publish/ .' >> Dockerfile.simple
         echo 'ENTRYPOINT ["dotnet", "DotNetSQL.dll"]' >> Dockerfile.simple
     
     - name: Build and push Backend (ARM64)
       uses: docker/build-push-action@v4
+      timeout-minutes: 10
       with:
         context: ./Backend/DotNetSQL
         file: ./Backend/DotNetSQL/Dockerfile.simple
@@ -79,7 +81,7 @@ jobs:
         platforms: linux/arm64
         no-cache: true
     
-    # ARM64 IoT Server Build
+    # ARM64 IoT Server Build - two-stage approach
     - name: Build IoT Server .NET app for ARM
       run: |
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
@@ -88,7 +90,7 @@ jobs:
     - name: Create simple Dockerfile for ARM IoT Server
       run: |
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
-        echo 'FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8' > Dockerfile.simple
+        echo 'FROM arm64v8/dotnet:8.0-aspnet-bookworm' > Dockerfile.simple
         echo 'WORKDIR /app' >> Dockerfile.simple
         echo 'COPY ./publish/ .' >> Dockerfile.simple
         echo 'EXPOSE 5000 23' >> Dockerfile.simple
@@ -96,6 +98,7 @@ jobs:
     
     - name: Build and push IoT Server (ARM64)
       uses: docker/build-push-action@v4
+      timeout-minutes: 10
       with:
         context: ./IoT/IoT_server/TcpGrpcBridgeServer
         file: ./IoT/IoT_server/TcpGrpcBridgeServer/Dockerfile.simple
