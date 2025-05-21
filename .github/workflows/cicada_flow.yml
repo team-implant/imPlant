@@ -50,24 +50,51 @@ jobs:
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-frontend:latest
         no-cache: true
     
-    # ARM64 version of Backend
-    - name: Build and push Backend (ARM64)
-      uses: docker/build-push-action@v4
+    # Setup .NET for builds
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
-        context: ./Backend/DotNetSQL
-        file: ./Backend/DotNetSQL/Dockerfile.arm64
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
-        platforms: linux/arm64
-        no-cache: true
+        dotnet-version: |
+          8.0.x
+          9.0.x
     
-    # ARM64 version of IoT Server
-    - name: Build and push IoT Server (ARM64)
-      uses: docker/build-push-action@v4
-      with:
-        context: ./IoT/IoT_server/TcpGrpcBridgeServer
-        file: ./IoT/IoT_server/TcpGrpcBridgeServer/Dockerfile.arm64
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/implant/iot-server-arm64:latest
-        platforms: linux/arm64
-        no-cache: true
+    # ARM64 Backend with workaround
+    - name: Build Backend for ARM64
+      run: |
+        # Create a modified Dockerfile that skips the build step
+        cd ./Backend/DotNetSQL
+        
+        # Build on the GitHub runner
+        dotnet publish -c Release -o ./publish
+        
+        # Create a dockerfile that just copies the pre-built files
+        cat > Dockerfile.armcopy << EOF
+        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
+        WORKDIR /app
+        COPY ./publish/ .
+        ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
+        EOF
+        
+        # Let Docker build using the pre-built files
+        docker buildx build --platform linux/arm64 -f Dockerfile.armcopy -t ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest --push .
+    
+    # ARM64 IoT Server with workaround
+    - name: Build IoT Server for ARM64
+      run: |
+        # Create a modified Dockerfile that skips the build step
+        cd ./IoT/IoT_server/TcpGrpcBridgeServer
+        
+        # Build on the GitHub runner
+        dotnet publish -c Release -o ./publish
+        
+        # Create a dockerfile that just copies the pre-built files
+        cat > Dockerfile.armcopy << EOF
+        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
+        WORKDIR /app
+        COPY ./publish/ .
+        EXPOSE 5000 23
+        ENTRYPOINT ["dotnet", "TcpGrpcBridgeServer.dll"]
+        EOF
+        
+        # Let Docker build using the pre-built files
+        docker buildx build --platform linux/arm64 -f Dockerfile.armcopy -t ghcr.io/${{ github.repository_owner }}/implant/iot-server-arm64:latest --push .
