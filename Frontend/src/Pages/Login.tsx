@@ -4,7 +4,7 @@ import { useLogin } from '../api/auth';
 import '../styles/Login.css';
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -13,12 +13,11 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const result = await loginMutation.mutateAsync({ email, password });
+            const result = await loginMutation.mutateAsync({ username, password });
             if (result.token) {
                 if (rememberMe) {
                     localStorage.setItem('isLoggedIn', 'true');
                 }
-                localStorage.setItem('userRole', result.user.role);
                 navigate('/dashboard');
             }
         } catch (error) {
@@ -43,12 +42,12 @@ const Login: React.FC = () => {
                 <h2>Login</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="email">Email:</label>
+                        <label htmlFor="username">Username:</label>
                         <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>

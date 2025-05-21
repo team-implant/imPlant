@@ -1,60 +1,76 @@
 import axios from 'axios';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { jwtDecode } from 'jwt-decode';
 
-const API_URL = 'https://sep4-implant.azurewebsites.net/api\'';
+const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
-const api = axios.create({
-    baseURL: API_URL,
-});
-
-api.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('jwt');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+const instance = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
     }
-    return config;
 });
 
 interface LoginCredentials {
-    email: string;
+    username: string;
     password: string;
 }
 
-interface LoginResponse {
-    token: string;
-    user: {
-        id: string;
-        email: string;
-        role: string;
-    };
+interface RegisterCredentials {
+    username: string;
+    password: string;
 }
 
-const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const response = await api.post<{ token: string }>('/auth/login', credentials);
+interface User {
+    id: string;
+    username: string;
+}
+
+interface AuthResponse {
+    token: string;
+}
+
+const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    const response = await instance.post<AuthResponse>('/Auth/login', credentials);
     const { token } = response.data;
-    sessionStorage.setItem('jwt', token);
-    
-    // Fetch details
-    const userResponse = await api.get<{ id: string; username: string; role: string }>('/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-    
-    return { 
-        token, 
-        user: {
-            id: userResponse.data.id,
-            email: userResponse.data.username, // The backend returns username, not email to avoid confusion
-            role: userResponse.data.role
-        }
-    };
+    localStorage.setItem('token', token);
+    instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    return response.data;
+};
+
+const register = async (credentials: RegisterCredentials): Promise<AuthResponse> => {
+    const response = await instance.post<AuthResponse>('/Auth/register', credentials);
+    const { token } = response.data;
+    localStorage.setItem('token', token);
+    instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    return response.data;
+};
+
+const getMe = async (): Promise<User> => {
+    const response = await instance.get<User>('/Auth/me');
+    return response.data;
 };
 
 export const useLogin = () => {
-    return useMutation<LoginResponse, Error, LoginCredentials>(login);
+    return useMutation<AuthResponse, Error, LoginCredentials>(login);
+};
+
+export const useRegister = () => {
+    return useMutation<AuthResponse, Error, RegisterCredentials>(register);
+};
+
+export const useGetMe = () => {
+    return useQuery<User, Error>(['me'], getMe);
 };
 
 export const logout = () => {
-    sessionStorage.removeItem('jwt');
+    localStorage.removeItem('token');
+    delete instance.defaults.headers.common['Authorization'];
 };
 
-export default api;
+const token = localStorage.getItem('token');
+if (token) {
+    instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+export default instance;
