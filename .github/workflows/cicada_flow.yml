@@ -22,7 +22,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    # Build and push standard Backend
+    # Build and push standard x86_64 images
     - name: Build and push Backend
       uses: docker/build-push-action@v4
       with:
@@ -31,29 +31,6 @@ jobs:
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
         no-cache: true
     
-    # Build and push Backend ARM64
-    - name: Build and push Backend (ARM64)
-      uses: docker/build-push-action@v4
-      with:
-        context: ./Backend/DotNetSQL
-        file: ./Backend/DotNetSQL/Dockerfile.arm64
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
-        platforms: linux/arm64
-        no-cache: true
-    
-    # Build and push IoT Server ARM64
-    - name: Build and push IoT Server (ARM64)
-      uses: docker/build-push-action@v4
-      with:
-        context: ./IoT/IoT_server/TcpGrpcBridgeServer
-        file: ./IoT/IoT_server/TcpGrpcBridgeServer/Dockerfile.arm64
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/implant/iot-server-arm64:latest
-        platforms: linux/arm64
-        no-cache: true
-    
-    # Build and push MLService
     - name: Build and push MLService
       uses: docker/build-push-action@v4
       with:
@@ -62,11 +39,67 @@ jobs:
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-mlservice:latest
         no-cache: true
         
-    # Build and push Frontend
     - name: Build and push Frontend
       uses: docker/build-push-action@v4
       with:
         context: ./Frontend
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/implant/implant-frontend:latest
+        no-cache: true
+    
+    # Set up .NET for ARM builds
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+    
+    # ARM64 Backend Build - two-stage approach
+    - name: Build Backend .NET app for ARM
+      run: |
+        cd ./Backend/DotNetSQL
+        dotnet publish -c Release -o ./publish
+    
+    - name: Create simple Dockerfile for ARM Backend
+      run: |
+        cd ./Backend/DotNetSQL
+        echo 'FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8' > Dockerfile.simple
+        echo 'WORKDIR /app' >> Dockerfile.simple
+        echo 'COPY ./publish/ .' >> Dockerfile.simple
+        echo 'ENTRYPOINT ["dotnet", "DotNetSQL.dll"]' >> Dockerfile.simple
+    
+    - name: Build and push Backend (ARM64)
+      uses: docker/build-push-action@v4
+      with:
+        context: ./Backend/DotNetSQL
+        file: ./Backend/DotNetSQL/Dockerfile.simple
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
+        platforms: linux/arm64
+        no-cache: true
+    
+    # ARM64 IoT Server Build
+    - name: Build IoT Server .NET app for ARM
+      run: |
+        cd ./IoT/IoT_server/TcpGrpcBridgeServer
+        dotnet publish -c Release -o ./publish
+    
+    - name: Create simple Dockerfile for ARM IoT Server
+      run: |
+        cd ./IoT/IoT_server/TcpGrpcBridgeServer
+        echo 'FROM mcr.microsoft.com/dotnet/aspnet:9.0-jammy-arm64v8' > Dockerfile.simple
+        echo 'WORKDIR /app' >> Dockerfile.simple
+        echo 'COPY ./publish/ .' >> Dockerfile.simple
+        echo 'EXPOSE 5000 23' >> Dockerfile.simple
+        echo 'ENTRYPOINT ["dotnet", "TcpGrpcBridgeServer.dll"]' >> Dockerfile.simple
+    
+    - name: Build and push IoT Server (ARM64)
+      uses: docker/build-push-action@v4
+      with:
+        context: ./IoT/IoT_server/TcpGrpcBridgeServer
+        file: ./IoT/IoT_server/TcpGrpcBridgeServer/Dockerfile.simple
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/iot-server-arm64:latest
+        platforms: linux/arm64
         no-cache: true
