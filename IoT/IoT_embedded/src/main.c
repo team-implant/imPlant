@@ -18,6 +18,22 @@ bool shouldMeasure = false;
 bool shouldHandleInboundData = false;
 bool calibrating_water_level = false;
 
+static bool first = false;
+
+void displayAndDie() {
+    if (!first){
+        display_empty();
+        disable_timer_b();
+    }
+    first = false;
+}
+
+void asyncDisableDisplayAfterMs(int ms){
+    first = true;
+    void (*disablePointer)(void) = &displayAndDie;
+    periodic_task_init_b(disablePointer, ms);
+}
+
 void enableMeasure(void) {
     shouldMeasure = true;
 }

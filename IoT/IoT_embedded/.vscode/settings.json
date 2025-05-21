@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "interrupt.h": "c"
+        "interrupt.h": "c",
+        "wifi_com.h": "c",
+        "env.h": "c",
+        "sensors.h": "c"
     }
 }
