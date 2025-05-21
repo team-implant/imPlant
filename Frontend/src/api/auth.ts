@@ -24,10 +24,12 @@ interface RegisterCredentials {
 interface User {
     id: string;
     username: string;
+    role:string;
 }
 
 interface AuthResponse {
     token: string;
+    message?: string;
 }
 
 const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {

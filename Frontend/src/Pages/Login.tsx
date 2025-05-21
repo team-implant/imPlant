@@ -1,10 +1,11 @@
-import React, { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLogin } from '../api/auth';
+import React, {useState, FormEvent} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useLogin} from '../api/auth';
 import '../styles/Login.css';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
     const [password, setPassword] = useState<string>('');
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -12,17 +13,25 @@ const Login: React.FC = () => {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError(null);
         try {
-            const result = await loginMutation.mutateAsync({ username, password });
+            const result = await loginMutation.mutateAsync({
+                username,
+                password
+            });
             if (result.token) {
                 if (rememberMe) {
-                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('token', result.token);
                 }
                 navigate('/dashboard');
             }
         } catch (error) {
-            console.error('Login failed:', error);
-            // Handle login error (e.g., show error message to user)
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An error occurred while attempting to login.');
+            }
+
         }
     };
 
@@ -35,7 +44,8 @@ const Login: React.FC = () => {
                 <div className="circle xlarge shade4 bottom-right"></div>
                 <div className="circle xxlarge shade5 center"></div>
                 {[...Array(5)].map((_, index) => (
-                    <div key={index} className={`logo-background logo-${index + 1}`}></div>
+                    <div key={index}
+                         className={`logo-background logo-${index + 1}`}></div>
                 ))}
             </div>
             <div className="login-container">
@@ -47,7 +57,10 @@ const Login: React.FC = () => {
                             type="text"
                             id="username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                setError(null);
+                            }}
                             required
                         />
                     </div>
@@ -57,7 +70,10 @@ const Login: React.FC = () => {
                             type="password"
                             id="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setError(null);
+                            }}
                             required
                         />
                     </div>
@@ -75,10 +91,9 @@ const Login: React.FC = () => {
                         {loginMutation.isLoading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
-                {loginMutation.isError && (
-                    <div className="error-message">
-                        Login failed. Please check your credentials and try again.
-                    </div>
+                {error && (
+                    <div className="error-message" role="alert">
+                        {error}                    </div>
                 )}
                 <a href="#" className="forgot-password">Forgot password?</a>
             </div>
