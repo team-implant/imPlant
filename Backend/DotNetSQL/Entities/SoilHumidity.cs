@@ -9,7 +9,11 @@ namespace DotNetSQL.Entities
         public double MinValue { get; set; }
         public DateTime Timestamp { get; set; }
 
+        // Foreign key to MeasurementData
+        public int MeasurementDataId { get; set; }
+        public MeasurementData? MeasurementData { get; set; }
+
         // Navigation property
-        public Plant Plant { get; set; }
+        public Plant? Plant { get; set; }
     }
 }
