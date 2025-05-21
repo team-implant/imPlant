@@ -1,0 +1,86 @@
+name: imPlant CI/CD Pipeline
+on:
+  push:
+    branches: [ main, master, develop, DEV_Backend ]
+  pull_request:
+    branches: [ main, master, develop ]
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    # Add step to force image update by disabling caching
+    - name: Generate random string to force build
+      id: random
+      run: echo "CACHE_BUST=$(date +%s%N | sha256sum | head -c 8)" >> $GITHUB_ENV
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    # Build and push standard x86_64 backend
+    - name: Build and push Backend (AMD64)
+      uses: docker/build-push-action@v4
+      with:
+        context: ./Backend/DotNetSQL
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend:latest
+        platforms: linux/amd64
+        no-cache: true  # Disable caching to force rebuilding
+        
+    # Build ARM64 backend using a different approach
+    - name: Create ARM Dockerfile
+      run: |
+        cat > ./Backend/DotNetSQL/Dockerfile.arm64 << 'EOF'
+        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
+        WORKDIR /app
+        COPY ./publish/ .
+        ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
+        EOF
+    
+    # First build the dotnet app natively (not in Docker)
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Publish .NET app
+      run: |
+        cd ./Backend/DotNetSQL
+        dotnet publish -c Release -o ./publish
+    
+    # Then build an ARM64 Docker image with the pre-built artifacts
+    - name: Build and push Backend (ARM64)
+      uses: docker/build-push-action@v4
+      with:
+        context: ./Backend/DotNetSQL
+        file: ./Backend/DotNetSQL/Dockerfile.arm64
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest
+        platforms: linux/arm64
+        no-cache: true  # Disable caching to force rebuilding
+    
+    - name: Build and push MLService
+      uses: docker/build-push-action@v4
+      with:
+        context: ./Backend/MLService
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-mlservice:latest
+        no-cache: true  # Disable caching to force rebuilding
+        
+    - name: Build and push Frontend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./Frontend
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/implant/implant-frontend:latest
+        no-cache: true  # Disable caching to force rebuilding
