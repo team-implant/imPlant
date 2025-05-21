@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from ML.data.soilHumidity_data import fetch_soil_humidity_data
+from ML.data.soilHumidity_data import fetch_soil_humidity_data, save_soil_prediction_results
 
 def forecast_soil_humidity_multi_step(days=7, predictions_per_day=3):
     df = fetch_soil_humidity_data().sort_values("Timestamp").reset_index(drop=True)
@@ -44,5 +44,7 @@ def forecast_soil_humidity_multi_step(days=7, predictions_per_day=3):
         # Update lags
         last_2 = last_1
         last_1 = next_prediction
+
+    save_soil_prediction_results(results, plant_id=None, batch=None)
 
     return results
