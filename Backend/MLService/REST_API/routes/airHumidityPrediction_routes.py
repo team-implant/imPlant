@@ -12,7 +12,7 @@ def get_air_humidity_route():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@air_humidity_predictions_bp.route("/forecast/airhumidity/next", methods=["GET"])
+@air_humidity_predictions_bp.route("/predictions/airhumidity/forecast", methods=["GET"])
 def forecast_next_air_humidity():
     try:
         prediction = forecast_air_humidity()

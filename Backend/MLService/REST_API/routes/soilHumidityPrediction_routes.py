@@ -13,7 +13,7 @@ def get_soil_humidity_route():
         return jsonify({"error": str(e)}), 500
     
     
-@soil_humidity_predictions_bp.route("/forecast/soilhumidity/next", methods=["GET"])
+@soil_humidity_predictions_bp.route("/predictions/soilhumidity/forecast", methods=["GET"])
 def forecast_next_soil_humidity():
     try:
         prediction = forecast_soil_humidity()
