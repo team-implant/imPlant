@@ -88,7 +88,7 @@ jobs:
     - name: Create simple Dockerfile for ARM IoT Server
       run: |
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
-        echo 'FROM mcr.microsoft.com/dotnet/aspnet:9.0-jammy-arm64v8' > Dockerfile.simple
+        echo 'FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8' > Dockerfile.simple
         echo 'WORKDIR /app' >> Dockerfile.simple
         echo 'COPY ./publish/ .' >> Dockerfile.simple
         echo 'EXPOSE 5000 23' >> Dockerfile.simple
