@@ -93,15 +93,27 @@ namespace DotNetSQL.EFC
 
             // PredictionResult table mapping
             modelBuilder.Entity<PredictionResult>()
-                .ToTable("PredictionResults")
-                .Property(p => p.IrrigationRecommendation)
-                .HasColumnName("irrigation_recommendation");
+                .ToTable("PredictionResults");
             modelBuilder.Entity<PredictionResult>()
-                .Property(p => p.PlantHealth)
-                .HasColumnName("plant_health");
+                .Property(p => p.PredictionType)
+                .HasColumnName("prediction_type");
             modelBuilder.Entity<PredictionResult>()
-                .Property(p => p.AirHumidity)
-                .HasColumnName("air_humidity");
+                .Property(p => p.Value)
+                .HasColumnName("value");
+            modelBuilder.Entity<PredictionResult>()
+                .Property(p => p.Timestamp)
+                .HasColumnName("timestamp");
+            modelBuilder.Entity<PredictionResult>()
+                .Property(p => p.PlantId)
+                .HasColumnName("plant_id");
+            modelBuilder.Entity<PredictionResult>()
+                .Property(p => p.Batch)
+                .HasColumnName("batch");
+            modelBuilder.Entity<PredictionResult>()
+                .HasOne(p => p.Plant)
+                .WithMany()
+                .HasForeignKey(p => p.PlantId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevents cascade delete issues with nullable FK
 
             // SoilMeasurement foreign keys
             modelBuilder.Entity<SoilMeasurement>()

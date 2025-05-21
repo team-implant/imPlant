@@ -5,12 +5,13 @@ namespace DotNetSQL.Entities
     public class PredictionResult
     {
         public int Id { get; set; }
-        public double Temperature { get; set; }
-        public double AirHumidity { get; set; }
-        public double SoilHumidity { get; set; }
-        public string IrrigationRecommendation { get; set; } = string.Empty;
-        public double LightIntensity { get; set; }
-        public string PlantHealth { get; set; } = string.Empty;
+        public string PredictionType { get; set; } = string.Empty; // e.g. "Temperature"
+        public double Value { get; set; }
         public DateTime Timestamp { get; set; }
+        public int? PlantId { get; set; }
+        public int Batch { get; set; }
+
+        // Navigation property
+        public Plant? Plant { get; set; }
     }
 }
