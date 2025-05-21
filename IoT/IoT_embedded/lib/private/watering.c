@@ -3,8 +3,8 @@
 #include "waterPump.h"
 #include "watering.h"
 
-static int PLANT1_ANGLE = 70;
-static int PLANT2_ANGLE = 105;
+int PLANT1_ANGLE = 70;
+int PLANT2_ANGLE = 105;
 static int NEUTRAL_ANGLE = 87;
 
 void runWaterPump(){

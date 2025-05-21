@@ -1,5 +1,4 @@
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include "includes.h"
 #include <stdbool.h>
 
 #include "buttons.h"

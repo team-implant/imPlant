@@ -13,6 +13,8 @@
 
 extern char outbound_buffer[256];
 extern bool calibrating_water_level;
+extern int PLANT1_ANGLE;
+extern int PLANT2_ANGLE;
 
 void calibrate_water_levels() {
     calibrating_water_level = true;
@@ -43,7 +45,6 @@ void calibrate_water_levels() {
 void calibrate_sprinkler_angles() {
     int angle1 = 70;
     int angle2 = 105;
-
     display_setValues(18, 20, 18, 1);
     bool done = false;
     servo(angle1);
@@ -64,6 +65,7 @@ void calibrate_sprinkler_angles() {
             display_setValues(18, 20, 18, 1);
         } else if (buttons_3_pressed()) {
             done = true;
+            PLANT1_ANGLE = angle1;
         }
     }
 
@@ -88,6 +90,7 @@ void calibrate_sprinkler_angles() {
         } else if (buttons_3_pressed()) {
             display_setValues(13, 21, 20, 14);
             asyncDisableDisplayAfterMs(5000);
+            PLANT2_ANGLE = angle2;
             done = true;
         }
     }

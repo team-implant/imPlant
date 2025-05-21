@@ -118,6 +118,8 @@ extern uint8_t DDRL;
 extern uint8_t PORTL;
 #define MUX0 0
 #define MUX2 2
+#define MUX3 3
+#define MUX4 4
 #define INT2 2
 extern uint8_t PINB;
 extern uint8_t EIMSK;

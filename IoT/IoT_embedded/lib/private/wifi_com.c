@@ -16,9 +16,9 @@ void send_data(char data[]) {
 }
 
 void handle_incoming_wifi_data() {
-    if (strcmp(inbound_buffer, "WATER1") == 0) {
+    if (strcmp(inbound_buffer, "1") == 0) {
         waterPlant1();
-    } else if (strcmp(inbound_buffer, "WATER2") == 0) {
+    } else if (strcmp(inbound_buffer, "2") == 0) {
         waterPlant2();
     } else if (strcmp(inbound_buffer, "NEUTRAL") == 0) {
         neutral();

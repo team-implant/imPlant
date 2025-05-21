@@ -18,9 +18,9 @@ void pump_stop()
     PORTA &= ~(_BV(PA7));
 }
 
-int pump_runnung()
+int pump_running()
 {
-    if (PORTA & _BV(PA7) == 0)
+    if (PORTA && _BV(PA7) == 0)
     {
         return 0;
     }
