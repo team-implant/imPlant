@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
-using TcpGrpcBridgeServer;
-using TcpGrpcBridgeServer.Services;
+using TcpGrpcBridgeServer.Network;
+
 
 namespace TcpGrpcBridgeServer
 {
@@ -10,6 +9,7 @@ namespace TcpGrpcBridgeServer
     {
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("Starting TCP and gRPC servers...");
             // Run both TCP server and gRPC server concurrently
             Task tcpTask = TcpServer.StartAsync();
             Task grpcTask = CreateHostBuilder(args).Build().RunAsync();

@@ -13,5 +13,8 @@ namespace DotNetSQL.Entities
 
         // Navigation property for Plant
         public Plant? Plant { get; set; }
+
+        // Navigation property for one-to-one SoilHumidity
+        public SoilHumidity? SoilHumidityDetails { get; set; }
     }
 }
