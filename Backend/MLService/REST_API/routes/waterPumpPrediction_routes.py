@@ -12,7 +12,7 @@ def get_water_pump_route():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@water_pump_predictions_bp.route("/predictions/airhumidity/forecast", methods=["GET"])
+@water_pump_predictions_bp.route("/predictions/waterPump/forecast", methods=["GET"])
 def forecast_multi_water_pump():
     try:
         forecast = get_predictions("WaterPump")

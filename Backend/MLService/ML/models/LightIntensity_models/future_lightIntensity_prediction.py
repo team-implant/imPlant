@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from ML.data.lightIntensity_data import fetch_light_intensity_data, save_prediction_results
 
-def forecast_temperature_step(days=7, predictions_per_day=3):
+def forecast_light_intensity_multi_step(days=7, predictions_per_day=3):
     df = fetch_light_intensity_data().sort_values("Timestamp").reset_index(drop=True)
 
     # Create lag features

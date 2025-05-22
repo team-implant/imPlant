@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from ML.data.temperature_data import fetch_temperature_data, save_prediction_results
+from ML.data.waterPump_data import fetch_water_pump_data, save_prediction_results
 
-def forecast_temperature_step(days=7, predictions_per_day=3):
-    df = fetch_temperature_data().sort_values("Timestamp").reset_index(drop=True)
+def forecast_water_pump_multi_step(days=7, predictions_per_day=3):
+    df = fetch_water_pump_data().sort_values("Timestamp").reset_index(drop=True)
 
     # Create lag features
     df["WaterPump_t-1"] = df["WaterPump"].shift(1)

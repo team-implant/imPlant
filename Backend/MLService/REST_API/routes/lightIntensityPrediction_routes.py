@@ -12,10 +12,10 @@ def get_light_intensity_route():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@light_intensity_predictions_bp.route("/predictions/airhumidity/forecast", methods=["GET"])
+@light_intensity_predictions_bp.route("/predictions/lightintensity/forecast", methods=["GET"])
 def forecast_multi_light_intensity():
     try:
-        forecast = get_predictions("AirHumidity")
+        forecast = get_predictions("LightIntensity")
         return jsonify(forecast), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -3,7 +3,7 @@ from AzurePythonConnection.DbConnection.DbConnection import get_conn
 def get_predictions(measurementType):
     with get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT Id, Value , Timestamp FROM PredictionResults as a WHERE prediction_type = ? AND Batch = (SELECT MAX(Batch) FROM PredictionResults as b WHERE a.Id = b.Id)", measurementType)
+        cursor.execute("SELECT Id, Value , Timestamp FROM PredictionResults WHERE Batch = (SELECT MAX(Batch) FROM PredictionResults WHERE prediction_type = ?)", measurementType)
         rows = cursor.fetchall()
         return [
             {"Id": row.Id, measurementType: row.Value, "Timestamp": row.Timestamp}
