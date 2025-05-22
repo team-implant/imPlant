@@ -27,11 +27,11 @@ def save_prediction_results(measurementType, predictions, plant_id=None, batch=N
     
     def stringToColumnName(argument):
         switcher = {
-            "soilHumidity": "predictedSoilHumidity",
-            "airHumidity": "predictedAirHumidity",
-            "temperature": "predictedTemperature",
-            "lightIntensity": "predictedLightIntensity",
-            "waterPump": "predictedWaterPump"
+            "SoilHumidity": "predictedSoilHumidity",
+            "AirHumidity": "predictedAirHumidity",
+            "Temperature": "predictedTemperature",
+            "LightIntensity": "predictedLightIntensity",
+            "WaterPump": "predictedWaterPump"
         }
 
         return switcher.get(argument)

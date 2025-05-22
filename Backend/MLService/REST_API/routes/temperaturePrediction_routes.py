@@ -15,7 +15,7 @@ def get_temperature_route():
 @temperature_predictions_bp.route("/predictions/temperatures/forecast", methods=["GET"])
 def forecast_multi_temperature():
     try:
-        forecast = get_predictions("temperature")
+        forecast = get_predictions("Temperature")
         return jsonify(forecast), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
