@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from ML.data.measurement_data import fetch_measurement_data
+from ML.utills.jsonify import jsonify_predictions
 
 def run_soil_humidity_gradient_boosting(debug=True, use_preset_params=True):
     df = fetch_measurement_data()
@@ -65,3 +66,15 @@ def run_soil_humidity_gradient_boosting(debug=True, use_preset_params=True):
     print("Feature importances:", dict(zip(feature_cols, model.feature_importances_)))
 
     return model, X_test, y_test, y_pred, df, feature_cols, model.feature_importances_
+
+def get_soil_humidity_predictions_json():
+    model, X_test, y_test, y_pred, df, feature_cols, importances = run_soil_humidity_gradient_boosting()
+    return jsonify_predictions(
+        df,
+        X_test.index,
+        y_pred,
+        id_col="Id",
+        value_col="predictedSoilHumidity",
+        timestamp_col="Timestamp",
+        output_value_name="predictedSoilHumidity"
+    )
