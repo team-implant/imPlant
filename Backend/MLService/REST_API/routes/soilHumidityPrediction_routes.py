@@ -1,4 +1,3 @@
-from ML.models.SoilHumidities_models.future_soilHumidity_prediction import forecast_soil_humidity_multi_step
 from flask import Blueprint, jsonify # type: ignore
 from ML.models.SoilHumidities_models import soilHumidity_linearRegression
 from REST_API.services.soilHumidity_prediction_service import get_soil_humidity_predictions
