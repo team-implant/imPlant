@@ -1,28 +1,28 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from ML.data.lightIntensity_data import fetch_light_intensity_data, save_prediction_results
+from ML.data.temperature_data import fetch_temperature_data, save_prediction_results
 
 def forecast_temperature_step(days=7, predictions_per_day=3):
-    df = fetch_light_intensity_data().sort_values("Timestamp").reset_index(drop=True)
+    df = fetch_temperature_data().sort_values("Timestamp").reset_index(drop=True)
 
     # Create lag features
-    df["LightIntensity_t-1"] = df["LightIntensity"].shift(1)
-    df["LightIntensity_t-2"] = df["LightIntensity"].shift(2)
+    df["WaterPump_t-1"] = df["WaterPump"].shift(1)
+    df["WaterPump_t-2"] = df["WaterPump"].shift(2)
     df = df.dropna()
 
     if len(df) < 2:
         raise ValueError("Not enough data to forecast.")
 
     # Train lag-based model
-    X = df[["LightIntensity_t-1", "LightIntensity_t-2"]]
-    y = df["LightIntensity"]
+    X = df[["WaterPump_t-1", "WaterPump_t-2"]]
+    y = df["WaterPump"]
     model = LinearRegression()
     model.fit(X, y)
 
     # Start with the last two known values
-    last_1 = df["LightIntensity"].iloc[-1]
-    last_2 = df["LightIntensity"].iloc[-2]
+    last_1 = df["WaterPump"].iloc[-1]
+    last_2 = df["WaterPump"].iloc[-2]
     last_timestamp = df["Timestamp"].iloc[-1]
 
     total_predictions = days * predictions_per_day
@@ -37,7 +37,7 @@ def forecast_temperature_step(days=7, predictions_per_day=3):
 
         results.append({
             "timestamp": next_time.strftime("%Y-%m-%d %H:%M:%S"),
-            "predictedLightIntensity": round(float(next_prediction), 2),
+            "predictedWaterPump": round(float(next_prediction), 2),
             "based_on": [round(last_2, 2), round(last_1, 2)]
         })
 
@@ -45,6 +45,6 @@ def forecast_temperature_step(days=7, predictions_per_day=3):
         last_2 = last_1
         last_1 = next_prediction
 
-    save_prediction_results("LightIntensity",results, plant_id=None, batch=None)
+    save_prediction_results("WaterPump",results, plant_id=None, batch=None)
 
     return results

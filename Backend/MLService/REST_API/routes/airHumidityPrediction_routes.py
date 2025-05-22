@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify # type: ignore
 from ML.models.AirHumidity_models import airHumidity_linearRegresion
-from ML.models.AirHumidity_models.future_airHumidity_prediction import forecast_air_humidity_multi_step
 from REST_API.services.general_prediction_service import get_predictions
 
 air_humidity_predictions_bp = Blueprint("air_humidity_predictions", __name__)
