@@ -6,7 +6,7 @@ interface MLAirHumidityData {
     id: number;
     airHumidity: number;
     timestamp: string;
-    // Add
+
 }
 
 const getMLAirHumidity = async (): Promise<MLAirHumidityData[]> => {

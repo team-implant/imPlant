@@ -80,6 +80,7 @@ export default function MLInsights() {
                         </>
                     ))}
                 </div>
+                <p> please click on card to view data</p>
             </div>
         </div>
     );
