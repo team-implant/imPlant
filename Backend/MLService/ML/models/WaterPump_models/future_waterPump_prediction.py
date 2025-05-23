@@ -7,8 +7,8 @@ def forecast_water_pump_multi_step(days=7, predictions_per_day=3):
     df = fetch_water_pump_data().sort_values("Timestamp").reset_index(drop=True)
 
     # Create lag features
-    df["WaterPump_t-1"] = df["WaterPump"].shift(1)
-    df["WaterPump_t-2"] = df["WaterPump"].shift(2)
+    df["WaterPump_t-1"] = df["WaterPumpLevel"].shift(1)
+    df["WaterPump_t-2"] = df["WaterPumpLevel"].shift(2)
     df = df.dropna()
 
     if len(df) < 2:
@@ -16,13 +16,13 @@ def forecast_water_pump_multi_step(days=7, predictions_per_day=3):
 
     # Train lag-based model
     X = df[["WaterPump_t-1", "WaterPump_t-2"]]
-    y = df["WaterPump"]
+    y = df["WaterPumpLevel"]
     model = LinearRegression()
     model.fit(X, y)
 
     # Start with the last two known values
-    last_1 = df["WaterPump"].iloc[-1]
-    last_2 = df["WaterPump"].iloc[-2]
+    last_1 = df["WaterPumpLevel"].iloc[-1]
+    last_2 = df["WaterPumpLevel"].iloc[-2]
     last_timestamp = df["Timestamp"].iloc[-1]
 
     total_predictions = days * predictions_per_day

@@ -11,7 +11,7 @@ def get_all_route():
     try:
        forecast_air_humidity_multi_step()
        forecast_soil_humidity_multi_step()
-       #forecast_water_pump_multi_step()
+       forecast_water_pump_multi_step()
        forecast_temperature_step()
        forecast_light_intensity_multi_step()
        return "Models finished running, refresh the site", 200
