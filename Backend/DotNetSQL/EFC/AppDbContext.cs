@@ -28,13 +28,6 @@ namespace DotNetSQL.EFC
                 .Property(m => m.LightIntensity)
                 .HasColumnName("Light");
 
-            // Set up relationship between MeasurementData and SoilHumidity
-            // Updated to handle nullable navigation properties
-            modelBuilder.Entity<SoilHumidity>()
-                .HasOne(s => s.MeasurementData)
-                .WithOne(m => m.SoilHumidityDetails)
-                .HasForeignKey<SoilHumidity>(s => s.MeasurementDataId)
-                .IsRequired(); // Foreign key is required even if navigation property is nullable
             modelBuilder.Entity<MeasurementData>()
                 .Property(m => m.TankFillLevel)
                 .HasColumnName("tank_fill_level");

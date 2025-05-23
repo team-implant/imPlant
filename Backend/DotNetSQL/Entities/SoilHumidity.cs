@@ -22,9 +22,7 @@ namespace DotNetSQL.Entities
         public double MinThreshold { get; set; } // restored as before
         public DateTime Timestamp { get; set; }
 
-        // Foreign key to MeasurementData
-        public int MeasurementDataId { get; set; }
-        public MeasurementData? MeasurementData { get; set; }
+       
 
         // Navigation property
         public Plant? Plant { get; set; }

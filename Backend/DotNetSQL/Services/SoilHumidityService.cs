@@ -13,27 +13,22 @@ public class SoilHumidityService : ISoilHumidityService
         _context = context;
     }
 
-    // public async Task<SoilHumidityDto> AddSoilHumidityAsync(SoilHumidityDto soilHumidityDto)
-    // {
-    //     var entity = new MeasurementData
-    //     {
-    //         SoilHumidity = soilHumidityDto.SoilHumidity,
-    //         Timestamp = soilHumidityDto.Timestamp,
-    //         AirHumidity = 0,
-    //         Temperature = 0,
-    //         Light = 0
-    //     };
+    public async Task<SoilHumidityDto> AddSoilHumidityAsync(SoilHumidityDto soilHumidityDto)
+    {
+        var entity = new SoilHumidity
+        {
+            PlantId = soilHumidityDto.PlantId,
+            Position = soilHumidityDto.Position,
+            MinThreshold = soilHumidityDto.MinThreshold,
+            Timestamp = soilHumidityDto.Timestamp
+        };
 
-    //     _context.MeasurementData.Add(entity);
-    //     await _context.SaveChangesAsync();
+        _context.SoilHumidities.Add(entity);
+        await _context.SaveChangesAsync();
 
-    //     return new SoilHumidityDto
-    //     {
-    //         Id = entity.Id,
-    //         SoilHumidity = entity.SoilHumidity,
-    //         Timestamp = entity.Timestamp
-    //     };
-    // }
+        soilHumidityDto.Id = entity.Id;
+        return soilHumidityDto;
+    }
 
     public async Task<IEnumerable<SoilHumidityDto>> GetSoilHumidityAsync()
     {
