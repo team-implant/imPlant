@@ -56,7 +56,6 @@ jobs:
       with:
         dotnet-version: |
           8.0.x
-          9.0.x
     
     # ARM64 Backend with workaround
     - name: Build Backend for ARM64
@@ -65,18 +64,24 @@ jobs:
         cd ./Backend/DotNetSQL
         
         # Build on the GitHub runner
-        dotnet publish -c Release -o ./publish
+        dotnet publish DotNetSQL.csproj -c Release -o ./publish/backend
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
         FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
         WORKDIR /app
-        COPY ./publish/ .
+        COPY ./publish/backend/ .
         ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
         EOF
         
         # Let Docker build using the pre-built files
         docker buildx build --platform linux/arm64 -f Dockerfile.armcopy -t ghcr.io/${{ github.repository_owner }}/implant/implant-backend-arm64:latest --push .
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          9.0.x
     
     # ARM64 IoT Server with workaround
     - name: Build IoT Server for ARM64
@@ -85,13 +90,13 @@ jobs:
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
         
         # Build on the GitHub runner
-        dotnet publish TcpGrpcBridgeServer.csproj -c Release -o ./publish
+        dotnet publish TcpGrpcBridgeServer.csproj -c Release -o ./publish/iot
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
         FROM mcr.microsoft.com/dotnet/aspnet:9.0
         WORKDIR /app
-        COPY ./publish/ .
+        COPY ./publish/iot/ .
         EXPOSE 5000 23
         ENTRYPOINT ["dotnet", "TcpGrpcBridgeServer.dll"]
         EOF
