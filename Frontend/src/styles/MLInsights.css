@@ -1,28 +1,59 @@
 .ml-insights-page {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+  position: relative;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.ml-insights-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/tree-2-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.1;
+  z-index: -1;
 }
 
 .insights-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .insight-card {
-    background-color: #f0f8ff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: rgba(240, 248, 255, 0.9);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .insight-card h2 {
-    margin-top: 0;
-    color: #2c3e50;
-    font-size: 1.2em;
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.2em;
 }
 
 .insight-card p {
-    color: #34495e;
+  color: #34495e;
+}
+
+.insight-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.insight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
