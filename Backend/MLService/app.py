@@ -16,6 +16,7 @@ from REST_API.routes.soilHumidityPrediction_routes import soil_humidity_predicti
 from REST_API.routes.measurementPrediction_routes import measurement_predictions_bp
 from REST_API.routes.temperaturePrediction_routes import temperature_predictions_bp
 from REST_API.routes.waterPumpPrediction_routes import water_pump_predictions_bp
+from REST_API.routes.modelActivation_routes import model_activation_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -33,6 +34,7 @@ app.register_blueprint(soil_humidity_predictions_bp)
 app.register_blueprint(measurement_predictions_bp)
 app.register_blueprint(temperature_predictions_bp)
 app.register_blueprint(water_pump_predictions_bp)
+app.register_blueprint(model_activation_bp)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -16,14 +16,17 @@ namespace TcpGrpcBridgeServer.Network
 
             foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                if ((ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
+                    ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                    && ni.OperationalStatus == OperationalStatus.Up
+                    && !ni.Name.ToLower().Contains("vethernet")
+                    && !ni.Description.ToLower().Contains("virtual")
+                    && !ni.Description.ToLower().Contains("hyper-v"))
                 {
                     Console.WriteLine($"Interface: {ni.Name}");
-                    if (ni.OperationalStatus != OperationalStatus.Up) continue;
-
                     foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
                     {
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork) // IPv4
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
                         {
                             ipAddr = ip.Address;
                             Console.WriteLine($"Selected IPv4 address: {ipAddr}");
@@ -32,6 +35,7 @@ namespace TcpGrpcBridgeServer.Network
                     }
                 }
             }
+
         DoneSelectingIP:
 
             Console.WriteLine("CREATING TCP LISTENER");

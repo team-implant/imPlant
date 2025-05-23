@@ -3,7 +3,5 @@ from datetime import datetime
 
 class WaterPump(BaseModel):
     Id: int
-    Level: float
-    MinLevel: int
-    MaxLevel: int
+    WaterPumpLevel: float
     Timestamp: datetime
