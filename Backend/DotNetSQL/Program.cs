@@ -22,8 +22,6 @@ builder.Services.AddCors(options =>
                    .AllowCredentials());
     });
 
-builder.UseCors("Default");
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -126,7 +124,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAll");
+app.UseCors("Default");
 
 app.MapControllers();
 
