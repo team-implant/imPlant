@@ -10,7 +10,7 @@ using DotNetSQL.GrpcClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load configuration from JSON and environment variables
+// Load config from JSON and environment variables
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
@@ -25,10 +25,11 @@ builder.Services.AddCors(options =>
               .AllowCredentials());
 });
 
+// Controller support
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Swagger & JWT config
+// Swagger & JWT integration
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -57,7 +58,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Register services
+// Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
@@ -68,18 +69,18 @@ builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IGrpcClientManager, GrpcClientManager>();
 
-// ✅ Securely retrieve connection string
+// Database Connection
 var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")
                ?? builder.Configuration.GetConnectionString("DefaultConnection")
                ?? builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 
 if (string.IsNullOrEmpty(connection))
 {
-    Console.WriteLine("ERROR: Connection string not found.");
+    Console.WriteLine("❌ ERROR: Connection string not found.");
 }
 else
 {
-    Console.WriteLine("Using connection string.");
+    Console.WriteLine("✅ Using SQL connection string.");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -88,13 +89,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         sqlOptions.EnableRetryOnFailure();
     }));
 
-// JWT Authentication
+// JWT Setup
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET");
 
 if (string.IsNullOrWhiteSpace(secretKey))
 {
-    throw new InvalidOperationException("JWT Secret is not configured.");
+    throw new InvalidOperationException("❌ JWT Secret is not configured.");
 }
 
 builder.Services.AddAuthentication(options =>
@@ -118,27 +119,31 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// ✅ Swagger
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger (always enabled)
+app.UseSwagger();
+app.UseSwaggerUI();
 
+// HTTPS & CORS
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.UseCors("Default");
 
+// Authentication & Authorization
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map routes
 app.MapControllers();
 
-// ✅ Health check endpoint
+// Health check
 app.MapGet("/", () => "✅ Backend is alive!");
 
+// Optional: redirect root to Swagger UI
 app.MapGet("/swagger", context =>
 {
     context.Response.Redirect("/swagger/index.html");
     return Task.CompletedTask;
 });
+
+app.Logger.LogInformation("🚀 Backend has started and is ready to serve requests.");
 
 app.Run();
