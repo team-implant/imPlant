@@ -87,7 +87,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }));
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"];
+var secretKey = jwtSettings["Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET");
 
 if (string.IsNullOrWhiteSpace(secretKey))
 {
