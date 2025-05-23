@@ -12,23 +12,23 @@ namespace DotNetSQL.Controllers
     [Route("api/measurements")]
     public class MeasurementController : ControllerBase
     {
-        private readonly IMeasurementService _temperatureService;
+        private readonly IMeasurementService _measurementService;
 
-        public MeasurementController(IMeasurementService temperatureService)
+        public MeasurementController(IMeasurementService measurementService)
         {
-            _temperatureService = temperatureService;
+            _measurementService = measurementService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MeasurementData>>> GetAllMeasurements()
         {
-            return Ok(await _temperatureService.GetAllMeasurementsAsync());
+            return Ok(await _measurementService.GetAllMeasurementsAsync());
         }
 
         [HttpGet("by-plant/{plantId}")]
         public async Task<ActionResult<IEnumerable<MeasurementData>>> GetMeasurementsByPlantId(int plantId)
         {
-            var allMeasurements = await _temperatureService.GetAllMeasurementsAsync();
+            var allMeasurements = await _measurementService.GetAllMeasurementsAsync();
             var filtered = allMeasurements.Where(m => m.PlantId == plantId).ToList();
             return Ok(filtered);
         }
@@ -36,7 +36,7 @@ namespace DotNetSQL.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MeasurementData>> GetMeasurementById(int id)
         {
-            var measurement = await _temperatureService.GetMeasurementByIdAsync(id);
+            var measurement = await _measurementService.GetMeasurementByIdAsync(id);
             if (measurement == null)
                 return NotFound();
             return Ok(measurement);
