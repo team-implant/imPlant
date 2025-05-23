@@ -55,7 +55,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: |
-          8.0.x
+          9.0.x
     
     # ARM64 Backend with workaround
     - name: Build Backend for ARM64
@@ -68,7 +68,7 @@ jobs:
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
-        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
+        FROM mcr.microsoft.com/dotnet/aspnet:9.0
         WORKDIR /app
         COPY ./backend/publish/ .
         ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
