@@ -64,13 +64,13 @@ jobs:
         cd ./Backend/DotNetSQL
         
         # Build on the GitHub runner
-        dotnet publish DotNetSQL.csproj -c Release -o ./publish/backend
+        dotnet publish DotNetSQL.csproj -c Release -o ./backend/publish
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
         FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
         WORKDIR /app
-        COPY ./publish/backend/ .
+        COPY ./backend/publish/ .
         ENTRYPOINT ["dotnet", "DotNetSQL.dll"]
         EOF
         
@@ -90,13 +90,13 @@ jobs:
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
         
         # Build on the GitHub runner
-        dotnet publish TcpGrpcBridgeServer.csproj -c Release -o ./publish/iot
+        dotnet publish TcpGrpcBridgeServer.csproj -c Release -o ./iot/publish
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
         FROM mcr.microsoft.com/dotnet/aspnet:9.0
         WORKDIR /app
-        COPY ./publish/iot/ .
+        COPY ./iot/publish/ .
         EXPOSE 5000 23
         ENTRYPOINT ["dotnet", "TcpGrpcBridgeServer.dll"]
         EOF
