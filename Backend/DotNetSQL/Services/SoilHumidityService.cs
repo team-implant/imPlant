@@ -42,7 +42,7 @@ public class SoilHumidityService : ISoilHumidityService
             {
                 Id = m.Id,
                 PlantId = m.PlantId,
-                MinValue = m.MinValue,
+                Position = m.Position, // Renamed from MinValue
                 Timestamp = m.Timestamp
             })
             .ToListAsync();
@@ -56,7 +56,7 @@ public class SoilHumidityService : ISoilHumidityService
             {
                 Id = m.Id,
                 PlantId = m.PlantId,
-                MinValue = m.MinValue,
+                Position = m.Position, // Renamed from MinValue
                 Timestamp = m.Timestamp
             })
             .FirstOrDefaultAsync();

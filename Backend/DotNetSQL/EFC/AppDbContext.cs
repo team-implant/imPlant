@@ -59,8 +59,8 @@ namespace DotNetSQL.EFC
             // Map SoilHumidity to Soil_Humidity_Thresholds
             modelBuilder.Entity<SoilHumidity>()
                 .ToTable("Soil_Humidity_Thresholds")
-                .Property(s => s.MinValue)
-                .HasColumnName("min_threshold");
+                .Property(s => s.Position)
+                .HasColumnName("Position");
             modelBuilder.Entity<SoilHumidity>()
                 .Property(s => s.Timestamp)
                 .HasColumnName("time");
