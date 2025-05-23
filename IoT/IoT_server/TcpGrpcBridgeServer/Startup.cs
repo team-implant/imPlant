@@ -12,6 +12,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddGrpc();
+        services.AddSingleton<ITcpSender, TcpSender>();
     }
 
     // 2. Start gRPC and TCP server
