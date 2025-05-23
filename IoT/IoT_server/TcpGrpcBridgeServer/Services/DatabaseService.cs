@@ -20,8 +20,8 @@ namespace TcpGrpcBridgeServer.Services
             foreach (var data in dataList)
             {
                 var query = @"INSERT INTO MeasurementData 
-                          (Temperature, AirHumidity, SoilHumidity, Light, tank_fill_level, SoilHumidityDetailsId) 
-                          VALUES (@Temperature, @AirHumidity, @SoilHumidity, @Light, @TankFillLevel, @SoilHumidityDetailsId)";
+                          (Temperature, AirHumidity, SoilHumidity, Light, tank_fill_level, plant_id, TimeStamp) 
+                          VALUES (@Temperature, @AirHumidity, @SoilHumidity, @Light, @TankFillLevel, @plant_id, @TimeStamp)";
 
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Temperature", data.Temperature);
@@ -29,9 +29,13 @@ namespace TcpGrpcBridgeServer.Services
                 command.Parameters.AddWithValue("@SoilHumidity", data.SoilHumidity);
                 command.Parameters.AddWithValue("@Light", data.Light);
                 command.Parameters.AddWithValue("@TankFillLevel", data.TankFillLevel);
-                command.Parameters.AddWithValue("@SoilHumidityDetailsId", data.SoilHumidityDetailsId);
+                command.Parameters.AddWithValue("@plant_id", data.SoilHumidityDetailsId);
+                command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
 
                 await command.ExecuteNonQueryAsync();
+
+                Console.WriteLine($"Inserted data: {data.Temperature}, {data.AirHumidity}, {data.SoilHumidity}, {data.Light}, {data.TankFillLevel}, {data.SoilHumidityDetailsId}");
+
             }
         }
 
@@ -60,7 +64,7 @@ namespace TcpGrpcBridgeServer.Services
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = @"SELECT TOP 1 min_threshold 
+            var query = @"SELECT TOP 1 MinThreshold 
                       FROM dbo.Soil_Humidity_Thresholds 
                       WHERE plant_id = @PlantId 
                       ORDER BY time DESC";
