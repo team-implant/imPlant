@@ -10,21 +10,25 @@ using DotNetSQL.GrpcClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                     .AddEnvironmentVariables();
+// Load configuration from JSON and environment variables
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
+// CORS
 builder.Services.AddCors(options =>
-    {
-        options.AddPolicy(name: "Default", policy =>
-            policy.WithOrigins("http://localhost:5173", "https://electimore.xyz")
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials());
-    });
+{
+    options.AddPolicy("Default", policy =>
+        policy.WithOrigins("http://localhost:5173", "https://electimore.xyz")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// Swagger & JWT config
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -53,6 +57,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<ITemperatureTService, TemperatureTService>();
@@ -61,21 +66,20 @@ builder.Services.AddScoped<IAirHumidityService, AirHumidityService>();
 builder.Services.AddScoped<ISoilHumidityService, SoilHumidityService>();
 builder.Services.AddScoped<IWaterPumpService, WaterPumpService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
-
-
 builder.Services.AddScoped<IGrpcClientManager, GrpcClientManager>();
 
-
-// Get connection string (same logic for both Dev and Prod)
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+// ✅ Securely retrieve connection string
+var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")
+               ?? builder.Configuration.GetConnectionString("DefaultConnection")
+               ?? builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 
 if (string.IsNullOrEmpty(connection))
 {
-    Console.WriteLine("ERROR: Connection string 'AZURE_SQL_CONNECTIONSTRING' not found.");
+    Console.WriteLine("ERROR: Connection string not found.");
 }
 else
 {
-    Console.WriteLine($"Using connection string: {connection}");
+    Console.WriteLine("Using connection string.");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -84,12 +88,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         sqlOptions.EnableRetryOnFailure();
     }));
 
+// JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET");
 
 if (string.IsNullOrWhiteSpace(secretKey))
 {
-    throw new InvalidOperationException("JWT Secret is not configured. Check appsettings.json or environment variables.");
+    throw new InvalidOperationException("JWT Secret is not configured.");
 }
 
 builder.Services.AddAuthentication(options =>
@@ -111,10 +116,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 var app = builder.Build();
 
-// ✅ Swagger visible, but protected endpoints require token to call
+// ✅ Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -128,7 +132,9 @@ app.UseCors("Default");
 
 app.MapControllers();
 
-// Optional: redirect /swagger to index.html
+// ✅ Health check endpoint
+app.MapGet("/", () => "✅ Backend is alive!");
+
 app.MapGet("/swagger", context =>
 {
     context.Response.Redirect("/swagger/index.html");
