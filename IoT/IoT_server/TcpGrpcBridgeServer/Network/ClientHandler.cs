@@ -23,7 +23,7 @@ namespace TcpGrpcBridgeServer.Network
                     Console.WriteLine("TCP received: " + received);
 
                     var sensorDataList = SensorDataParser.ParseSensorData(received);
-                    var dbService = new DatabaseService("Server=tcp:sep4-implant.database.windows.net,1433;" +
+                    var dbService = new DatabaseService("Server=tcp:ep4-implant-db-server.database.windows.net,1433;" +
                                                 "Initial Catalog=sep4-implant-db;" +
                                                 "Persist Security Info=False;" +
                                                 "User ID=systemUser;" +
