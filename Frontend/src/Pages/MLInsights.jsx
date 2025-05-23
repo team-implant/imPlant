@@ -2,9 +2,29 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/MLInsights.css';
 import TopBar from '../components/TopBar';
+import { useGetMLTemperaturePredictions } from '../Hooks/ml/useMLTemperature';
+import { useGetMLSoilHumidityPredictions } from '../Hooks/ml/useMLSoilHumidity';
+import { useGetMLWaterPumpPredictions } from '../Hooks/ml/useMLWaterPump';
+import { useGetMLLightIntensityPredictions } from '../Hooks/ml/useMLLightIntensity';
 
 export default function MLInsights() {
     const [notifications, setNotifications] = useState([]);
+    const { data: temperatureData, isLoading: tempLoading } = useGetMLTemperaturePredictions();
+    const { data: soilHumidityData, isLoading: soilLoading } = useGetMLSoilHumidityPredictions();
+    const { data: waterPumpData, isLoading: pumpLoading } = useGetMLWaterPumpPredictions();
+    const { data: lightIntensityData, isLoading: lightLoading } = useGetMLLightIntensityPredictions();
+
+    const latestTemperature = temperatureData?.[0];
+    const latestSoilHumidity = soilHumidityData?.[0];
+    const latestLightIntensity = lightIntensityData?.[0];
+    const latestWaterPump = waterPumpData?.[0];
+
+    const renderInsightCard = (title, to, content) => (
+        <Link to={to} className="insight-card">
+            <h2>{title}</h2>
+            {content}
+        </Link>
+    );
 
     return (
         <div className="ml-insights-page">
@@ -13,40 +33,54 @@ export default function MLInsights() {
                 <h1>ML Insights</h1>
 
                 <div className="insights-container">
-                    <div className="insight-card">
-                        <h2>🌱 Plant Growth Prediction</h2>
-                        <p>Based on current conditions, your plants are expected to grow 2.5cm next week innit.</p>
-                    </div>
+                    {renderInsightCard("🌱 Plant Growth Prediction", "/graphs/plant-growth", (
+                        <>
+                            <p>Predicted growth: {tempLoading ? 'Loading...' : (latestTemperature?.prediction || 'No prediction available')}</p>
+                            {latestTemperature?.anomaly && <p>Anomaly detected: {latestTemperature.recommendation}</p>}
+                        </>
+                    ))}
 
-                    <div className="insight-card">
-                        <h2>💧 Watering Schedule Optimisation</h2>
-                        <p>Recommended next watering: Tomorrow at 9:00 AM</p>
-                        <p>Estimated water savings: 15% compared to fixed schedule</p>
-                    </div>
+                    {renderInsightCard("💧 Watering Schedule", "/graphs/watering-schedule", (
+                        <>
+                            <p>Current soil humidity: {soilLoading ? 'Loading...' : (latestSoilHumidity?.soilHumidity || 'Data unavailable')}</p>
+                            <p>Recommendation: {soilLoading ? 'Loading...' : (latestSoilHumidity?.recommendation || 'No recommendation available')}</p>
+                            {latestSoilHumidity?.anomaly && <p>Anomaly detected: Adjust watering schedule</p>}
+                        </>
+                    ))}
 
-                    <div className="insight-card">
-                        <h2>🌡️ Measurement Trend </h2>
-                        <p>Predicted temperature range for next 24 hours: 20°C - 25°C</p>
-                        <p>No significant anomalies expected.</p>
-                    </div>
+                    {renderInsightCard("🌡️ Temperature", "/graphs/temperature", (
+                        <>
+                            <p>Current temperature: {tempLoading ? 'Loading...' : (latestTemperature?.temperature || 'Data unavailable')}</p>
+                            <p>Predicted temperature: {tempLoading ? 'Loading...' : (latestTemperature?.prediction || 'No prediction available')}</p>
+                            {latestTemperature?.anomaly && <p>Anomaly detected!</p>}
+                        </>
+                    ))}
 
-                    <div className="insight-card">
-                        <h2>☀️ Light Exposure </h2>
-                        <p>Your plants received optimal light exposure today. Consider rotating pots for even growth.</p>
-                    </div>
+                    {renderInsightCard("☀️ Light Exposure", "/graphs/light-exposure", (
+                        <>
+                            <p>Current light intensity: {lightLoading ? 'Loading...' : (latestLightIntensity?.lightIntensity || 'Data unavailable')}</p>
+                            <p>Recommendation: {lightLoading ? 'Loading...' : (latestLightIntensity?.recommendation || 'No recommendation available')}</p>
+                            {latestLightIntensity?.anomaly && <p>Anomaly detected: Adjust light exposure</p>}
+                        </>
+                    ))}
 
-                    <div className="insight-card">
-                        <h2>💦 Humidity Trend </h2>
-                        <p>Predicted humidity range for next 24 hours: 55% - 65%</p>
-                        <p>Recommendation: No action needed, levels are optimal.</p>
-                    </div>
+                    {renderInsightCard("💦 Humidity Trend", "/graphs/humidity", (
+                        <>
+                            <p>Current soil humidity: {soilLoading ? 'Loading...' : (latestSoilHumidity?.soilHumidity || 'Data unavailable')}</p>
+                            <p>Predicted humidity: {soilLoading ? 'Loading...' : (latestSoilHumidity?.prediction || 'No prediction available')}</p>
+                            <p>Recommendation: {soilLoading ? 'Loading...' : (latestSoilHumidity?.recommendation || 'No recommendation available')}</p>
+                        </>
+                    ))}
 
-                    <div className="insight-card">
-                        <h2>🚰 Water Pump Level Prediction</h2>
-                        <p>Current level: 70%</p>
-                        <p>Estimated days until refill needed: 5 days</p>
-                    </div>
+                    {renderInsightCard("🚰 Water Pump Level Prediction", "/graphs/water-pump", (
+                        <>
+                            <p>Current level: {pumpLoading ? 'Loading...' : (latestWaterPump?.level || 'Data unavailable')}</p>
+                            <p>Prediction: {pumpLoading ? 'Loading...' : (latestWaterPump?.prediction || 'No prediction available')}</p>
+                            <p>Recommendation: {pumpLoading ? 'Loading...' : (latestWaterPump?.recommendation || 'No recommendation available')}</p>
+                        </>
+                    ))}
                 </div>
+                <p> please click on card to view data</p>
             </div>
         </div>
     );
