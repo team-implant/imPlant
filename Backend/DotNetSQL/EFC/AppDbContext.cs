@@ -14,7 +14,6 @@ namespace DotNetSQL.EFC
         public DbSet<WaterPump> WaterPumps { get; set; }
         public DbSet<SoilHumidity> SoilHumidities { get; set; }
         public DbSet<User> Users => Set<User>();
-        public DbSet<SoilMeasurement> SoilMeasurements { get; set; }
         public DbSet<ServoCalibration> ServoCalibrations { get; set; }
         public DbSet<Plant> Plants { get; set; } // new
         public DbSet<PredictionResult> PredictionResults { get; set; } // new
@@ -69,20 +68,6 @@ namespace DotNetSQL.EFC
                 .Property(s => s.PlantId)
                 .HasColumnName("plant_id");
 
-            // SoilMeasurements composite key mapping
-            modelBuilder.Entity<SoilMeasurement>()
-                .ToTable("Soil_Measurements")
-                .HasKey(sm => new { sm.PlantId, sm.MeasurementId });
-            modelBuilder.Entity<SoilMeasurement>()
-                .Property(sm => sm.PlantId)
-                .HasColumnName("plant_id");
-            modelBuilder.Entity<SoilMeasurement>()
-                .Property(sm => sm.MeasurementId)
-                .HasColumnName("measure_id");
-            modelBuilder.Entity<SoilMeasurement>()
-                .Property(sm => sm.Value)
-                .HasColumnName("value");
-
             // ServoCalibration mapping
             modelBuilder.Entity<ServoCalibration>()
                 .ToTable("Servo_Calibration");
@@ -125,26 +110,6 @@ namespace DotNetSQL.EFC
                 .WithMany()
                 .HasForeignKey(p => p.PlantId)
                 .OnDelete(DeleteBehavior.NoAction); // Prevents cascade delete issues with nullable FK
-
-            // SoilMeasurement foreign keys
-            modelBuilder.Entity<SoilMeasurement>()
-                .HasOne(sm => sm.Plant)
-                .WithMany()
-                .HasForeignKey(sm => sm.PlantId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<SoilMeasurement>()
-                .HasOne(sm => sm.MeasurementData)
-                .WithMany()
-                .HasForeignKey(sm => sm.MeasurementId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // SoilHumidity foreign key
-            modelBuilder.Entity<SoilHumidity>()
-                .HasOne(sh => sh.Plant)
-                .WithMany()
-                .HasForeignKey(sh => sh.PlantId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
