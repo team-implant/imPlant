@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
                    .AllowCredentials());
     });
 
-app.UseCors("Default");
+builder.UseCors("Default");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
