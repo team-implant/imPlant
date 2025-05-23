@@ -15,10 +15,11 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 
 builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll", builder =>
-            builder.AllowAnyOrigin()
+        options.AddPolicy(name: "Default", policy =>
+            policy.WithOrigins("http://localhost:5173/", "https://electimore.xyz")()
                    .AllowAnyMethod()
-                   .AllowAnyHeader());
+                   .AllowAnyHeader()
+                   .AllowCredentials());
     });
 
 builder.Services.AddControllers();
