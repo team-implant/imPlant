@@ -23,15 +23,10 @@ namespace TcpGrpcBridgeServer.Network
                     Console.WriteLine("TCP received: " + received);
 
                     var sensorDataList = SensorDataParser.ParseSensorData(received);
-                    var dbService = new DatabaseService("Server=tcp:ep4-implant-db-server.database.windows.net,1433;" +
-                                                "Initial Catalog=sep4-implant-db;" +
-                                                "Persist Security Info=False;" +
-                                                "User ID=systemUser;" +
-                                                "Password=P@ssw0rdP@ssw0rd;" +
-                                                "MultipleActiveResultSets=False;" +
-                                                "Encrypt=True;" +
-                                                "TrustServerCertificate=False;" +
-                                                "Connection Timeout=30;");
+                    var dbService = new DatabaseService("Server=tcp:sep4-implant-db-server.database.windows.net,1433;" +
+                                    "Initial Catalog=sep4-implant-db;Persist Security Info=False;" +
+                                    "User ID=systemUser;Password=P@ssw0rdP@ssw0rd;MultipleActiveResultSets=False;" +
+                                    "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
                     await dbService.InsertSensorDataAsync(sensorDataList);
 
                     // Create and insert measurements
