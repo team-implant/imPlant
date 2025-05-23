@@ -23,23 +23,49 @@ namespace TcpGrpcBridgeServer.Network
                     Console.WriteLine("TCP received: " + received);
 
                     var sensorDataList = SensorDataParser.ParseSensorData(received);
-                    await DatabaseService.InsertSensorDataAsync(sensorDataList);
+                    var dbService = new DatabaseService("Server=tcp:sep4-implant.database.windows.net,1433;" +
+                                                "Initial Catalog=sep4-implant-db;" +
+                                                "Persist Security Info=False;" +
+                                                "User ID=systemUser;" +
+                                                "Password=P@ssw0rdP@ssw0rd;" +
+                                                "MultipleActiveResultSets=False;" +
+                                                "Encrypt=True;" +
+                                                "TrustServerCertificate=False;" +
+                                                "Connection Timeout=30;");
+                    await dbService.InsertSensorDataAsync(sensorDataList);
 
-                    var measurements = new List<SoilMeasurement>
+                    // Create and insert measurements
+                    var measurements = new List<SoilMeasurement>();
+
+                    foreach (var sensorData in sensorDataList)
                     {
-                        new() { PlantId = 1, MeasureId = 1, Value = sensorDataList[0].SoilHumidity },
-                        new() { PlantId = 2, MeasureId = 2, Value = sensorDataList[1].SoilHumidity }
-                    };
+                        int plantId = sensorData.SoilHumidityDetailsId;
+                        float soilHumidity = sensorData.SoilHumidity;
+
+                        measurements.Add(new SoilMeasurement
+                        {
+                            PlantId = plantId,
+                            MeasureId = plantId, // Adjust if MeasureId is different from PlantId
+                            Value = soilHumidity
+                        });
+
+                        // Check against threshold
+                        bool isBelow = await dbService.IsBelowThresholdAsync(plantId, soilHumidity);
+                        if (isBelow)
+                        {
+                            string warningMessage = $"{plantId}\n";
+                            byte[] data = Encoding.ASCII.GetBytes(warningMessage);
+                            await stream.WriteAsync(data, 0, data.Length);
+                            Console.WriteLine("Sent alert to client: " + warningMessage.Trim());
+                        }
+                    }
+
+                    //await dbService.InsertSoilMeasurementsAsync(measurements);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Client error: " + ex.Message);
-            }
-            finally
-            {
-                client.Close();
-                TcpServer.ConnectedClients.Remove(client);
             }
         }
     }

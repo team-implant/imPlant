@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1+aYh192V/Q=",
+  "dgSpecHash": "TSDWR3gtJOo=",
   "success": true,
   "projectFilePath": "C:\\Users\\Bibek\\OneDrive\\Desktop\\FourthSemester\\SEP4\\SEP4_Final_Repo\\imPlant\\IoT\\IoT_server\\TcpGrpcBridgeServer\\TcpGrpcBridgeServer.csproj",
   "expectedPackageFiles": [
@@ -12,6 +12,7 @@
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.aspnetcore\\2.71.0\\grpc.aspnetcore.2.71.0.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.aspnetcore.server\\2.71.0\\grpc.aspnetcore.server.2.71.0.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.aspnetcore.server.clientfactory\\2.71.0\\grpc.aspnetcore.server.clientfactory.2.71.0.nupkg.sha512",
+    "C:\\Users\\Bibek\\.nuget\\packages\\grpc.core\\2.46.6\\grpc.core.2.46.6.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.core.api\\2.71.0\\grpc.core.api.2.71.0.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.net.client\\2.71.0\\grpc.net.client.2.71.0.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\grpc.net.clientfactory\\2.71.0\\grpc.net.clientfactory.2.71.0.nupkg.sha512",
@@ -85,7 +86,8 @@
     "C:\\Users\\Bibek\\.nuget\\packages\\xunit.assert\\2.9.3\\xunit.assert.2.9.3.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\xunit.core\\2.9.3\\xunit.core.2.9.3.nupkg.sha512",
     "C:\\Users\\Bibek\\.nuget\\packages\\xunit.extensibility.core\\2.9.3\\xunit.extensibility.core.2.9.3.nupkg.sha512",
-    "C:\\Users\\Bibek\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512"
+    "C:\\Users\\Bibek\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
+    "C:\\Users\\Bibek\\.nuget\\packages\\xunit.runner.visualstudio\\3.1.0\\xunit.runner.visualstudio.3.1.0.nupkg.sha512"
   ],
   "logs": []
 }

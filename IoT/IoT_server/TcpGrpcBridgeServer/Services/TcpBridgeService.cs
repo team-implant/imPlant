@@ -7,12 +7,17 @@ namespace TcpGrpcBridgeServer.Services;
 
 public class TcpBridgeService : WaterPump.WaterPumpBase
 {
+    private readonly ITcpSender _tcpSender;
+
+    public TcpBridgeService(ITcpSender tcpSender)
+    {
+        _tcpSender = tcpSender;
+    }
+
     public override async Task<MessageReply> QueueWatering(Plant request, ServerCallContext context)
     {
         int message = request.PlantId;
-        byte[] data = Encoding.ASCII.GetBytes(message + "\n");
-
-        await TcpServer.SendMessageToTcpClientsAsync(message.ToString());
+        await _tcpSender.SendMessageAsync(message.ToString());
 
         return new MessageReply
         {
@@ -20,3 +25,4 @@ public class TcpBridgeService : WaterPump.WaterPumpBase
         };
     }
 }
+

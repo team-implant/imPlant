@@ -7,7 +7,10 @@ namespace TcpGrpcBridgeServer.Services
     {
         public static List<SensorData> ParseSensorData(string data)
         {
-            string[] lines = data.Replace("\r", "").Split('\n');
+            // Split lines and ignore empty or "DATA" lines
+            string[] lines = data.Replace("\r", "").Split('\n')
+                         .Where(line => !string.IsNullOrWhiteSpace(line) && !line.StartsWith("DATA"))
+                         .ToArray();
             string? temp = lines.FirstOrDefault(l => l.StartsWith("TEMP="))?.Split('=')[1].Replace("C", "").Trim();
             string? humidity = lines.FirstOrDefault(l => l.StartsWith("HUMIDITY="))?.Split('=')[1].Replace("%", "").Trim();
             string? light = lines.FirstOrDefault(l => l.StartsWith("LIGHT="))?.Split('=')[1].Replace("LUX", "").Trim();
