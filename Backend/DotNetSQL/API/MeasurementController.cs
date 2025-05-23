@@ -33,24 +33,13 @@ namespace DotNetSQL.Controllers
             return Ok(filtered);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<MeasurementData>> AddMeasurement(MeasurementData temperatureData)
-        {
-            var result = await _temperatureService.AddMeasurementAsync(temperatureData);
-            return CreatedAtAction(nameof(GetMeasurement), new { id = result.Id }, result);
-        }
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<MeasurementData>> GetMeasurement(int id)
+        public async Task<ActionResult<MeasurementData>> GetMeasurementById(int id)
         {
-            var temperature = await _temperatureService.GetMeasurementByIdAsync(id);
-
-            if (temperature == null)
-            {
+            var measurement = await _temperatureService.GetMeasurementByIdAsync(id);
+            if (measurement == null)
                 return NotFound();
-            }
-
-            return temperature;
-        }     
+            return Ok(measurement);
+        }
     }
 }

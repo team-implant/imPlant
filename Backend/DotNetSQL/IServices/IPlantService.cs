@@ -7,4 +7,5 @@ public interface IPlantService
     Task<IEnumerable<Plant>> GetAllPlantsAsync();
     Task<Plant?> GetPlantByIdAsync(int id);
     Task<Plant?> GetPlantByNameAsync(string name);
+    Task<Plant> CreatePlantAsync(Plant plant);
 }
