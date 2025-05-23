@@ -35,25 +35,25 @@ namespace TcpGrpcBridgeServer.Services
             }
         }
 
-        public async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
-        {
-            await using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+        // public async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
+        // {
+        //     await using var connection = new SqlConnection(_connectionString);
+        //     await connection.OpenAsync();
 
-            foreach (var measurement in measurements)
-            {
-                var query = @"INSERT INTO Soil_Measurements 
-                          (plant_id, measure_id, value) 
-                          VALUES (@PlantId, @MeasureId, @Value)";
+        //     foreach (var measurement in measurements)
+        //     {
+        //         var query = @"INSERT INTO Soil_Measurements 
+        //                   (plant_id, measure_id, value) 
+        //                   VALUES (@PlantId, @MeasureId, @Value)";
 
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@PlantId", measurement.PlantId);
-                command.Parameters.AddWithValue("@MeasureId", measurement.MeasureId);
-                command.Parameters.AddWithValue("@Value", measurement.Value);
+        //         using var command = new SqlCommand(query, connection);
+        //         command.Parameters.AddWithValue("@PlantId", measurement.PlantId);
+        //         command.Parameters.AddWithValue("@MeasureId", measurement.MeasureId);
+        //         command.Parameters.AddWithValue("@Value", measurement.Value);
 
-                await command.ExecuteNonQueryAsync();
-            }
-        }
+        //         await command.ExecuteNonQueryAsync();
+        //     }
+        // }
 
         public async Task<bool> IsBelowThresholdAsync(int plantId, float currentValue)
         {

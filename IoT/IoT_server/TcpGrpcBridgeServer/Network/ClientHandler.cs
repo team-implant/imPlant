@@ -60,17 +60,12 @@ namespace TcpGrpcBridgeServer.Network
                         }
                     }
 
-                    await dbService.InsertSoilMeasurementsAsync(measurements);
+                    //await dbService.InsertSoilMeasurementsAsync(measurements);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Client error: " + ex.Message);
-            }
-            finally
-            {
-                client.Close();
-                TcpServer.ConnectedClients.Remove(client);
             }
         }
     }
