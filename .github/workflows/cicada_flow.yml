@@ -85,7 +85,7 @@ jobs:
         cd ./IoT/IoT_server/TcpGrpcBridgeServer
         
         # Build on the GitHub runner
-        dotnet publish -c Release -o ./publish
+        dotnet publish TcpGrpcBridgeServer.csproj -c Release -o ./publish
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
