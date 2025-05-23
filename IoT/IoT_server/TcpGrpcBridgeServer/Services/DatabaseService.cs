@@ -3,28 +3,25 @@ using TcpGrpcBridgeServer.Models;
 
 namespace TcpGrpcBridgeServer.Services
 {
-    public static class DatabaseService
+    public class DatabaseService : IDatabaseService
     {
-        private const string ConnectionString = "Server=tcp:sep4-implant.database.windows.net,1433;" +
-                                                "Initial Catalog=sep4-implant-db;" +
-                                                "Persist Security Info=False;" +
-                                                "User ID=systemUser;" +
-                                                "Password=P@ssw0rdP@ssw0rd;" +
-                                                "MultipleActiveResultSets=False;" +
-                                                "Encrypt=True;" +
-                                                "TrustServerCertificate=False;" +
-                                                "Connection Timeout=30;";
+        private readonly string _connectionString;
 
-        public static async Task InsertSensorDataAsync(List<SensorData> dataList)
+        public DatabaseService(string connectionString)
         {
-            await using var connection = new SqlConnection(ConnectionString);
+            _connectionString = connectionString;
+        }
+
+        public async Task InsertSensorDataAsync(List<SensorData> dataList)
+        {
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             foreach (var data in dataList)
             {
                 var query = @"INSERT INTO MeasurementData 
-                            (Temperature, AirHumidity, SoilHumidity, Light, tank_fill_level, SoilHumidityDetailsId) 
-                            VALUES (@Temperature, @AirHumidity, @SoilHumidity, @Light, @TankFillLevel, @SoilHumidityDetailsId)";
+                          (Temperature, AirHumidity, SoilHumidity, Light, tank_fill_level, SoilHumidityDetailsId) 
+                          VALUES (@Temperature, @AirHumidity, @SoilHumidity, @Light, @TankFillLevel, @SoilHumidityDetailsId)";
 
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Temperature", data.Temperature);
@@ -36,20 +33,18 @@ namespace TcpGrpcBridgeServer.Services
 
                 await command.ExecuteNonQueryAsync();
             }
-
-            Console.WriteLine("Inserted sensor data.");
         }
 
-        public static async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
+        public async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
         {
-            await using var connection = new SqlConnection(ConnectionString);
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             foreach (var measurement in measurements)
             {
                 var query = @"INSERT INTO Soil_Measurements 
-                            (plant_id, measure_id, value) 
-                            VALUES (@PlantId, @MeasureId, @Value)";
+                          (plant_id, measure_id, value) 
+                          VALUES (@PlantId, @MeasureId, @Value)";
 
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@PlantId", measurement.PlantId);
@@ -58,9 +53,27 @@ namespace TcpGrpcBridgeServer.Services
 
                 await command.ExecuteNonQueryAsync();
             }
-
-            Console.WriteLine("Inserted soil measurements.");
         }
 
+        public async Task<bool> IsBelowThresholdAsync(int plantId, float currentValue)
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = @"SELECT TOP 1 min_threshold 
+                      FROM dbo.Soil_Humidity_Thresholds 
+                      WHERE plant_id = @PlantId 
+                      ORDER BY time DESC";
+
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PlantId", plantId);
+
+            var result = await command.ExecuteScalarAsync();
+
+            return result != null &&
+                   float.TryParse(result.ToString(), out float threshold) &&
+                   currentValue < threshold;
+        }
     }
+
 }
