@@ -9,6 +9,7 @@ level: number;
 timestamp: string; 
 } 
 
+
 const fetchWaterPumpById = async (id: number): Promise<WaterPumpData> => { 
 const response = await axios.get<WaterPumpData>(`${BASE_URL}/${id}`); 
 return response.data; 
@@ -23,3 +24,4 @@ enabled: !!id,
 } 
 ); 
 };
+
