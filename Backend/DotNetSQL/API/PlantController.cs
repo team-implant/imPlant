@@ -42,5 +42,12 @@ namespace DotNetSQL.Controllers
                 return NotFound();
             return Ok(plant);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Plant>> CreatePlant([FromBody] Plant plant)
+        {
+            var created = await _plantService.CreatePlantAsync(plant);
+            return CreatedAtAction(nameof(GetPlantById), new { id = created.Id }, created);
+        }
     }
 }
