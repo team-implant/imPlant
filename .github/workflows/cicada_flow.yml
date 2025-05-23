@@ -89,7 +89,7 @@ jobs:
         
         # Create a dockerfile that just copies the pre-built files
         cat > Dockerfile.armcopy << EOF
-        FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8
+        FROM mcr.microsoft.com/dotnet/aspnet:9.0
         WORKDIR /app
         COPY ./publish/ .
         EXPOSE 5000 23
