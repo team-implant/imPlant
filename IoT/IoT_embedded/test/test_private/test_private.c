@@ -13,15 +13,18 @@
 #include "pir.h"
 #include "tone.h"
 
-void setUp(void)
-{
+// Here you write t
+
+void setUp(void){
+    
 }
 
-void tearDown(void)
-{
+void tearDown(void){
+
 }
 
 void test1(void){
+    TEST_MESSAGE("71 is 71 :1:_:PASS\n");
     TEST_ASSERT_EQUAL(71, 71);
 }
 

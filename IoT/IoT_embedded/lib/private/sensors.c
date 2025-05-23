@@ -52,18 +52,18 @@ void measureAcceleration() {
     int16_t x, y, z;
     adxl345_read_xyz(&x, &y, &z);
     sprintf(outbound_buffer + strlen(outbound_buffer),
-            "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", x, y, z);
+            "ACCEL_X=%d\nACCEL_Y=%d\nACCEL_Z=%d\n", (x/834), (y/834), (z/834));
 }
 
 void collect_all_sensor_data() {
-    strcpy(outbound_buffer, "DATA;");
+    strcpy(outbound_buffer, "DATA\n");
     measureTemp();
     measureLight();
     measureDist();
     measureSoils(8);
     _delay_ms(100);
     measureSoils(9);
-    measureAcceleration();
+    // measureAcceleration();
 }
 
 void init_sensors() {

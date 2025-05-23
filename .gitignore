@@ -15,3 +15,4 @@ IoT/.vscode/c_cpp_properties.json
 IoT/.vscode/launch.json
 IoT/IoT_embedded/.vscode/extensions.json
 IoT/IoT_embedded/.vscode/extensions.json
+IoT/IoT_embedded/lib/private/env.h

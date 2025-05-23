@@ -34,7 +34,7 @@ void calibrate_water_levels() {
     leds_turnOn(3);
 
     sprintf(outbound_buffer,
-            "WC;EMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
+            "WC\nEMPTY_WATER_LEVEL=%d\nMAX_WATER_LEVEL=%d\n",
             measurement_empty, measurement_full);
 
     send_data(outbound_buffer);
