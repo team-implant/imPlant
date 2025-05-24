@@ -12,6 +12,8 @@ import WaterLevelIndicator from '../components/waterpump/WaterLevelIndicator';
 import { useWaterPumpData } from '../Hooks/waterpump/useWaterPump';
 import toast from 'react-hot-toast';
 import {BASE_URL} from "../config.ts";
+import axiosInstance from '../api/axiosInstance';
+
 
 const Dashboard = () => {
     const [isOnline, setIsOnline] = useState(false);
@@ -387,29 +389,22 @@ const Dashboard = () => {
 
 // Helper functions
 const fetchPlantTypes = async () => {
-    try {
-        const response = await fetch(`${BASE_URL}/api/plants`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${yourAuthToken}`, // needs implemented
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch plant types');
-        }
-
-        const plants = await response.json();
-        return plants.map(plant => ({ id: plant.id, name: plant.name }));
-    } catch (error) {
-        console.error('Error fetching plant types:', error);
-        return [
-            { id: 1, name: 'Bell Pepper' },
-            { id: 2, name: 'Chestnut' },
-        ]; // Fallback to if no data
-    }
+  try {
+    const response = await axiosInstance.get('/plants');
+    return response.data.map((plant) => ({
+      id: plant.id,
+      name: plant.name
+    }));
+  } catch (error) {
+    console.error('Error fetching plant types:', error);
+    return [
+      { id: 1, name: 'Bell Pepper' },
+      { id: 2, name: 'Chestnut' }
+    ];
+  }
 };
+
+
 
 const fetchNotifications = async () => {
     // Replace with actual API call

@@ -1,7 +1,5 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import axios from 'axios';
-
-const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
+import axiosInstance from '../api/axiosInstance';
 
 interface SoilHumidityData {
   id: number;
@@ -9,36 +7,37 @@ interface SoilHumidityData {
   timestamp: string;
 }
 
+// Fetch all soil humidity data by filtering from full measurements
 const getAllSoilHumidity = async (): Promise<SoilHumidityData[]> => {
-  const response = await axios.get(`${BASE_URL}/measurements`);
+  const response = await axiosInstance.get('/measurements');
   const allMeasurements = response.data;
 
-  const soilHumidityData: SoilHumidityData[] = allMeasurements.map((m: any) => ({
-    id: m.id,
-    soilHumidity: m.soilHumidity,
-    timestamp: m.timestamp,
-  }));
+  const soilHumidityData: SoilHumidityData[] = (response.data as SoilHumidityData[]).map(
+  ({ id, soilHumidity, timestamp }) => ({
+    id,
+    soilHumidity,
+    timestamp,
+  })
+);
+
 
   return soilHumidityData;
 };
 
-
+// React Query hook for all soil humidity
 export const useGetAllSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
   return useQuery(['getAllSoilHumidity'], getAllSoilHumidity);
-
 };
 
+// Fetch soil humidity by ID (uses a separate endpoint)
 const getSoilHumidityById = async (id: number): Promise<SoilHumidityData> => {
-    const response = await axios.get<SoilHumidityData>(`${BASE_URL}/soil-humidity/${id}`);
-    return response.data;
+  const response = await axiosInstance.get<SoilHumidityData>(`/soil-humidity/${id}`);
+  return response.data;
 };
 
+// React Query hook for a single soil humidity value
 export const useGetSoilHumidityById = (id: number): UseQueryResult<SoilHumidityData, Error> => {
-    return useQuery<SoilHumidityData, Error>(
-        ['getSoilHumidityById', id],
-        () => getSoilHumidityById(id),
-        {
-            enabled: !!id,
-        }
-    );
+  return useQuery(['getSoilHumidityById', id], () => getSoilHumidityById(id), {
+    enabled: !!id,
+  });
 };
