@@ -1,9 +1,5 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import axios from 'axios';
-
-
-
-const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import instance from "../api/auth";
 
 interface AirHumidityData {
   id: number;
@@ -12,27 +8,26 @@ interface AirHumidityData {
 }
 
 const getAllAirHumidity = async (): Promise<AirHumidityData[]> => {
-  const response = await axios.get<AirHumidityData[]>(`${BASE_URL}/air-humidity`);
+  const response = await instance.get<AirHumidityData[]>("/air-humidity");
   return response.data;
 };
 
-export const useGetAllAirHumidity = (): UseQueryResult<AirHumidityData[], Error> => {
-  return useQuery(['getAllAirHumidity'], getAllAirHumidity);
+export const useGetAllAirHumidity = (): UseQueryResult<
+  AirHumidityData[],
+  Error
+> => {
+  return useQuery(["getAllAirHumidity"], getAllAirHumidity);
 };
-
-
 
 const getAirHumidityById = async (id: number): Promise<AirHumidityData> => {
-    const response = await axios.get<AirHumidityData>(`${BASE_URL}/air-humidity/${id}`);
-    return response.data;
+  const response = await instance.get<AirHumidityData>(`/air-humidity/${id}`);
+  return response.data;
 };
 
-export const useGetAirHumidityById = (id: number): UseQueryResult<AirHumidityData, Error> => {
-    return useQuery<AirHumidityData, Error>(
-        ['getAirHumidityById', id],
-        () => getAirHumidityById(id),
-        {
-            enabled: !!id,
-        }
-    );
+export const useGetAirHumidityById = (
+  id: number
+): UseQueryResult<AirHumidityData, Error> => {
+  return useQuery(["getAirHumidityById", id], () => getAirHumidityById(id), {
+    enabled: !!id,
+  });
 };
