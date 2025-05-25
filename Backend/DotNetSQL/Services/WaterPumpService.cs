@@ -19,7 +19,6 @@ public class WaterPumpService : IWaterPumpService
             .Select(wp => new WaterPumpDto
             {
                 Id = wp.Id,
-                Level = wp.Level,
                 MinLevel = wp.MinLevel,
                 MaxLevel = wp.MaxLevel,
                 Timestamp = wp.Timestamp
@@ -34,7 +33,6 @@ public class WaterPumpService : IWaterPumpService
             .Select(wp => new WaterPumpDto
             {
                 Id = wp.Id,
-                Level = wp.Level,
                 MinLevel = wp.MinLevel,
                 MaxLevel = wp.MaxLevel,
                 Timestamp = wp.Timestamp
