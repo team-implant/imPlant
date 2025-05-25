@@ -96,8 +96,9 @@ export default function CustomizeThresholds() {
         <h1>Customise Thresholds</h1>
 
         <div className="plant-selector">
-          <label>Select Plant: </label>
+          <label htmlFor="plant-select">Select Plant: </label>
           <select
+            id="plant-select"
             value={selectedPlantId}
             onChange={(e) => setSelectedPlantId(Number(e.target.value))}
           >
