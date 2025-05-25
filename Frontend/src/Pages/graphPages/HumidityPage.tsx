@@ -11,7 +11,6 @@ const HumidityPage: React.FC = () => {
     isLoading: predictionLoading,
     error: predictionError,
   } = useGetMLAirHumidity();
-  console.log("Prediction Data:", predictionData);
 
   const {
     data: currentData,

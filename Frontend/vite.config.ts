@@ -1,14 +1,21 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Ensures relative paths for static assets
+  base: "./",
   build: {
-    outDir: 'dist',
-    emptyOutDir: true
-  }
-  //server: {
-    //port: 571, // or any port like 5173, 5175, etc.
-  //},
+    outDir: "dist",
+    emptyOutDir: true,
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+
+    exclude: ["**/node_modules/**", "**/dist/**"], // Default exclusions
+    setupFiles: "./src/setupTests.ts", // Add this line
+    coverage: {
+      provider: "v8",
+    },
+  },
 });
