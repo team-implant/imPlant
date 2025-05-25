@@ -1,5 +1,5 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import axiosInstance from '../api/axiosInstance'; // ✅ Use this instead
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import instance from "../api/auth";
 
 interface LightIntensity {
   id: number;
@@ -7,26 +7,31 @@ interface LightIntensity {
   timestamp: string;
 }
 
-// Get all light intensity data
 const getAllLightIntensities = async (): Promise<LightIntensity[]> => {
-  const response = await axiosInstance.get<LightIntensity[]>('/light-intensity');
+  const response = await instance.get<LightIntensity[]>("/light-intensity");
   return response.data;
 };
 
-export const useGetAllLightIntensity = (): UseQueryResult<LightIntensity[], Error> => {
-  return useQuery(['getAllLightIntensity'], getAllLightIntensities);
+export const useGetAllLightIntensity = (): UseQueryResult<
+  LightIntensity[],
+  Error
+> => {
+  return useQuery(["getAllLightIntensity"], getAllLightIntensities);
 };
 
-// Get single by ID
 const getLightIntensityById = async (id: number): Promise<LightIntensity> => {
-  const response = await axiosInstance.get<LightIntensity>(`/light-intensity/${id}`);
+  const response = await instance.get<LightIntensity>(`/light-intensity/${id}`);
   return response.data;
 };
 
 export const useGetLightIntensityById = (
   id: number
 ): UseQueryResult<LightIntensity, Error> => {
-  return useQuery(['getLightIntensityById', id], () => getLightIntensityById(id), {
-    enabled: !!id,
-  });
+  return useQuery(
+    ["getLightIntensityById", id],
+    () => getLightIntensityById(id),
+    {
+      enabled: !!id,
+    }
+  );
 };

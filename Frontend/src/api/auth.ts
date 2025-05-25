@@ -4,14 +4,11 @@ import { jwtDecode } from 'jwt-decode';
 
 const BASE_URL = 'https://sep4-implant.azurewebsites.net/api';
 
-const instance = axios.create({ baseURL: BASE_URL });
-
-instance.interceptors.request.use(config => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+const instance = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
 });
 
 interface LoginCredentials {

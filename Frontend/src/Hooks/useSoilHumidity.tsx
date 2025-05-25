@@ -1,5 +1,5 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import axiosInstance from '../api/axiosInstance';
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import instance from "../api/auth";
 
 interface SoilHumidityData {
   id: number;
@@ -7,37 +7,37 @@ interface SoilHumidityData {
   timestamp: string;
 }
 
-// Fetch all soil humidity data by filtering from full measurements
 const getAllSoilHumidity = async (): Promise<SoilHumidityData[]> => {
-  const response = await axiosInstance.get('/measurements');
+  const response = await instance.get(`${"/measurements"}`);
   const allMeasurements = response.data;
 
-  const soilHumidityData: SoilHumidityData[] = (response.data as SoilHumidityData[]).map(
-  ({ id, soilHumidity, timestamp }) => ({
-    id,
-    soilHumidity,
-    timestamp,
-  })
-);
-
+  const soilHumidityData: SoilHumidityData[] = allMeasurements.map(
+    (m: any) => ({
+      id: m.id,
+      soilHumidity: m.soilHumidity,
+      timestamp: m.timestamp,
+    })
+  );
 
   return soilHumidityData;
 };
 
-// React Query hook for all soil humidity
-export const useGetAllSoilHumidity = (): UseQueryResult<SoilHumidityData[], Error> => {
-  return useQuery(['getAllSoilHumidity'], getAllSoilHumidity);
+export const useGetAllSoilHumidity = (): UseQueryResult<
+  SoilHumidityData[],
+  Error
+> => {
+  return useQuery(["getAllSoilHumidity"], getAllSoilHumidity);
 };
 
-// Fetch soil humidity by ID (uses a separate endpoint)
 const getSoilHumidityById = async (id: number): Promise<SoilHumidityData> => {
-  const response = await axiosInstance.get<SoilHumidityData>(`/soil-humidity/${id}`);
+  const response = await instance.get<SoilHumidityData>(`/soil-humidity/${id}`);
   return response.data;
 };
 
-// React Query hook for a single soil humidity value
-export const useGetSoilHumidityById = (id: number): UseQueryResult<SoilHumidityData, Error> => {
-  return useQuery(['getSoilHumidityById', id], () => getSoilHumidityById(id), {
+export const useGetSoilHumidityById = (
+  id: number
+): UseQueryResult<SoilHumidityData, Error> => {
+  return useQuery(["getSoilHumidityById", id], () => getSoilHumidityById(id), {
     enabled: !!id,
   });
 };
