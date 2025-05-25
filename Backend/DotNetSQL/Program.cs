@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Default", policy =>
         policy.WithOrigins(
             "http://localhost:5173",
+            "http://localhost:5174",
             "https://electimore.xyz",
             "https://yellow-meadow-0d446e503.6.azurestaticapps.net" 
         )
