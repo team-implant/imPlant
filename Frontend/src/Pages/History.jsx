@@ -45,6 +45,7 @@ export default function History() {
       });
     });
 
+    
     return { labels, values };
   };
 
