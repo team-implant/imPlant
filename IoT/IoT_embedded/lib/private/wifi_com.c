@@ -1,18 +1,18 @@
 #include <string.h>
 #include <util/delay.h>
-#include "wifi.h"
 #include "display.h"
 #include "leds.h"
 #include "watering.h"
 #include "wifi_com.h"
 #include "sensors.h"
 #include "env.h"
+#include <avr/wdt.h>
 
 extern char inbound_buffer[128];
 extern void incomingDataDetected(void);
 
-void send_data(char data[]) {
-    wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
+WIFI_ERROR_MESSAGE_t send_data(char data[]) {
+    return wifi_command_TCP_transmit((uint8_t *)data, strlen(data));
 }
 
 void handle_incoming_wifi_data() {
@@ -22,6 +22,10 @@ void handle_incoming_wifi_data() {
         waterPlant2();
     } else if (strncmp(inbound_buffer, "0", 1) == 0) {
         neutral();
+    } else if (strncmp(inbound_buffer, "r", 1) == 0) {
+        wdt_reset();
+        wdt_enable(WDTO_8S);
+        while(1);
     } else {
         display_setValues(17, 22, 19, 22);
         asyncDisableDisplayAfterMs(2000);

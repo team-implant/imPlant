@@ -1,10 +1,8 @@
-#ifndef WIFI_COM_H
-#define WIFI_COM_H
+#pragma once
 
 #include <stdbool.h>
+#include "wifi.h"
 
-void send_data(char data[]);
+WIFI_ERROR_MESSAGE_t send_data(char data[]);
 void handle_incoming_wifi_data(void);
 bool startWifi(void);
-
-#endif

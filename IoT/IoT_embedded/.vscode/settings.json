@@ -3,6 +3,7 @@
         "interrupt.h": "c",
         "wifi_com.h": "c",
         "env.h": "c",
-        "sensors.h": "c"
+        "sensors.h": "c",
+        "delay.h": "c"
     }
 }

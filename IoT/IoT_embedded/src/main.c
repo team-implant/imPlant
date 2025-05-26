@@ -1,5 +1,6 @@
 #include "includes.h"
 #include <stdbool.h>
+#include <avr/wdt.h>
 
 #include "buttons.h"
 #include "display.h"
@@ -13,7 +14,7 @@
 char outbound_buffer[256];
 char inbound_buffer[128];
 
-bool shouldMeasure = false;
+bool shouldMeasure = true;
 bool shouldHandleInboundData = false;
 bool calibrating_water_level = false;
 
@@ -60,7 +61,7 @@ int main() {
     // Connect to WiFi
     bool working = startWifi();
 
-    // Setup periodic measurement every 3 minutes (20x per hour)
+    // Setup periodic measurement every 1 minute (60x per hour)
     int perHour = 0;
     int perMinute = 1;
     if (perHour > 0){
@@ -86,7 +87,10 @@ int main() {
         if (shouldMeasure) {
             leds_turnOn(4);
             collect_all_sensor_data();
-            send_data(outbound_buffer);
+            if (send_data(outbound_buffer) != 0){
+                working = false;
+                break;
+            }
             shouldMeasure = false;
         }
 
@@ -103,7 +107,16 @@ int main() {
             calibrate_sprinkler_angles();
         }
     }
+    ledAnimation();
     display_dead();
-    while (1) {}  // Should never reach here
+    _delay_ms(60000*3);
+    wdt_reset();
+    wdt_enable(WDTO_8S);
+    while (1);  // Will never reach here. If the device is described as dead, it will wait 3 minutes and restart itself, trying again :)
+    // Surely this reminds us of a story of a certain greek king, whose name begun with S and ended with isyphus. It is plain to see 
+    // that we have forced this poor little arduino to suffer a fate worse then death. Constantly giving it a task, and upon failing said task
+    // where it had no say in the matter, is forced to immedietely pronounce its very self dead, wait in dread, and finally kill itself only to
+    // be dragged back into life by a force infinetely higher than itself. Truly a fate worse then death. May we ask god for forgivenes for what
+    // we have created. For surely the creature holds for us naught by contempt.
     return 0;
 }
