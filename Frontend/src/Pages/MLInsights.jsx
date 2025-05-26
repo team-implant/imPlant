@@ -15,7 +15,7 @@ import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
 import { useGetAllSoilHumidity } from "../Hooks/useSoilHumidity";
 import { useGetAllLightIntensity } from "../Hooks/useGetLightIntensity";
 import { useGetAllAirHumidity } from "../Hooks/useAirHumidity";
-import { useWaterPumpData } from "../Hooks/waterpump/useWaterPump";
+import { useMeasurements } from "../Hooks/useMeasurement";
 
 export default function MLInsights() {
   const [notifications, setNotifications] = useState([]);
@@ -29,8 +29,9 @@ export default function MLInsights() {
     useGetAllLightIntensity();
   const { data: currentAirHumidityData, isLoading: currentAirLoading } =
     useGetAllAirHumidity();
+
   const { data: currentWaterPumpData, isLoading: currentPumpLoading } =
-    useWaterPumpData();
+    useMeasurements();
 
   // Fetch predictions
   const { data: temperaturePredictionData, isLoading: tempPredictionLoading } =
@@ -45,13 +46,14 @@ export default function MLInsights() {
     useGetMLAirHumidity();
   const { data: waterPumpPredictionData, isLoading: pumpPredictionLoading } =
     useGetMLWaterPumpPredictions();
+  console.log("waterPumpPredictionData", waterPumpPredictionData);
 
   // Extract latest data
   const latestCurrentTemperature = currentTemperatureData?.[0];
   const latestCurrentSoilHumidity = currentSoilHumidityData?.[0];
   const latestCurrentLightIntensity = currentLightIntensityData?.[0];
   const latestCurrentAirHumidity = currentAirHumidityData?.[0];
-  const latestCurrentWaterPump = currentWaterPumpData?.at?.(-1);
+  const latestCurrentWaterPump = currentWaterPumpData?.at(-1).tankFillLevel;
 
   const latestTemperaturePrediction = temperaturePredictionData?.[0];
   const latestSoilHumidityPrediction = soilHumidityPredictionData?.[0];
@@ -91,13 +93,6 @@ export default function MLInsights() {
                   : latestSoilHumidityPrediction?.SoilHumidity ??
                     "No prediction"}
               </p>
-              <p>
-                Recommendation:{" "}
-                {soilPredictionLoading
-                  ? "Loading..."
-                  : latestSoilHumidityPrediction?.recommendation ??
-                    "No recommendation"}
-              </p>
               {latestSoilHumidityPrediction?.anomaly && (
                 <p>Anomaly detected!</p>
               )}
@@ -119,13 +114,6 @@ export default function MLInsights() {
                 {tempPredictionLoading
                   ? "Loading..."
                   : latestTemperaturePrediction?.Temperature ?? "No prediction"}
-              </p>
-              <p>
-                Recommendation:{" "}
-                {tempPredictionLoading
-                  ? "Loading..."
-                  : latestTemperaturePrediction?.recommendation ??
-                    "No recommendation"}
               </p>
               {latestTemperaturePrediction?.anomaly && <p>Anomaly detected!</p>}
             </>
@@ -149,13 +137,6 @@ export default function MLInsights() {
                   : latestLightIntensityPrediction?.LightIntensity ??
                     "No prediction"}
               </p>
-              <p>
-                Recommendation:{" "}
-                {lightPredictionLoading
-                  ? "Loading..."
-                  : latestLightIntensityPrediction?.recommendation ??
-                    "No recommendation"}
-              </p>
               {latestLightIntensityPrediction?.anomaly && (
                 <p>Anomaly detected!</p>
               )}
@@ -178,13 +159,6 @@ export default function MLInsights() {
                   ? "Loading..."
                   : latestAirHumidityPrediction?.AirHumidity ?? "No prediction"}
               </p>
-              <p>
-                Recommendation:{" "}
-                {airPredictionLoading
-                  ? "Loading..."
-                  : latestAirHumidityPrediction?.recommendation ??
-                    "No recommendation"}
-              </p>
               {latestAirHumidityPrediction?.anomaly && <p>Anomaly detected!</p>}
             </>
           )}
@@ -197,20 +171,13 @@ export default function MLInsights() {
                 Current level:{" "}
                 {currentPumpLoading
                   ? "Loading..."
-                  : latestCurrentWaterPump?.level ?? "Data unavailable"}
+                  : latestCurrentWaterPump ?? "Data unavailable"}
               </p>
               <p>
                 Predicted level:{" "}
                 {pumpPredictionLoading
                   ? "Loading..."
-                  : latestWaterPumpPrediction?.prediction ?? "No prediction"}
-              </p>
-              <p>
-                Recommendation:{" "}
-                {pumpPredictionLoading
-                  ? "Loading..."
-                  : latestWaterPumpPrediction?.recommendation ??
-                    "No recommendation"}
+                  : latestWaterPumpPrediction?.WaterPump ?? "No prediction"}
               </p>
               {latestWaterPumpPrediction?.anomaly && <p>Anomaly detected!</p>}
             </>
