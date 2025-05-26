@@ -1,3 +1,4 @@
+using DefaultNamespace;
 using Microsoft.Data.SqlClient;
 using TcpGrpcBridgeServer.Models;
 
@@ -22,42 +23,35 @@ namespace TcpGrpcBridgeServer.Services
                 var query = @"INSERT INTO MeasurementData 
                           (Temperature, AirHumidity, SoilHumidity, Light, tank_fill_level, plant_id, TimeStamp) 
                           VALUES (@Temperature, @AirHumidity, @SoilHumidity, @Light, @TankFillLevel, @plant_id, @TimeStamp)";
-
+                float x = await GetPumpPercentage(data.TankFillLevel);
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Temperature", data.Temperature);
                 command.Parameters.AddWithValue("@AirHumidity", data.AirHumidity);
                 command.Parameters.AddWithValue("@SoilHumidity", data.SoilHumidity);
                 command.Parameters.AddWithValue("@Light", data.Light);
-                command.Parameters.AddWithValue("@TankFillLevel", data.TankFillLevel);
+                command.Parameters.AddWithValue("@TankFillLevel", float.ConvertToInteger<int>(x));
                 command.Parameters.AddWithValue("@plant_id", data.SoilHumidityDetailsId);
                 command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
 
                 await command.ExecuteNonQueryAsync();
-
-                Console.WriteLine($"Inserted data: {data.Temperature}, {data.AirHumidity}, {data.SoilHumidity}, {data.Light}, {data.TankFillLevel}, {data.SoilHumidityDetailsId}");
-
+                Console.WriteLine($"Inserted data: {data.Temperature}, {data.AirHumidity}, {data.SoilHumidity}, {data.Light}, {float.ConvertToInteger<int>(x)}, {data.SoilHumidityDetailsId}");
             }
         }
 
-        // public async Task InsertSoilMeasurementsAsync(List<SoilMeasurement> measurements)
-        // {
-        //     await using var connection = new SqlConnection(_connectionString);
-        //     await connection.OpenAsync();
+        public async Task InsertWaterPump(PumpMeasurement pumpConfig)
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+            var query = @"INSERT INTO WaterPumps (MinLevel, MaxLevel, Timestamp) VALUES (@MinLevel, @MaxLevel, @TimeStamp)";
 
-        //     foreach (var measurement in measurements)
-        //     {
-        //         var query = @"INSERT INTO Soil_Measurements 
-        //                   (plant_id, measure_id, value) 
-        //                   VALUES (@PlantId, @MeasureId, @Value)";
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MinLevel", pumpConfig.EmptyWaterLevel);
+            command.Parameters.AddWithValue("@MaxLevel", pumpConfig.FullWaterLevel);
+            command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
 
-        //         using var command = new SqlCommand(query, connection);
-        //         command.Parameters.AddWithValue("@PlantId", measurement.PlantId);
-        //         command.Parameters.AddWithValue("@MeasureId", measurement.MeasureId);
-        //         command.Parameters.AddWithValue("@Value", measurement.Value);
-
-        //         await command.ExecuteNonQueryAsync();
-        //     }
-        // }
+            await command.ExecuteNonQueryAsync();
+            
+        }
 
         public async Task<bool> IsBelowThresholdAsync(int plantId, float currentValue)
         {
@@ -71,12 +65,33 @@ namespace TcpGrpcBridgeServer.Services
 
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PlantId", plantId);
-
+    
             var result = await command.ExecuteScalarAsync();
 
             return result != null &&
                    float.TryParse(result.ToString(), out float threshold) &&
                    currentValue < threshold;
+        }
+        public async Task<float> GetPumpPercentage(float currentPumpValue)
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var queryMin = @"SELECT TOP (1) MinLevel 
+                FROM dbo.WaterPumps 
+                ORDER BY Timestamp DESC";
+            var queryMax = @"SELECT TOP (1) MaxLevel 
+                FROM dbo.WaterPumps 
+                ORDER BY Timestamp DESC";
+            // using var command = new SqlCommand(query, connection);
+            var resultMin = await new SqlCommand(queryMin, connection).ExecuteScalarAsync();
+            var resultMax = await new SqlCommand(queryMax, connection).ExecuteScalarAsync();
+            if (resultMin != null || resultMax != null) {
+                int min = int.Parse(resultMin.ToString());
+                int max = int.Parse(resultMax.ToString());
+                return ((min - currentPumpValue) / (min - max)) * 100;
+            }
+            return 0;
         }
     }
 

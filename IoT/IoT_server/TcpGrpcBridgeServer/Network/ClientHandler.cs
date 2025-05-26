@@ -22,39 +22,42 @@ namespace TcpGrpcBridgeServer.Network
                     string received = Encoding.ASCII.GetString(buffer, 0, bytes);
                     Console.WriteLine("TCP received: " + received);
 
-                    var sensorDataList = SensorDataParser.ParseSensorData(received);
-                    var dbService = new DatabaseService("Server=tcp:sep4-implant-db-server.database.windows.net,1433;" +
-                                    "Initial Catalog=sep4-implant-db;Persist Security Info=False;" +
-                                    "User ID=systemUser;Password=P@ssw0rdP@ssw0rd;MultipleActiveResultSets=False;" +
-                                    "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-                    await dbService.InsertSensorDataAsync(sensorDataList);
-
+                    //based on received decide if DATA or WC
                     // Create and insert measurements
-                    var measurements = new List<SoilMeasurement>();
-
-                    foreach (var sensorData in sensorDataList)
-                    {
-                        int plantId = sensorData.SoilHumidityDetailsId;
-                        float soilHumidity = sensorData.SoilHumidity;
-
-                        measurements.Add(new SoilMeasurement
-                        {
-                            PlantId = plantId,
-                            MeasureId = plantId, // Adjust if MeasureId is different from PlantId
-                            Value = soilHumidity
-                        });
-
-                        // Check against threshold
-                        bool isBelow = await dbService.IsBelowThresholdAsync(plantId, soilHumidity);
-                        if (isBelow)
-                        {
-                            string warningMessage = $"{plantId}\n";
-                            byte[] data = Encoding.ASCII.GetBytes(warningMessage);
-                            await stream.WriteAsync(data, 0, data.Length);
-                            Console.WriteLine("Sent alert to client: " + warningMessage.Trim());
-                        }
+                    string type = received.Split("\n")[0];
+                    var dbService = new DatabaseService("Server=tcp:sep4-implant-db-server.database.windows.net,1433;" +
+                                                        "Initial Catalog=sep4-implant-db;Persist Security Info=False;" +
+                                                        "User ID=systemUser;Password=P@ssw0rdP@ssw0rd;MultipleActiveResultSets=False;" +
+                                                        "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                    switch (type) { 
+                        case "DATA" :
+                            var sensorDataList = SensorDataParser.ParseSensorData(received);
+                            await dbService.InsertSensorDataAsync(sensorDataList);
+                            // Check if soil below threshold
+                            foreach (var sensorData in sensorDataList)
+                            {
+                                int plantId = sensorData.SoilHumidityDetailsId;
+                                float soilHumidity = sensorData.SoilHumidity;
+                                // Check against threshold
+                                bool isBelow = await dbService.IsBelowThresholdAsync(plantId, soilHumidity);
+                                if (isBelow)
+                                {
+                                    string warningMessage = $"{plantId}\n";
+                                    byte[] data = Encoding.ASCII.GetBytes(warningMessage);
+                                    await stream.WriteAsync(data, 0, data.Length);
+                                    Console.WriteLine("Sent alert to client: " + warningMessage.Trim());
+                                }
+                            }
+                            break;
+                        case "WC":
+                            var pumpData = WaterPumpParser.ParsePumpMeasurement(received);
+                            await dbService.InsertWaterPump(pumpData);
+                            Console.WriteLine("Configure water I swear");
+                            break;
+                        default:
+                            Console.WriteLine("Unknown command");
+                            break;
                     }
-
                     //await dbService.InsertSoilMeasurementsAsync(measurements);
                 }
             }
