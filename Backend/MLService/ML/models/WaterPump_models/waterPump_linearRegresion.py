@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from ML.data.waterPump_data import fetch_water_pump_data
@@ -8,10 +8,10 @@ def run_water_pump_regression():
     df = fetch_water_pump_data()
     df["TimestampOrdinal"] = df["Timestamp"].map(lambda x: x.toordinal())
     X = df[["TimestampOrdinal"]]
-    y = df["WaterPumpOn"]
+    y = df["WaterPumpLevel"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
-    model = LogisticRegression()
+    model = LinearRegression()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
@@ -27,7 +27,7 @@ def get_water_pump_predictions_json():
         X_test.index,
         y_pred,
         id_col="Id",
-        value_col="predictedWaterPumpOn",
+        value_col="predictedWaterPumpLevel",
         timestamp_col="Timestamp",
-        output_value_name="predictedWaterPumpOn"
+        output_value_name="predictedWaterPumpLevel"
     )

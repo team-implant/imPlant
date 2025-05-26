@@ -1,53 +1,191 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/MLInsights.css';
-import TopBar from '../components/TopBar';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "../styles/MLInsights.css";
+import TopBar from "../components/TopBar";
+
+// ML prediction hooks
+import { useGetMLTemperaturePredictions } from "../Hooks/ml/useMLTemperature";
+import { useGetMLSoilHumidityPredictions } from "../Hooks/ml/useMLSoilHumidity";
+import { useGetMLWaterPumpPredictions } from "../Hooks/ml/useMLWaterPump";
+import { useGetMLLightIntensityPredictions } from "../Hooks/ml/useMLLightIntensity";
+import { useGetMLAirHumidity } from "../Hooks/ml/useMLAirHumidity";
+
+// Real-time sensor data hooks
+import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
+import { useGetAllSoilHumidity } from "../Hooks/useSoilHumidity";
+import { useGetAllLightIntensity } from "../Hooks/useGetLightIntensity";
+import { useGetAllAirHumidity } from "../Hooks/useAirHumidity";
+import { useMeasurements } from "../Hooks/useMeasurement";
 
 export default function MLInsights() {
-    const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-    return (
-        <div className="ml-insights-page">
-            <TopBar notifications={notifications} />
-            <div className="ml-insights-content">
-                <h1>ML Insights</h1>
+  // Fetch current data
+  const { data: currentTemperatureData, isLoading: currentTempLoading } =
+    useGetAllTemperatures();
+  const { data: currentSoilHumidityData, isLoading: currentSoilLoading } =
+    useGetAllSoilHumidity();
+  const { data: currentLightIntensityData, isLoading: currentLightLoading } =
+    useGetAllLightIntensity();
+  const { data: currentAirHumidityData, isLoading: currentAirLoading } =
+    useGetAllAirHumidity();
 
-                <div className="insights-container">
-                    <div className="insight-card">
-                        <h2>🌱 Plant Growth Prediction</h2>
-                        <p>Based on current conditions, your plants are expected to grow 2.5cm next week innit.</p>
-                    </div>
+  const { data: currentWaterPumpData, isLoading: currentPumpLoading } =
+    useMeasurements();
 
-                    <div className="insight-card">
-                        <h2>💧 Watering Schedule Optimisation</h2>
-                        <p>Recommended next watering: Tomorrow at 9:00 AM</p>
-                        <p>Estimated water savings: 15% compared to fixed schedule</p>
-                    </div>
+  // Fetch predictions
+  const { data: temperaturePredictionData, isLoading: tempPredictionLoading } =
+    useGetMLTemperaturePredictions();
+  const { data: soilHumidityPredictionData, isLoading: soilPredictionLoading } =
+    useGetMLSoilHumidityPredictions();
+  const {
+    data: lightIntensityPredictionData,
+    isLoading: lightPredictionLoading,
+  } = useGetMLLightIntensityPredictions();
+  const { data: airHumidityPredictionData, isLoading: airPredictionLoading } =
+    useGetMLAirHumidity();
+  const { data: waterPumpPredictionData, isLoading: pumpPredictionLoading } =
+    useGetMLWaterPumpPredictions();
+  console.log("waterPumpPredictionData", waterPumpPredictionData);
 
-                    <div className="insight-card">
-                        <h2>🌡️ Measurement Trend </h2>
-                        <p>Predicted temperature range for next 24 hours: 20°C - 25°C</p>
-                        <p>No significant anomalies expected.</p>
-                    </div>
+  // Extract latest data
+  const latestCurrentTemperature = currentTemperatureData?.[0];
+  const latestCurrentSoilHumidity = currentSoilHumidityData?.[0];
+  const latestCurrentLightIntensity = currentLightIntensityData?.[0];
+  const latestCurrentAirHumidity = currentAirHumidityData?.[0];
+  const latestCurrentWaterPump = currentWaterPumpData?.at(-1).tankFillLevel;
 
-                    <div className="insight-card">
-                        <h2>☀️ Light Exposure </h2>
-                        <p>Your plants received optimal light exposure today. Consider rotating pots for even growth.</p>
-                    </div>
+  const latestTemperaturePrediction = temperaturePredictionData?.[0];
+  const latestSoilHumidityPrediction = soilHumidityPredictionData?.[0];
+  const latestLightIntensityPrediction = lightIntensityPredictionData?.[0];
+  const latestAirHumidityPrediction = airHumidityPredictionData?.[0];
+  const latestWaterPumpPrediction = waterPumpPredictionData?.[0];
 
-                    <div className="insight-card">
-                        <h2>💦 Humidity Trend </h2>
-                        <p>Predicted humidity range for next 24 hours: 55% - 65%</p>
-                        <p>Recommendation: No action needed, levels are optimal.</p>
-                    </div>
+  const renderInsightCard = (title, to, content) => (
+    <Link to={to} className="insight-card">
+      <h2>{title}</h2>
+      {content}
+    </Link>
+  );
 
-                    <div className="insight-card">
-                        <h2>🚰 Water Pump Level Prediction</h2>
-                        <p>Current level: 70%</p>
-                        <p>Estimated days until refill needed: 5 days</p>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="ml-insights-page">
+      <TopBar notifications={notifications} />
+      <div className="ml-insights-content">
+        <h1>ML Insights</h1>
+
+        <div className="insights-container">
+          {renderInsightCard(
+            "💧 Soil Moisture",
+            "/graphs/watering-schedule",
+            <>
+              <p>
+                Current soil humidity:{" "}
+                {currentSoilLoading
+                  ? "Loading..."
+                  : latestCurrentSoilHumidity?.soilHumidity ??
+                    "Data unavailable"}
+              </p>
+              <p>
+                Predicted humidity:{" "}
+                {soilPredictionLoading
+                  ? "Loading..."
+                  : latestSoilHumidityPrediction?.SoilHumidity ??
+                    "No prediction"}
+              </p>
+              {latestSoilHumidityPrediction?.anomaly && (
+                <p>Anomaly detected!</p>
+              )}
+            </>
+          )}
+
+          {renderInsightCard(
+            "🌡️ Temperature",
+            "/graphs/temperature",
+            <>
+              <p>
+                Current temperature:{" "}
+                {currentTempLoading
+                  ? "Loading..."
+                  : latestCurrentTemperature?.temperature ?? "Data unavailable"}
+              </p>
+              <p>
+                Predicted temperature:{" "}
+                {tempPredictionLoading
+                  ? "Loading..."
+                  : latestTemperaturePrediction?.Temperature ?? "No prediction"}
+              </p>
+              {latestTemperaturePrediction?.anomaly && <p>Anomaly detected!</p>}
+            </>
+          )}
+
+          {renderInsightCard(
+            "☀️ Light Exposure",
+            "/graphs/light-exposure",
+            <>
+              <p>
+                Current light intensity:{" "}
+                {currentLightLoading
+                  ? "Loading..."
+                  : latestCurrentLightIntensity?.lightIntensity ??
+                    "Data unavailable"}
+              </p>
+              <p>
+                Predicted light intensity:{" "}
+                {lightPredictionLoading
+                  ? "Loading..."
+                  : latestLightIntensityPrediction?.LightIntensity ??
+                    "No prediction"}
+              </p>
+              {latestLightIntensityPrediction?.anomaly && (
+                <p>Anomaly detected!</p>
+              )}
+            </>
+          )}
+
+          {renderInsightCard(
+            "💨 Air Humidity",
+            "/graphs/humidity",
+            <>
+              <p>
+                Current air humidity:{" "}
+                {currentAirLoading
+                  ? "Loading..."
+                  : latestCurrentAirHumidity?.airHumidity ?? "Data unavailable"}
+              </p>
+              <p>
+                Predicted air humidity:{" "}
+                {airPredictionLoading
+                  ? "Loading..."
+                  : latestAirHumidityPrediction?.AirHumidity ?? "No prediction"}
+              </p>
+              {latestAirHumidityPrediction?.anomaly && <p>Anomaly detected!</p>}
+            </>
+          )}
+
+          {renderInsightCard(
+            "🚰 Water Pump",
+            "/graphs/water-pump",
+            <>
+              <p>
+                Current level:{" "}
+                {currentPumpLoading
+                  ? "Loading..."
+                  : latestCurrentWaterPump ?? "Data unavailable"}
+              </p>
+              <p>
+                Predicted level:{" "}
+                {pumpPredictionLoading
+                  ? "Loading..."
+                  : latestWaterPumpPrediction?.WaterPump ?? "No prediction"}
+              </p>
+              {latestWaterPumpPrediction?.anomaly && <p>Anomaly detected!</p>}
+            </>
+          )}
         </div>
-    );
+
+        <p>Please click on a card to view detailed graphs.</p>
+      </div>
+    </div>
+  );
 }

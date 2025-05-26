@@ -26,4 +26,11 @@ public class PlantService : IPlantService
     {
         return await _context.Plants.FirstOrDefaultAsync(p => p.Name == name);
     }
+
+    public async Task<Plant> CreatePlantAsync(Plant plant)
+    {
+        _context.Plants.Add(plant);
+        await _context.SaveChangesAsync();
+        return plant;
+    }
 }

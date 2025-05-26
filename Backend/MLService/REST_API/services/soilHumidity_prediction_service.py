@@ -3,7 +3,7 @@ from AzurePythonConnection.DbConnection.DbConnection import get_conn
 def get_soil_humidity_predictions():
     with get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT Id, Value , Timestamp FROM PredictionResults as a WHERE prediction_type = 'SoilHumidity' AND Batch = (SELECT MAX(Batch) FROM PredictionResults as b WHERE a.Id = b.Id)")
+        cursor.execute("SELECT Id, Value , Timestamp FROM PredictionResults WHERE Batch = (SELECT MAX(Batch) FROM PredictionResults)")
         rows = cursor.fetchall()
         return [
             {"Id": row.Id, "SoilHumidity": row.Value, "Timestamp": row.Timestamp}

@@ -54,3 +54,5 @@ IoT/IoT_server/TcpGrpcBridgeServer/obj/project.packagespec.json
 IoT/IoT_server/TcpGrpcBridgeServer/obj/rider.project.model.nuget.info
 IoT/IoT_server/TcpGrpcBridgeServer/obj/rider.project.restore.info
 IoT/IoT_server/TcpGrpcBridgeServer/obj/TcpGrpcBridgeServer.csproj.nuget.g.targets
+IoT/IoT_server/TcpGrpcBridgeServer/obj
+IoT/IoT_server/TcpGrpcBridgeServer/bin

@@ -1,68 +1,157 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import ChartPanel from '../components/ChartPanel';
-import '../styles/History.css';
-import TopBar from '../components/TopBar';
+import React, { useState } from "react";
+import ChartPanel from "../components/ChartPanel";
+import "../styles/History.css";
+import TopBar from "../components/TopBar";
+
+import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
+import { useGetAllLightIntensity } from "../Hooks/useGetLightIntensity";
+import { useGetAllAirHumidity } from "../Hooks/useAirHumidity";
+import { useGetAllSoilHumidity } from "../Hooks/useSoilHumidity";
 
 export default function History() {
-    const [notifications, setNotifications] = useState([]);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [hasAppliedDateFilter, setHasAppliedDateFilter] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
 
-    // Sample Data to be handled by the backend
-    const temperatureData = {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        values: [22, 23, 25, 24, 26, 25, 23]
-    };
+  const { data: temperatureRawData = [], isLoading: loadingTemp } =
+    useGetAllTemperatures();
+  const { data: lightRawData = [], isLoading: loadingLight } =
+    useGetAllLightIntensity();
+  const { data: airRawData = [], isLoading: loadingAir } =
+    useGetAllAirHumidity();
+  const { data: soilRawData = [], isLoading: loadingSoil } =
+    useGetAllSoilHumidity();
 
-    const lightIntensityData = {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        values: [300, 320, 310, 330, 315, 325, 320]
-    };
+  const [temperatureChartData, setTemperatureChartData] = useState({
+    labels: [],
+    values: [],
+  });
+  const [lightChartData, setLightChartData] = useState({
+    labels: [],
+    values: [],
+  });
+  const [airChartData, setAirChartData] = useState({ labels: [], values: [] });
+  const [soilChartData, setSoilChartData] = useState({
+    labels: [],
+    values: [],
+  });
 
-    const airHumidityData = {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        values: [60, 62, 61, 63, 62, 64, 63]
-    };
+  const today = new Date().toISOString().split("T")[0];
 
-    const soilMoistureData = {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        values: [40, 42, 41, 43, 42, 44, 43]
-    };
+  const formatChartData = (rawData, valueKey, date) => {
+    const filtered = rawData
+      .filter((entry) => {
+        const ts = new Date(entry.timestamp);
+        const entryDate = ts.toISOString().split("T")[0];
+        return entryDate === date;
+      })
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-    const handleApply = () => {
-        // Here you would typically fetch data based on the date range
-        console.log(`Fetching data from ${startDate} to ${endDate}`);
-    };
+    const values = filtered.map((entry) => entry[valueKey]);
+    const labels = filtered.map((entry) => {
+      const ts = new Date(entry.timestamp);
+      return ts.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    });
 
-    return (
-        <div className="page">
-            <TopBar notifications={notifications} />
-            <div className="history-content">
-                <h1>Sensor Data History</h1>
-                
-                <div className="date-picker">
-                    <label>Select Date Range:</label>
-                    <input 
-                        type="date" 
-                        value={startDate} 
-                        onChange={(e) => setStartDate(e.target.value)} 
-                    /> to 
-                    <input 
-                        type="date" 
-                        value={endDate} 
-                        onChange={(e) => setEndDate(e.target.value)} 
-                    />
-                    <button onClick={handleApply}>Apply</button>
-                </div>
+    return { labels, values };
+  };
 
-                <div className="charts">
-                    <ChartPanel title="Measurement " data={temperatureData} />
-                    <ChartPanel title="Light Intensity " data={lightIntensityData} />
-                    <ChartPanel title="Air Humidity" data={airHumidityData} />
-                    <ChartPanel title="Soil Moisture " data={soilMoistureData} />
-                </div>
-            </div>
+  const handleApply = () => {
+    if (!selectedDate) return;
+
+    setIsFiltering(true);
+    setHasAppliedDateFilter(false);
+    setTemperatureChartData({ labels: [], values: [] });
+    setLightChartData({ labels: [], values: [] });
+    setAirChartData({ labels: [], values: [] });
+    setSoilChartData({ labels: [], values: [] });
+
+    setTimeout(() => {
+      setTemperatureChartData(
+        formatChartData(temperatureRawData, "temperature", selectedDate)
+      );
+      setLightChartData(
+        formatChartData(lightRawData, "lightIntensity", selectedDate)
+      );
+      setAirChartData(formatChartData(airRawData, "airHumidity", selectedDate));
+      setSoilChartData(
+        formatChartData(soilRawData, "soilHumidity", selectedDate)
+      );
+
+      setHasAppliedDateFilter(true);
+      setIsFiltering(false);
+    }, 100);
+  };
+
+  const isLoading = loadingTemp || loadingLight || loadingAir || loadingSoil;
+
+  const allDataEmpty =
+    temperatureChartData.values.length === 0 &&
+    lightChartData.values.length === 0 &&
+    airChartData.values.length === 0 &&
+    soilChartData.values.length === 0;
+
+  return (
+    <div className="history-page">
+      <TopBar notifications={notifications} />
+      <div className="history-content">
+        <div className="dashboard-background"></div>
+
+        <h1>Sensor Data History</h1>
+
+        <div className="date-picker">
+          <label htmlFor="history-date-picker">Select a Date:</label>
+          <input
+            id="history-date-picker"
+            type="date"
+            value={selectedDate}
+            max={today}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+          <button
+            onClick={handleApply}
+            disabled={!selectedDate || isLoading || isFiltering}
+          >
+            {isFiltering ? "Loading..." : "Apply"}
+          </button>
         </div>
-    );
+
+        {isLoading ? (
+          <div className="charts loading">
+            <ChartPanel title="Temperature" data={{ labels: [], values: [] }} />
+            <ChartPanel
+              title="Light Intensity"
+              data={{ labels: [], values: [] }}
+            />
+            <ChartPanel
+              title="Air Humidity"
+              data={{ labels: [], values: [] }}
+            />
+            <ChartPanel
+              title="Soil Moisture"
+              data={{ labels: [], values: [] }}
+            />
+          </div>
+        ) : (
+          <>
+            {hasAppliedDateFilter && allDataEmpty && (
+              <p>No data available for the selected date.</p>
+            )}
+
+            <div className="charts" style={{ opacity: isFiltering ? 0.5 : 1 }}>
+              <ChartPanel title="Temperature" data={temperatureChartData} />
+              <ChartPanel title="Light Intensity" data={lightChartData} />
+              <ChartPanel title="Air Humidity" data={airChartData} />
+              <ChartPanel title="Soil Moisture" data={soilChartData} />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }

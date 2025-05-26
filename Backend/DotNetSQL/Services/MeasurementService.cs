@@ -24,12 +24,5 @@ namespace DotNetSQL.Services
         {
             return await _context.MeasurementData.FindAsync(id);
         }
-
-        public async Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData)
-        {
-            _context.MeasurementData.Add(temperatureData);
-            await _context.SaveChangesAsync();
-            return temperatureData;
-        }
     }
 }

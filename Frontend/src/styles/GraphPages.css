@@ -1,0 +1,51 @@
+.graph-page {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f0f8f0;
+  background-image: url('/images/leaf-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 300px;
+  background-attachment: fixed;
+}
+
+.graph-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  min-height: 400px; /* Ensure there's space for the graph */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.graph {
+  width: 100%;
+  height: 100%;
+  min-height: 300px; /* Minimum height for the graph */
+}
+
+.loading, .error {
+  text-align: center;
+  font-size: 1.2em;
+  color: #34495E;
+}
+
+h1 {
+  color: #34495E;
+  margin-bottom: 20px;
+}
+
+.back-link {
+  display: inline-block;
+  color: #3A7F0D;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}

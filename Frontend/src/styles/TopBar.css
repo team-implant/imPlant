@@ -21,10 +21,15 @@
 
 .dropdown-menu {
     position: absolute;
+    top: 100%;
+    left: 0;
     background-color: #f9f9f9;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+    z-index: 101;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s, transform 0.3s;
 }
 
 .dropdown-menu a {
@@ -36,6 +41,14 @@
 
 .dropdown-menu a:hover {
     background-color: #f1f1f1;
+}
+
+.dropdown-menu.open {
+    animation: rollDown 0.3s ease forwards;
+}
+
+.dropdown-menu.closing {
+    animation: rollUp 0.3s ease forwards;
 }
 
 .notification-area {
@@ -51,4 +64,36 @@
 
 .top-bar.dashboard h1 {
     margin: 0 auto;
+}
+
+@keyframes rollDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rollUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 100;
 }

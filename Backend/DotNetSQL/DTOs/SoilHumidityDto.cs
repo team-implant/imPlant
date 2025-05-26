@@ -4,7 +4,8 @@ namespace DotNetSQL.DTOs
     {
         public int Id { get; set; }
         public int PlantId { get; set; }
-        public double MinValue { get; set; }
+        public int Position { get; set; } // Only 0, 1, or 2 allowed
+        public double MinThreshold { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }

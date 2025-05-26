@@ -9,6 +9,5 @@ namespace DotNetSQL.IServices
     {
         Task<IEnumerable<MeasurementData>> GetAllMeasurementsAsync();
         Task<MeasurementData?> GetMeasurementByIdAsync(int id);
-        Task<MeasurementData> AddMeasurementAsync(MeasurementData temperatureData);
     }
 }
