@@ -16,11 +16,11 @@ void send_data(char data[]) {
 }
 
 void handle_incoming_wifi_data() {
-    if (strcmp(inbound_buffer, "1") == 0) {
+    if (strncmp(inbound_buffer, "1", 1) == 0) {
         waterPlant1();
-    } else if (strcmp(inbound_buffer, "2") == 0) {
+    } else if (strncmp(inbound_buffer, "2", 1) == 0) {
         waterPlant2();
-    } else if (strcmp(inbound_buffer, "NEUTRAL") == 0) {
+    } else if (strncmp(inbound_buffer, "0", 1) == 0) {
         neutral();
     } else {
         display_setValues(17, 22, 19, 22);
