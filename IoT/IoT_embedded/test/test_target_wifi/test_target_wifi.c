@@ -1,9 +1,10 @@
 // Tests the Wifi module on target
-#define WIFI_SSID "IoT-lab"
-#define WIFI_PASSWORD "2409V#2021a!"
-#define TCP_SERVER "192.168.56.1" // should be running and in echo mode for the test to pass. 
+#define WIFI_SSID WIFI_NAME
+#define WIFI_PASSWORD WIFI_PASSWORD
+#define TCP_SERVER MY_IP_ADDRESS // should be running and in echo mode for the test to pass. 
 #define TCP_PORT 23
 
+#include "env.h"
 #include "unity.h"
 #include "wifi.h"
 #include <util/delay.h>

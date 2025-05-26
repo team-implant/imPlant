@@ -24,3 +24,7 @@ void display_error(int16_t errorNumber);
 void display_dead();
 
 void display_empty();
+
+void asyncDisableDisplayAfterMs(int ms);
+void displayAndDie(void);
+void init_display(void);

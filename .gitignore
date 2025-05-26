@@ -17,3 +17,4 @@ IoT/IoT_embedded/.vscode/extensions.json
 IoT/IoT_embedded/.vscode/extensions.json
 IoT/IoT_server/obj
 IoT/IoT_server/bin
+IoT/IoT_embedded/lib/private/env.h

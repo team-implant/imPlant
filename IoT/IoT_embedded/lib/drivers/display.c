@@ -1,5 +1,6 @@
 #include "display.h"
 #include "includes.h"
+#include <stdbool.h>
 //LATCH
 #define LATCH_BIT PG5
 #define LATCH_DDR DDRG
@@ -198,4 +199,8 @@ void display_dead(){
 
 void display_empty(){
     display_setValues(17, 17, 17, 17);
+}
+
+void init_display() {
+    display_init();
 }
