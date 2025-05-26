@@ -9,9 +9,10 @@ import { useGetAllTemperatures } from "../Hooks/useGetTemperature";
 import { useGetAllSoilHumidity } from "../Hooks/useSoilHumidity";
 import { useGetAllLightIntensity } from "../Hooks/useGetLightIntensity";
 import WaterLevelIndicator from "../components/waterpump/WaterLevelIndicator";
-import { useWaterPumpData } from "../Hooks/waterpump/useWaterPump";
+
 import toast from "react-hot-toast";
 import { BASE_URL } from "../config.ts";
+import { useMeasurements } from "../Hooks/useMeasurement";
 
 const Dashboard = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -74,8 +75,7 @@ const Dashboard = () => {
     data: waterPumpData,
     loading: waterPumpLoading,
     error: waterPumpError,
-  } = useWaterPumpData(1);
-  console.log("Water Pump Data plzz:", waterPumpData);
+  } = useMeasurements();
 
   // Fetch initial dashboard data
   useEffect(() => {
@@ -227,7 +227,9 @@ const Dashboard = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const latestWaterPump = waterPumpData;
+  const latestWaterPump = waterPumpData?.at(-1)?.tankFillLevel ?? 0;
+  console.log("Water Pump Data:", waterPumpData);
+
   console.log("Latest Water Pump Data:", latestWaterPump);
 
   if (isLoading)
@@ -328,7 +330,7 @@ const Dashboard = () => {
             icon="🚰"
             className="water-pump-card"
           >
-            <WaterLevelIndicator level={latestWaterPump?.WaterPump ?? 0} />
+            <WaterLevelIndicator level={latestWaterPump ?? 0} />
           </SensorCard>
         </div>
 

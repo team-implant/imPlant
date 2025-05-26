@@ -7,29 +7,41 @@ import { MemoryRouter } from "react-router-dom";
 // Mock hooks and dependencies
 vi.mock("../Hooks/useAirHumidity", () => ({
   useGetAllAirHumidity: vi.fn(() => ({
-    data: [{ timestamp: Date.now(), airHumidity: 50 }],
+    data: [{ timestamp: new Date().toISOString(), airHumidity: 50 }],
   })),
 }));
 vi.mock("../Hooks/useGetTemperature", () => ({
   useGetAllTemperatures: vi.fn(() => ({
-    data: [{ timestamp: Date.now(), temperature: 25 }],
+    data: [{ timestamp: new Date().toISOString(), temperature: 25 }],
     loading: false,
   })),
 }));
 vi.mock("../Hooks/useSoilHumidity", () => ({
   useGetAllSoilHumidity: vi.fn(() => ({
-    data: [{ timestamp: Date.now(), soilHumidity: 500 }],
+    data: [{ timestamp: new Date().toISOString(), soilHumidity: 500 }],
     isLoading: false,
   })),
 }));
 vi.mock("../Hooks/useGetLightIntensity", () => ({
   useGetAllLightIntensity: vi.fn(() => ({
-    data: [{ timestamp: Date.now(), lightIntensity: 300 }],
+    data: [{ timestamp: new Date().toISOString(), lightIntensity: 300 }],
     loading: false,
   })),
 }));
-vi.mock("../Hooks/waterpump/useWaterPump", () => ({
-  useWaterPumpData: vi.fn(() => ({ data: { WaterPump: 70 }, loading: false })),
+vi.mock("../Hooks/useMeasurement", () => ({
+  useMeasurements: vi.fn(() => ({
+    data: [
+      {
+        tankFillLevel: 75,
+        temperature: 25,
+        soilHumidity: 500,
+        lightIntensity: 300,
+        airHumidity: 50,
+        timestamp: new Date().toISOString(),
+      },
+    ],
+    loading: false,
+  })),
 }));
 vi.mock("react-hot-toast", () => ({
   __esModule: true,
@@ -38,7 +50,6 @@ vi.mock("react-hot-toast", () => ({
 vi.mock("../components/InsightsPanel", () => ({
   default: () => <div>InsightsPanel</div>,
 }));
-
 vi.mock("../components/TopBar", () => ({
   default: () => <div>TopBar</div>,
 }));
