@@ -228,9 +228,6 @@ const Dashboard = () => {
   }, []);
 
   const latestWaterPump = waterPumpData?.at(-1)?.tankFillLevel ?? 0;
-  console.log("Water Pump Data:", waterPumpData);
-
-  console.log("Latest Water Pump Data:", latestWaterPump);
 
   if (isLoading)
     return <div className="loading">Loading dashboard data...</div>;
