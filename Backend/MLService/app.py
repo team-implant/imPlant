@@ -38,4 +38,4 @@ app.register_blueprint(water_pump_predictions_bp)
 app.register_blueprint(model_activation_bp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False, ssl_context=("cert.pem", "key.pem")) 
+    app.run(host="0.0.0.0", port=5000, debug=False) 
