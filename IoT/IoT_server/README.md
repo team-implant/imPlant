@@ -52,5 +52,5 @@ VIA University College
 
 **Zygmunt** \
 Student, Software Technology Engineering
-VIA University College
+VIA University College \
 *definitely not ai generated* 😉
