@@ -44,8 +44,13 @@ bash
 
 
 
-## ✍️ Author
+## ✍️ Authors
 
-**Bibek**
+**Bibek** \
 Student, Software Technology Engineering
 VIA University College
+
+**Zygmunt** \
+Student, Software Technology Engineering
+VIA University College
+*definitely not ai generated* 😉
