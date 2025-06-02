@@ -46,7 +46,6 @@ export default function MLInsights() {
     useGetMLAirHumidity();
   const { data: waterPumpPredictionData, isLoading: pumpPredictionLoading } =
     useGetMLWaterPumpPredictions();
-  console.log("waterPumpPredictionData", waterPumpPredictionData);
 
   // Extract latest data
   const latestCurrentTemperature = currentTemperatureData?.[0];

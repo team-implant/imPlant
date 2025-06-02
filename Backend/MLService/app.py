@@ -19,7 +19,8 @@ from REST_API.routes.waterPumpPrediction_routes import water_pump_predictions_bp
 from REST_API.routes.modelActivation_routes import model_activation_bp
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/<path:everything>": {"origins":"https://159.89.1.205"}}, supports_credentials=True, expose_headers=[], allow_headers=["Content-Type"])
+
 
 app.register_blueprint(measurement_bp)
 app.register_blueprint(water_pump_bp)
@@ -37,4 +38,4 @@ app.register_blueprint(water_pump_predictions_bp)
 app.register_blueprint(model_activation_bp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False) 
