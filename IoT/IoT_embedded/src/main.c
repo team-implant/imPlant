@@ -61,9 +61,9 @@ int main() {
     // Connect to WiFi
     bool working = startWifi();
 
-    // Setup periodic measurement every 1 minute (60x per hour)
-    int perHour = 0;
-    int perMinute = 1;
+    // Setup periodic measurement every 3 minutes (20x per hour)
+    int perHour = 20;
+    int perMinute = 0;
     if (perHour > 0){
         periodic_task_init_c(&enableMeasure, 3600000 / perHour);
     }
