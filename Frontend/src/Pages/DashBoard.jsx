@@ -12,7 +12,7 @@ import WaterLevelIndicator from "../components/waterpump/WaterLevelIndicator";
 
 import toast from "react-hot-toast";
 import { BASE_URL } from "../config.ts";
-import { useMeasurements } from "../Hooks/useMeasurement";
+import { useMeasurements, useMeasurementsByPlant } from "../Hooks/useMeasurement";
 
 const Dashboard = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -54,22 +54,22 @@ const Dashboard = () => {
   });
 
   // Hooks for fetching sensor data
-  const { data: airHumidityData } = useGetAllAirHumidity(selectedPlant.id);
+  const { data: airHumidityData } = useMeasurementsByPlant(selectedPlant.id);
   const {
     data: temperatureData,
     loading: temperatureLoading,
     error: temperatureError,
-  } = useGetAllTemperatures(selectedPlant.id);
+  } = useMeasurementsByPlant(selectedPlant.id);
   const {
     data: soilHumidityData,
     isLoading: soilHumidityLoading,
     error: soilHumidityError,
-  } = useGetAllSoilHumidity(selectedPlant.id);
+  } = useMeasurementsByPlant(selectedPlant.id);
   const {
     data: lightIntensityData,
     loading: lightIntensityLoading,
     error: lightIntensityError,
-  } = useGetAllLightIntensity(selectedPlant.id);
+  } = useMeasurementsByPlant(selectedPlant.id);
 
   const {
     data: waterPumpData,
@@ -98,7 +98,17 @@ const Dashboard = () => {
     };
     fetchInitialData();
   }, []);
+  const filterLast24Hours = (data) => {
+    if (!data || data.length === 0) return [];
 
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    return data.filter((item) => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= twentyFourHoursAgo;
+    });
+  };
   // check if the greenhouse is online
   useEffect(() => {
     const hasData =
@@ -204,7 +214,7 @@ const Dashboard = () => {
 
   //soil normalization
   const normalizeSoil = (rawValue) => {
-    const percent = Math.round((1 - rawValue / 1023) * 100);
+    const percent = Math.round((rawValue / 1023) * 100);
     return Math.min(Math.max(percent, 0), 100); // clamp between 0–100%
   };
 
@@ -343,12 +353,12 @@ const Dashboard = () => {
           <ChartPanel
             title={`Temperature (24h) - ${selectedPlant.name}`}
             data={
-              temperatureData
+              filterLast24Hours(temperatureData)
                 ? {
-                    labels: temperatureData.map((d) =>
+                    labels: filterLast24Hours(temperatureData).map((d) =>
                       new Date(d.timestamp).toLocaleTimeString()
                     ),
-                    values: temperatureData.map((d) => d.temperature),
+                    values: filterLast24Hours(temperatureData).map((d) => d.temperature),
                   }
                 : { labels: [], values: [] }
             }
@@ -358,12 +368,12 @@ const Dashboard = () => {
           <ChartPanel
             title={`Humidity (24h) - ${selectedPlant.name}`}
             data={
-              airHumidityData
+              filterLast24Hours(airHumidityData)
                 ? {
-                    labels: airHumidityData.map((d) =>
+                    labels: filterLast24Hours(airHumidityData).map((d) =>
                       new Date(d.timestamp).toLocaleTimeString()
                     ),
-                    values: airHumidityData.map((d) => d.airHumidity),
+                    values: filterLast24Hours(airHumidityData).map((d) => d.airHumidity),
                   }
                 : { labels: [], values: [] }
             }
@@ -374,12 +384,12 @@ const Dashboard = () => {
           <ChartPanel
             title={`Soil Moisture (24h) - ${selectedPlant.name}`}
             data={
-              soilHumidityData
+              filterLast24Hours(soilHumidityData)
                 ? {
-                    labels: soilHumidityData.map((d) =>
+                    labels: filterLast24Hours(soilHumidityData).map((d) =>
                       new Date(d.timestamp).toLocaleTimeString()
                     ),
-                    values: soilHumidityData.map((d) => d.soilHumidity),
+                    values: filterLast24Hours(soilHumidityData).map((d) => d.soilHumidity),
                   }
                 : { labels: [], values: [] }
             }
@@ -390,12 +400,12 @@ const Dashboard = () => {
           <ChartPanel
             title={`Light Intensity (24h) - ${selectedPlant.name}`}
             data={
-              lightIntensityData
+              filterLast24Hours(lightIntensityData)
                 ? {
-                    labels: lightIntensityData.map((d) =>
+                    labels: filterLast24Hours(lightIntensityData).map((d) =>
                       new Date(d.timestamp).toLocaleTimeString()
                     ),
-                    values: lightIntensityData.map(
+                    values: filterLast24Hours(lightIntensityData).map(
                       (d) => d.lightIntensity ?? d.light ?? d.value
                     ), // depending on your API response
                   }
@@ -512,8 +522,23 @@ const updateIrrigationStatus = async (status) => {
 
   return await res.json(); // expects { success: true, message: "..." }
 };
+const filterLast24Hours = (data) => {
+    if (!data || data.length === 0) return [];
+
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    return data.filter((item) => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= twentyFourHoursAgo;
+    });
+  };
 
 const getEnlargedChartData = (title, temperature, humidity, soil, light) => {
+  temperature = filterLast24Hours(temperature)
+  humidity = filterLast24Hours(humidity)
+  soil = filterLast24Hours(soil)
+  light = filterLast24Hours(light)
   switch (title) {
     case "Temperature (24h)":
       return temperature

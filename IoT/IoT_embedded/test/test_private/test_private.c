@@ -13,7 +13,7 @@
 #include "pir.h"
 #include "tone.h"
 
-// Here you write t
+// Here you write the tests
 
 void setUp(void){
     
@@ -23,13 +23,15 @@ void tearDown(void){
 
 }
 
-void test1(void){
-    TEST_MESSAGE("71 is 71 :1:_:PASS\n");
-    TEST_ASSERT_EQUAL(71, 71);
+void test_unity(void){
+    char message[1024];
+    sprintf(message, "71 is 71 (tests are working correctly!) :1:_:PASS\n");
+    TEST_MESSAGE(message); 
+    TEST_ASSERT_TRUE_MESSAGE((71 == 71), "71 should be equal to 71. Unity failed");
 }
 
 int main(void){
     UNITY_BEGIN();
-    RUN_TEST(test1);
+    RUN_TEST(test_unity);
     UNITY_END();
 }

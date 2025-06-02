@@ -9,6 +9,7 @@ interface AirHumidityData {
 
 const getAllAirHumidity = async (): Promise<AirHumidityData[]> => {
   const response = await instance.get<AirHumidityData[]>("/air-humidity");
+  console.log("Dupa cyce" + response.data);
   return response.data;
 };
 
