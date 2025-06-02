@@ -204,7 +204,7 @@ const Dashboard = () => {
 
   //soil normalization
   const normalizeSoil = (rawValue) => {
-    const percent = Math.round((1 - rawValue / 1023) * 100);
+    const percent = Math.round((rawValue / 1023) * 100);
     return Math.min(Math.max(percent, 0), 100); // clamp between 0–100%
   };
 
