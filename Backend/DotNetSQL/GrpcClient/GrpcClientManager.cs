@@ -14,7 +14,7 @@ public class GrpcClientManager : IGrpcClientManager
 //initializes the grpc connection to the server and the used service
     public GrpcClientManager()
     {
-        channel = GrpcChannel.ForAddress("http://localhost:5000");
+        channel = GrpcChannel.ForAddress("http://iot_server:5000");
         grpcService = new WaterPump.WaterPumpClient(channel);
     }
     
